@@ -1,0 +1,42 @@
+body[data-v="sobremim"] {
+  --pg: #123a2c;
+}
+
+.introducao-sobre {
+  max-width: 65ch;
+  color: #e8e2cd;
+  margin: 0 0 24px;
+}
+
+#sobremim .cartao {
+  padding: clamp(16px, 4vw, 32px);
+}
+
+#sobremim .cartao p {
+  max-width: 65ch;
+  margin: 12px 0 0;
+}
+
+.cartao-personagem-sobre {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 170px);
+  gap: 20px;
+  align-items: center;
+}
+
+.cartao-personagem-sobre img {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+}
+
+@media (max-width: 560px) {
+  .cartao-personagem-sobre {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cartao-personagem-sobre img {
+    height: 160px;
+  }
+}

@@ -1,0 +1,7 @@
+body[data-v="cadastro"] {
+  --pg: #123a2c;
+}
+
+#cadastro .cartao-licenca > img {
+  border-radius: 16px 16px 0 0;
+}

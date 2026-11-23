@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Quizzes · Caminho do Nen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/panels.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+
+<body data-v="quiz">
+    <nav id="nav"></nav>
+    <main hidden>
+        <section id="quiz">
+            <h1>Quizzes</h1>
+            <div id="qhub" tabindex="-1">
+    <p class="introducao-secao">Escolha um quiz. Os de conhecimento têm tempo limite e as questões sem resposta valem como erro.</p>
+    <ul class="lista-etapas lista-quizzes" id="lista-quizzes-disponiveis">
+        <li class="cartao-etapa quiz-obrigatorio">
+            <article class="conteudo-etapa">
+                <span class="rotulo">Comece por aqui</span>
+                <h2>Descubra seu Nen</h2>
+                <p>14 perguntas no estilo da Divinação do Copo de Água. O resultado é definitivo.</p>
+                <button type="button" id="iniciar-nen">Começar teste de Nen</button>
+                <p id="nen-concluido" hidden><a class="botao" id="link-estatisticas" href="./perfil.html#estatisticas">Ver estatísticas</a></p>
+                <span class="numero-etapa" aria-hidden="true">念</span>
+            </article>
+        </li>
+        <li class="cartao-etapa quiz-em-breve" id="quiz-arcos">
+            <article class="conteudo-etapa">
+                <span class="rotulo">Em breve</span>
+                <h2>Arcos do anime</h2>
+                <p>Exame Hunter, Yorknew City, Greed Island e mais.</p>
+            </article>
+        </li>
+    </ul>
+  <details class="quizzes-concluidos" id="quizzes-concluidos" hidden>
+    <summary>Concluídos</summary>
+    <ul class="lista-etapas lista-quizzes" id="lista-quizzes-concluidos"></ul>
+  </details>
+</div>
+            <div id="qbox" class="cartao" hidden></div>
+        </section>
+    </main>
+    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
+        Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <script src="../js/app.js"></script>
+</body>
+
+</html>

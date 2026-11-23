@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Entrar · Caminho do Nen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body data-v="login">
+    <nav id="nav"></nav>
+    <main>
+        <section id="login">
+            <h1>Licença Hunter</h1>
+            <div class="cartao-licenca"><img src="./assets/cardtop.png" alt="Cartão da Associação Hunter">
+                <form id="fl" class="formulario-licenca">
+                    <small>Associação Hunter · Identificação</small>
+                    <label for="le">E-mail</label>
+                    <div><input required id="le" type="email" autocomplete="email"></div>
+                    <label for="ls">Senha</label>
+                    <div><input required id="ls" type="password" autocomplete="current-password"><small class="erro"
+                            id="le2"></small></div>
+                    <p class="erro" role="status"></p><button type="submit">Apresentar licença</button>
+                    <p class="troca-formulario" id="preview-link" hidden><a href="./dashboard/quiz.html?preview=1">Acessar prévia sem conta</a></p>
+                    <p class="troca-formulario">Ainda não é Hunter? <a href="cadastro.html">Registre-se</a></p>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
+        Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+/* PAINEL DE AFINIDADES */
+
+.cartao-afinidade {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.estado-vazio {
+  text-align: center;
+}
+
+.area-radar {
+  transform-origin: 220px 150px;
+  animation: grow .9s ease-out;
+}
+
+@keyframes grow {
+  from {
+    transform: scale(.05);
+    opacity: 0;
+  }
+}
+
+body[data-v="dashboard"] {
+  --pg: #0f2d33;
+}
+
+svg.radar {
+  display: block;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.hexagrama-afinidade {
+  width: 100%;
+  margin: 16px auto;
+}
+
+.hexagrama-afinidade polygon {
+  fill: #172b25;
+  stroke: #d8ab49;
+  stroke-width: 3;
+}
+
+.hexagrama-afinidade circle {
+  stroke: #e1c57d;
+  stroke-width: 3;
+}
+
+.hexagrama-afinidade .afinidade-dominante circle {
+  stroke: #fff0ac;
+  stroke-width: 5;
+}
+
+.hexagrama-afinidade text {
+  fill: var(--fg);
+  font: 700 14px system-ui, sans-serif;
+  text-anchor: middle;
+}
+
+.hexagrama-afinidade .porcentagem,
+.hexagrama-afinidade .tipo-dominante {
+  fill: #ffd34e;
+  font-size: 17px;
+}

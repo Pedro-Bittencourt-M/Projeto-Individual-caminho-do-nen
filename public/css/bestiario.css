@@ -1,0 +1,81 @@
+/* CATÁLOGO E FORMULÁRIO DO BESTIÁRIO */
+
+.grade-formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 0 14px;
+}
+
+.filtros-bestiario {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0 4px;
+}
+
+.filtros-bestiario select {
+  width: auto;
+  flex: 1 1 180px;
+}
+
+.grade-bestiario {
+  grid-template-columns: repeat(auto-fill,minmax(min(100%,320px),1fr));
+}
+
+.criatura {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cabecalho-criatura {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.cabecalho-criatura h3 {
+  margin: 0;
+  font-family: Georgia,serif;
+  font-size: 22px;
+}
+
+.detalhes-criatura {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.detalhes-criatura.aberto {
+  display: block;
+}
+
+.marcadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.marcador {
+  border: 1.5px solid #000;
+  border-radius: 99px;
+  padding: 2px 10px;
+  font: 600 12px system-ui,sans-serif;
+  background: var(--bg);
+}
+
+.criatura .remover {
+  align-self: flex-start;
+  margin: 0;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+body[data-v="bestiario"] {
+  --pg: #2b1a3d;
+}

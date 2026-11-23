@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Bestiário · Caminho do Nen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/bestiario.css">
+</head>
+
+<body data-v="bestiario">
+    <nav id="nav"></nav>
+    <noscript><p class="cartao">Ative o JavaScript para acessar a área Hunter.</p></noscript>
+<main hidden>
+        <section id="bestiario">
+            <h1>Bestiário da Associação</h1>
+            <p class="introducao-secao">A Associação Hunter cataloga as criaturas do mundo. Encontrou uma espécie nova? Registre e
+                ajude os outros Hunters.</p>
+            <div class="acoes-edicao"><button type="button" id="bnew" disabled>Registrar nova criatura</button></div>
+            <form id="bform" class="cartao" novalidate hidden>
+                <h2>Nova criatura</h2>
+                <div><label for="bn">Nome (opcional)</label><input id="bn" maxlength="40"
+                        placeholder="Deixe em branco se ainda não tem nome"><small class="erro"></small></div>
+                <label for="bd">Descrição</label>
+                <div><textarea id="bd" rows="4" maxlength="600"
+                        placeholder="Aparência, comportamento, onde foi vista…"></textarea><small class="erro"></small>
+                </div>
+                <div class="grade-formulario">
+                    <div><label for="bp">Classificação de perigo</label><select id="bp"></select><small
+                            class="erro"></small></div>
+                    <div><label for="bev">Potencial de evolução</label><select id="bev"></select><small
+                            class="erro"></small></div>
+                    <div><label for="bt">Tipo</label><select id="bt"></select><small class="erro"></small></div>
+                    <div><label for="bh">Habitat</label><select id="bh"></select><small class="erro"></small></div>
+                    <div><label for="bo">Porte</label><select id="bo"></select><small class="erro"></small></div>
+                    <div><label for="bc">Comportamento</label><select id="bc"></select><small class="erro"></small></div>
+                    <div><label for="bnn">Afinidade com Nen</label><select id="bnn"></select><small class="erro"></small>
+                    </div>
+                </div>
+                <button>Registrar criatura</button> <button type="button" class="alternativo" id="bcancel">Cancelar</button>
+            </form>
+            <div class="filtros-bestiario" hidden><select id="ftipo" aria-label="Filtrar por tipo"></select><select id="fper"
+                    aria-label="Filtrar por perigo"></select></div>
+            <p class="texto-secundario nota" id="bcount"></p>
+            <div class="grade grade-bestiario" id="blist"></div>
+        </section>
+    </main>
+    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
+        Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <script src="../js/app.js"></script>
+</body>
+
+</html> 
