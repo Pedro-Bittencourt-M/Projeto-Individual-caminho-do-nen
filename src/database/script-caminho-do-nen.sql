@@ -1,15 +1,17 @@
 CREATE DATABASE IF NOT EXISTS hunter;
 USE hunter;
 
+-- Execute no mesmo MySQL usado pela API do Caminho do Nen.
+-- As tabelas existentes e seus registros são preservados.
+USE hunter;
+
 CREATE USER 'hunter_user'@'localhost' identified by 'Urubu@100';
 
 GRANT ALL privileges ON hunter.* TO 'hunter_user'@'localhost';
 
 FLUSH PRIVILEGES;
 
-/* Cadastro dos Hunters */
-
-CREATE TABLE usuario (
+CREATE TABLE IF NOT EXISTS usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(254) NOT NULL UNIQUE,
@@ -18,9 +20,7 @@ CREATE TABLE usuario (
     codigo_licenca VARCHAR(8) NOT NULL UNIQUE
 );
 
-/* Resultado do quiz de afinidade */
-
-CREATE TABLE resultado_nen (
+CREATE TABLE IF NOT EXISTS resultado_nen (
     id INT PRIMARY KEY AUTO_INCREMENT,
     tipo_dominante VARCHAR(20) CHECK (tipo_dominante IN (
         'Intensificação', 'Transmutação', 'Materialização',
@@ -38,9 +38,7 @@ CREATE TABLE resultado_nen (
     REFERENCES usuario(id)
 );
 
-/* Voto e Restrição */
-
-CREATE TABLE voto_restricao (
+CREATE TABLE IF NOT EXISTS voto_restricao (
     id INT PRIMARY KEY AUTO_INCREMENT,
     meta VARCHAR(150),
     restricao VARCHAR(300),
@@ -51,9 +49,7 @@ CREATE TABLE voto_restricao (
     REFERENCES usuario(id)
 );
 
-/* Registros do bestiário */
-
-CREATE TABLE criatura (
+CREATE TABLE IF NOT EXISTS criatura (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(150),
     descricao TEXT,
@@ -69,12 +65,22 @@ CREATE TABLE criatura (
     REFERENCES usuario(id)
 );
 
-/* Consultas para conferir as tabelas */
+CREATE TABLE IF NOT EXISTS tentativa_quiz (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fk_usuario INT NOT NULL,
+    quiz VARCHAR(20) NOT NULL,
+    acertos SMALLINT UNSIGNED NOT NULL,
+    total_perguntas SMALLINT UNSIGNED NOT NULL,
+    concluido_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_tentativa_quiz_placar CHECK (total_perguntas > 0 AND acertos <= total_perguntas),
+    CONSTRAINT fk_tentativa_quiz_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
+);
 
-SELECT id, nome, email, codigo_licenca FROM usuario;
-SELECT * FROM resultado_nen;
-SELECT * FROM voto_restricao;
-SELECT * FROM criatura;
+-- Se uma tabela antiga estiver com outra estrutura, o SELECT mostra a coluna que falta.
+SELECT id, nome, email, senha, motivo_cadastro, codigo_licenca FROM usuario LIMIT 0;
+SELECT id, tipo_dominante, pontos_intensificacao, pontos_transmutacao, pontos_materializacao, pontos_especializacao, pontos_manipulacao, pontos_emissao, data_resultado, fk_usuario FROM resultado_nen LIMIT 0;
+SELECT id, meta, restricao, penalidade, severidade, fk_usuario FROM voto_restricao LIMIT 0;
+SELECT id, nome, descricao, categoria, perigo, habitat, porte, comportamento, evolucao, tipo_nen, fk_usuario FROM criatura LIMIT 0;
+SELECT id, fk_usuario, quiz, acertos, total_perguntas, concluido_em FROM tentativa_quiz LIMIT 0;
 
-SELECT c.nome AS criatura, c.perigo, u.nome AS hunter
-FROM criatura AS c JOIN usuario AS u ON c.fk_usuario = u.id;
+

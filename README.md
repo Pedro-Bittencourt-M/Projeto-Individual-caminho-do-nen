@@ -9,7 +9,7 @@ Caminho do Nen é um projeto individual inspirado em *Hunter × Hunter*. O site 
 - **Cadastro e login** — formulários temáticos do Exame Hunter e da Licença Hunter.
 - **Área Hunter** — telas de dashboard, perfil, quizzes, personagens, bestiário e Voto e Restrição.
 
-O cadastro e o login usam a API Node.js e o MySQL. A interface guarda a sessão de navegação, as edições de perfil, os resultados, os votos e as criaturas no navegador. Contas antigas criadas no protótipo local precisam ser cadastradas novamente para usar a API.
+O cadastro, o login, a edição de perfil, o resultado de Nen, as tentativas dos quizzes, os votos e as criaturas usam a API Node.js e o MySQL. Entre novamente após reiniciar o servidor. O modo de prévia usa dados de teste do navegador e as informações antigas do protótipo local não são enviadas automaticamente ao banco.
 
 ## Como executar localmente
 

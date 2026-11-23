@@ -32,4 +32,20 @@ function executar(instrucao, parametros = []) {
     });
 }
 
-module.exports = { executar };
+async function executarEmTransacao(operacao) {
+    const conexao = await mysql.createConnection(mySqlConfig).promise();
+    try {
+        await conexao.beginTransaction();
+        const executarConsulta = async (sql, parametros) => (await conexao.execute(sql, parametros))[0];
+        const resultado = await operacao(executarConsulta);
+        await conexao.commit();
+        return resultado;
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
+    } finally {
+        await conexao.end();
+    }
+}
+
+module.exports = { executar, executarEmTransacao };

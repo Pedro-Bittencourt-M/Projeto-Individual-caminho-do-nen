@@ -1,0 +1,72 @@
+const quizzesPersonagens = [
+        { id: "killua", name: "Killua", questions: [
+            ["Qual é o sobrenome de Killua?", ["Zoldyck", "Freecss", "Kurta", "Nostrade"]],
+            ["Que profissão tornou a família de Killua conhecida?", ["Assassinos", "Médicos", "Caçadores de tesouros", "Artistas marciais"]],
+            ["Qual é a irmã de Killua?", ["Alluka", "Mito", "Shizuku", "Neon"]],
+            ["Qual arma Killua usa em combate?", ["Ioiôs", "Correntes", "Cartas", "Bumerangues"]],
+            ["Qual é a categoria natural de Nen de Killua?", ["Transmutação", "Materialização", "Intensificação", "Emissão"]],
+            ["Que propriedade Killua dá à aura?", ["Eletricidade", "Elasticidade", "Magnetismo", "Frio"]],
+            ["Quem Killua mata na fase final do primeiro Exame Hunter, causando sua desclassificação?", ["Bodoro", "Hanzo", "Gittarackur", "Pokkle"]],
+            ["Quem escondeu uma agulha na cabeça de Killua?", ["Illumi", "Silva", "Milluki", "Zeno"]],
+            ["Contra qual inimigo Killua retira a agulha de Illumi?", ["Rammot", "Ikalgo", "Youpi", "Bloster"]],
+            ["Qual adversário da Arena Celestial usa uma cadeira de rodas e chicotes contra Killua?", ["Riehlvelt", "Gido", "Sadaso", "Kastro"]],
+            ["Na partida contra Razor, para quem Killua segura a bola durante os arremessos com Nen?", ["Gon", "Biscuit", "Tsezguerra", "Hisoka"]],
+            ["Qual é o nome da técnica que acelera os movimentos de Killua com aura elétrica?", ["Godspeed", "Jajanken", "Bungee Gum", "Pain Packer"]],
+            ["Que Formiga Quimera, com aparência de polvo, se torna amiga de Killua?", ["Ikalgo", "Meleoron", "Colt", "Leol"]],
+            ["A quem Killua pede para curar Gon no hospital?", ["Nanika", "Neferpitou", "Komugi", "Palm"]],
+            ["Com quem Killua segue viagem após se despedir de Gon perto da Árvore do Mundo?", ["Alluka", "Biscuit", "Canary", "Leorio"]]
+        ] },
+        { id: "leorio", name: "Leorio", questions: [
+            ["Qual profissão Leorio quer exercer?", ["Médico", "Professor", "Advogado", "Jornalista"]],
+            ["Onde Leorio conhece Gon e Kurapika?", ["No navio a caminho do Exame Hunter", "Na Arena Celestial", "Em Greed Island", "Na mansão dos Zoldyck"]],
+            ["Qual acessório Leorio costuma carregar nas mãos?", ["Uma maleta", "Um skate", "Uma vara de pesca", "Um livro de receitas"]],
+            ["Por que Leorio quer estudar medicina?", ["Para ajudar quem precisa de tratamento", "Para competir na Arena Celestial", "Para recuperar os olhos do clã Kurta", "Para se tornar presidente da Associação"]],
+            ["Quem leva um soco de Nen de Leorio durante a eleição da Associação Hunter?", ["Ging", "Hisoka", "Silva", "Hanzo"]],
+            ["Qual categoria de Nen combina com o soco que Leorio projeta à distância?", ["Emissão", "Intensificação", "Materialização", "Transmutação"]],
+            ["Na Torre dos Truques, qual prisioneira faz apostas com Leorio?", ["Leroute", "Bendot", "Majtani", "Johness"]],
+            ["O que Leorio e Leroute usam como aposta durante o desafio?", ["Horas do tempo disponível da equipe", "Distintivos dos candidatos", "Dinheiro do prêmio do exame", "Pontos de uma partida de cartas"]],
+            ["Na fase final do primeiro Exame Hunter, quem era o adversário de Leorio quando Killua interferiu?", ["Bodoro", "Hanzo", "Hisoka", "Pokkle"]],
+            ["No exame de caça aos distintivos, qual candidata usa cobras e envenena Leorio?", ["Ponzu", "Menchi", "Leroute", "Shizuku"]],
+            ["Qual dos quatro amigos viaja com Leorio e Gon à propriedade dos Zoldyck para buscar Killua?", ["Kurapika", "Kite", "Biscuit", "Wing"]],
+            ["Por que Leorio confronta Ging durante a eleição?", ["Porque Ging não tinha visitado Gon no hospital", "Porque Ging havia tomado sua licença", "Porque Ging o impediu de prestar o exame", "Porque Ging o desafiou para um duelo"]],
+            ["Quem aparece recuperado na reunião e muda o rumo da candidatura de Leorio?", ["Gon", "Killua", "Netero", "Kurapika"]],
+            ["Quem vence a eleição em que Leorio se torna finalista?", ["Pariston", "Cheadle", "Mizaistom", "Botobai"]],
+            ["Quem usa a técnica de Leorio como inspiração para um golpe no mangá?", ["Ging", "Chrollo", "Kurapika", "Hisoka"]]
+        ] },
+        { id: "gon", name: "Gon", questions: [
+            ["Em que ilha Gon foi criado?", ["Ilha da Baleia", "Greed Island", "Ilha Zevil", "Ilha de Kukuroo"]],
+            ["Quem criou Gon?", ["Mito", "Biscuit", "Shizuku", "Komugi"]],
+            ["Como se chama o pai de Gon?", ["Ging", "Kite", "Silva", "Morel"]],
+            ["Que jogo Gon procura para encontrar pistas sobre seu pai?", ["Greed Island", "Gungi", "Pedra, Papel e Tesoura", "Gungi Online"]],
+            ["Qual é a categoria natural de Nen de Gon?", ["Intensificação", "Manipulação", "Emissão", "Especialização"]],
+            ["Como se chama a técnica de Gon inspirada em pedra, papel e tesoura?", ["Jajanken", "Godspeed", "Chain Jail", "Dragon Dive"]],
+            ["Quem conta a Gon que Ging está vivo?", ["Kite", "Leorio", "Wing", "Knuckle"]],
+            ["De quem Gon tenta pegar o distintivo na quarta fase do Exame Hunter?", ["Hisoka", "Hanzo", "Illumi", "Bodoro"]],
+            ["Quem é o adversário de Gon em sua luta na fase final do primeiro Exame Hunter?", ["Hanzo", "Bodoro", "Pokkle", "Gittarackur"]],
+            ["Quem ensina os fundamentos do Nen a Gon e Killua na Arena Celestial?", ["Wing", "Morel", "Knov", "Basho"]],
+            ["Que categoria Gon usa na variante Papel do Jajanken?", ["Emissão", "Materialização", "Manipulação", "Especialização"]],
+            ["Quem treina Gon e Killua em Greed Island?", ["Biscuit", "Palm", "Melody", "Kite"]],
+            ["Quem lidera a equipe adversária na partida de queimada em Greed Island?", ["Razor", "Genthru", "Tsezguerra", "Binolt"]],
+            ["Qual inimigo Gon derrota após sacrificar seu potencial de Nen?", ["Neferpitou", "Youpi", "Shaiapouf", "Colt"]],
+            ["Onde Gon conversa com Ging no fim do anime de 2011?", ["No topo da Árvore do Mundo", "Na Torre dos Truques", "Na Arena Celestial", "Na Ilha da Baleia"]]
+        ] },
+        { id: "kurapika", name: "Kurapika", questions: [
+            ["A qual clã Kurapika pertence?", ["Kurta", "Zoldyck", "Kakin", "Freecss"]],
+            ["O que Kurapika quer recuperar?", ["Os olhos escarlates", "Uma licença perdida", "As cartas de Greed Island", "O tesouro de Greed Island"]],
+            ["Qual grupo atacou o clã de Kurapika?", ["Trupe Fantasma", "Família Zoldyck", "Associação Hunter", "Máfia de Yorknew"]],
+            ["Que arma Kurapika materializa?", ["Correntes", "Ioiôs", "Cartas", "Lanças"]],
+            ["Qual é a categoria natural de Nen de Kurapika?", ["Materialização", "Emissão", "Intensificação", "Manipulação"]],
+            ["Em qual cidade Kurapika confronta a Trupe Fantasma no arco do leilão?", ["Yorknew", "Zaban", "Dolle", "Dolle Harbor"]],
+            ["Quem Kurapika protege como guarda-costas durante o arco de Yorknew?", ["Neon Nostrade", "Biscuit Krueger", "Alluka Zoldyck", "Menchi"]],
+            ["Qual membro da Trupe Fantasma Kurapika derrota em um duelo em Yorknew?", ["Uvogin", "Feitan", "Phinks", "Nobunaga"]],
+            ["Quem fornece informações a Kurapika em Yorknew para tentar lutar contra Chrollo?", ["Hisoka", "Silva", "Genthru", "Leorio"]],
+            ["Qual corrente Kurapika prende ao coração para impor uma regra?", ["Corrente do Julgamento", "Corrente da Cura", "Corrente do Polegar", "Corrente Sagrada"]],
+            ["Com qual dedo Kurapika usa a Corrente da Prisão?", ["Dedo médio", "Polegar", "Mindinho", "Indicador"]],
+            ["A Corrente da Prisão foi restringida a qual grupo de alvos?", ["Membros da Trupe Fantasma", "Todos os usuários de Nen", "Apenas membros da família Zoldyck", "Guardas de Kakin"]],
+            ["Que efeito a Corrente da Prisão impõe ao prender seu alvo?", ["Força o alvo a ficar em Zetsu", "Transfere a aura para Kurapika", "Copia a habilidade do alvo", "Amplifica a força do alvo"]],
+            ["Em qual categoria Kurapika entra quando seus olhos ficam escarlates?", ["Especialização", "Emissão", "Manipulação", "Transmutação"]],
+            ["Qual técnica Kurapika usa para impedir Chrollo de usar Nen após o confronto em Yorknew?", ["Corrente do Julgamento", "Corrente da Cura", "Corrente da Prisão", "Corrente de Dowsing"]]
+        ] }
+    ];
+
+if (typeof module !== "undefined") module.exports = quizzesPersonagens;
