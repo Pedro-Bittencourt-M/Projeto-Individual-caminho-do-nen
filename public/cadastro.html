@@ -7,36 +7,55 @@
     <title>Cadastro · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/cadastro.css">
 </head>
 
 <body data-v="cadastro">
-    <nav id="nav"></nav>
+    <nav id="nav" aria-label="Navegação principal">
+        <b><img src="./assets/logo.png" alt="">Caminho do Nen</b>
+        <a href="./index.html">Início</a>
+        <a href="./sobre.html">Sobre mim</a>
+        <a href="./cadastro.html" class="ativo" aria-current="page">Cadastro</a>
+        <a href="./login.html" class="botao-destaque">Entrar</a>
+    </nav>
     <main>
         <section id="cadastro">
             <h1>Inscrição no Exame Hunter</h1>
-            <p class="texto-secundario">Todo Hunter começa como candidato. Preencha sua ficha para receber seu número de inscrição.
+            <p class="texto-secundario">Todo Hunter começa como candidato. Preencha sua ficha para receber seu número de
+                inscrição.
             </p>
             <div class="cartao-licenca"><img src="./assets/cardtop.png" alt="Cartão da Associação Hunter">
-                <form id="fc" class="formulario-licenca">
-                    <label for="cn">Nome de Hunter</label>
-                    <div><input required id="cn" autocomplete="nickname"><small class="erro"></small></div>
-                    <label for="ce">E-mail</label>
-                    <div><input required id="ce" type="email" autocomplete="email"><small class="erro"></small></div>
-                    <label for="cs">Senha</label>
-                    <div><input required minlength="8" id="cs" type="password" autocomplete="new-password">
-                        <div class="barra-progresso"><i id="forca" style="width:0"></i></div><small class="erro"></small>
+                <form id="formulario_cadastro" class="formulario-licenca">
+                    <div class="campo">
+                        <label for="nome_input">Nome de Hunter</label>
+                        <input id="nome_input" type="text" placeholder="Seu nome" required autocomplete="nickname" />
                     </div>
-                    <label for="cs2">Confirme a senha</label>
-                    <div><input required id="cs2" type="password" autocomplete="new-password"><small class="erro"></small></div>
-                    <label for="cm">Por que você quer ser Hunter?</label>
-                    <div><textarea id="cm" rows="3"></textarea><small class="erro"></small></div>
-                    <div><label><input required id="ck" type="checkbox" style="width:auto"> Aceito os riscos do Exame e honro a
-                            palavra que der.</label><small class="erro"></small></div>
-                    <p class="erro" role="status"></p><button type="submit">Entrar no Exame</button>
+                    <div class="campo">
+                        <label for="email_input">E-mail</label>
+                        <input id="email_input" type="email" placeholder="seuemail@exemplo.com" required autocomplete="email" />
+                    </div>
+                    <div class="campo">
+                        <label for="senha_input">Senha</label>
+                        <input id="senha_input" type="password" placeholder="Crie uma senha com pelo menos 8 caracteres" required minlength="8" autocomplete="new-password" />
+                        <div class="barra-progresso"><i id="indicador_forca_senha" style="width:0"></i></div>
+                    </div>
+                    <div class="campo">
+                        <label for="confirmacao_senha_input">Confirme a senha</label>
+                        <input id="confirmacao_senha_input" type="password" placeholder="Repita sua senha" required autocomplete="new-password" />
+                    </div>
+                    <div class="campo">
+                        <label for="motivacao_input">Por que você quer ser Hunter?</label>
+                        <textarea id="motivacao_input" rows="3" placeholder="Conte sua motivação"></textarea>
+                    </div>
+                    <div>
+                        <input id="aceite_input" type="checkbox" required />
+                        <label for="aceite_input">Aceito os riscos do Exame e honro a palavra que der.</label>
+                    </div>
+                    <p class="erro" role="status"></p>
+                    <button type="submit">Entrar no Exame</button>
                     <p class="troca-formulario">Já tem uma licença? <a href="login.html">Entre</a></p>
                 </form>
             </div>
@@ -44,7 +63,7 @@
     </main>
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
-    <script src="js/app.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 
 </html>

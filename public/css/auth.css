@@ -10,7 +10,7 @@
 
 .licenca small {
   color: var(--mut);
-  font: 12px system-ui,sans-serif;
+  font: 12px var(--fonte-site);
   text-transform: uppercase;
   letter-spacing: .1em;
 }
@@ -18,7 +18,7 @@
 .troca-formulario {
   margin: 14px 0 0;
   text-align: center;
-  font: 14px system-ui,sans-serif;
+  font: 14px var(--fonte-site);
   color: #000;
 }
 
@@ -61,13 +61,6 @@
 .formulario-licenca label {
   color: #000;
   margin-top: 12px;
-}
-
-.formulario-licenca input,.formulario-licenca textarea {
-  background: #f2f2f2;
-  color: #000;
-  border: 2px solid #000;
-  border-radius: 5px;
 }
 
 .formulario-licenca input[type=checkbox] {

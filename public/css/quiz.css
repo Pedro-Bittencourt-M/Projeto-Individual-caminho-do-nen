@@ -25,7 +25,7 @@
 .cabecalho-quiz {
   display: flex;
   justify-content: space-between;
-  font: 700 14px system-ui,sans-serif;
+  font: 700 14px var(--fonte-site);
   margin-bottom: 6px;
 }
 
@@ -55,7 +55,7 @@ body[data-v="quiz"] {
   --pg: #6b1424;
 }
 
-#qhub .introducao-secao {
+#selecao_quizzes .introducao-secao {
   color: #e8e2cd;
 }
 

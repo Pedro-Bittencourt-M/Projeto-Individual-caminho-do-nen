@@ -7,16 +7,25 @@
     <title>Início · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/panels.css">
     <link rel="stylesheet" href="css/home.css">
 </head>
 
 <body data-v="inicio">
-    <nav id="nav"></nav>
+    <!-- MENU DE NAVEGAÇÃO -->
+    <nav id="nav" aria-label="Navegação principal">
+        <b><img src="./assets/logo.png" alt="">Caminho do Nen</b>
+        <a href="./index.html" class="ativo" aria-current="page">Início</a>
+        <a href="./sobre.html">Sobre mim</a>
+        <a href="./cadastro.html">Cadastro</a>
+        <a href="./login.html" class="botao-destaque">Entrar</a>
+    </nav>
+    <!-- CONTEÚDO DA PÁGINA -->
     <main>
         <section id="inicio">
+            <!-- APRESENTAÇÃO DO SITE -->
             <div class="capa-principal">
                 <div class="texto-capa-principal">
                     <h1>Descubra<br>o seu Nen</h1>
@@ -80,9 +89,9 @@
                     <h2 class="titulo-secao">Os seis tipos de Nen</h2>
                     <p class="introducao-secao">Cada Hunter tem afinidade natural com um tipo. Passe o cursor (ou toque) em cada
                         ponta do hexágono.</p>
-                    <div class="hexagono-nen"><svg id="hexsvg" viewBox="0 0 480 370" role="img"
+                    <div class="hexagono-nen"><svg id="hexagono_tipos_nen" viewBox="0 0 480 370" role="img"
                             aria-label="Hexágono dos seis tipos de Nen"></svg>
-                        <div id="hexinfo" class="cartao"></div>
+                        <div id="informacoes_tipo_nen" class="cartao"></div>
                     </div>
                 </div>
             </div>
@@ -108,7 +117,7 @@
 
                     <h2 class="titulo-secao">Linha do tempo</h2>
                     <ol class="linha-tempo">
-                        <li><b>1998</b>
+                        <li><b>1998</b> 
                             <h3>Mangá</h3>
                             <p>Togashi estreia Hunter x Hunter na Weekly Shonen Jump, da Shueisha.</p>
                         </li>
@@ -134,7 +143,7 @@
             <div class="faixa faixa-azul" hidden>
                 <div class="conteudo-faixa">
                     <h2 class="titulo-secao">Os protagonistas</h2>
-                    <div class="paineis-protagonistas" id="panels"></div>
+                    <div class="paineis-protagonistas" id="paineis_protagonistas"></div>
                     <p class="nota" style="text-align:center;font-size:12px">As frases em destaque resumem a ideia de
                         cada personagem; não são citações literais.</p>
                 </div>
@@ -177,7 +186,7 @@
                                     voto.</p><b class="numero-etapa">05</b>
                             </div>
                         </li>
-                        <li class="cartao-etapa" id="cast-step" hidden>
+                        <li class="cartao-etapa" id="etapa_personagens" hidden>
                             <div class="conteudo-etapa"><span class="rotulo">Passo 06</span>
                                 <h3>Conheça os personagens</h3>
                                 <p>Passe o cursor sobre a arte para conhecer Gon, Killua, Kurapika, Leorio e Hisoka.</p>
@@ -189,92 +198,95 @@
             </div>
             <div class="faixa faixa-papel">
                 <div class="conteudo-faixa">
-                    <div class="quadro-resumo quadro-divinacao" id="fdia"><h3>Divinação do Copo de Água</h3><p>A reação da água e da folha à aura revela o tipo de Nen.</p></div>
+                    <div class="quadro-resumo quadro-divinacao" id="divinacao_copo_agua"><h3>Divinação do Copo de Água</h3><p>A reação da água e da folha à aura revela o tipo de Nen.</p></div>
                 </div>
             </div>
             <div class="faixa faixa-carvao" hidden
-                <div class="conteudo-faixa">
-                    <h2 class="titulo-secao">Mural de Hunters</h2>
-                    <div class="grade" id="mural"></div>
-                    <p class="texto-secundario nota" style="text-align:center">Neste protótipo, o mural mostra os Hunters inscritos
+            <div class="conteudo-faixa">
+                <h2 class="titulo-secao">Mural de Hunters</h2>
+                <div class="grade" id="mural"></div>
+                <p class="texto-secundario nota" style="text-align:center">Neste protótipo, o mural mostra os Hunters inscritos
                         neste navegador. Com o banco de dados, ele passa a listar todos.</p>
-                </div>
             </div>
+
         </section>
     </main>
-    <dialog class="janela-informacoes" id="modal" aria-label="Mais informações"><form method="dialog"><button class="fechar-janela" aria-label="Fechar">×</button></form><div id="mbody"></div></dialog><template id="t-anime">
-            <h1>Anime</h1>
-            <div class="duas-colunas"><img src="./assets/anime.jpg" alt="Pôster do anime Hunter x Hunter (2011)">
-                <div>
-                    <p>Gon Freecss cresce numa ilha acreditando que o pai está morto, até descobrir que Ging é um Hunter
+    <!-- INFORMAÇÕES DO ANIME E DO MANGÁ -->
+    <dialog class="janela-informacoes" id="modal" aria-label="Mais informações"><form method="dialog"><button class="fechar-janela" aria-label="Fechar">×</button></form><div id="conteudo_janela_informacoes"></div></dialog><template id="t-anime">
+        <h1>Anime</h1>
+        <div class="duas-colunas"><img src="./assets/anime.jpg" alt="Pôster do anime Hunter x Hunter (2011)">
+            <div>
+                <p>Gon Freecss cresce numa ilha acreditando que o pai está morto, até descobrir que Ging é um Hunter
                         lendário. Para encontrá-lo, Gon decide fazer o Exame Hunter e, no caminho, conhece Killua,
                         Kurapika e Leorio.</p>
-                    <p>Hunter x Hunter ganhou duas adaptações para a TV. O pôster ao lado é da versão de 2011, do
+                <p>Hunter x Hunter ganhou duas adaptações para a TV. O pôster ao lado é da versão de 2011, do
                         estúdio Madhouse, que recomeça a história do zero.</p>
-                </div>
             </div>
-            <h2>Versão de 2011</h2>
-            <div class="ficha-tecnica">
-                <div><small>Estúdio</small><b>Madhouse</b></div>
-                <div><small>Exibição</small><b>Outubro de 2011 a setembro de 2014, na Nippon Television</b></div>
-                <div><small>Episódios</small><b>148</b></div>
-                <div><small>Direção</small><b>Hiroshi Kōjina</b></div>
-                <div><small>Música</small><b>Yoshihisa Hirano</b></div>
-                <div><small>Adaptação</small><b>Vai até o capítulo 339 do mangá</b></div>
-            </div>
-            <h2>Arcos da versão de 2011</h2>
-            <div class="opcoes-compactas"><span class="etiqueta" style="background:var(--ac2)">Exame Hunter</span><span class="etiqueta"
+        </div>
+        <h2>Versão de 2011</h2>
+        <div class="ficha-tecnica">
+            <div><small>Estúdio</small><b>Madhouse</b></div>
+            <div><small>Exibição</small><b>Outubro de 2011 a setembro de 2014, na Nippon Television</b></div>
+            <div><small>Episódios</small><b>148</b></div>
+            <div><small>Direção</small><b>Hiroshi Kōjina</b></div>
+            <div><small>Música</small><b>Yoshihisa Hirano</b></div>
+            <div><small>Adaptação</small><b>Vai até o capítulo 339 do mangá</b></div>
+        </div>
+        <h2>Arcos da versão de 2011</h2>
+        <div class="opcoes-compactas"><span class="etiqueta" style="background:var(--ac2)">Exame Hunter</span><span class="etiqueta"
                     style="background:var(--ac2)">Família Zoldyck</span><span class="etiqueta"
                     style="background:var(--ac2)">Arena Celestial (Heavens Arena)</span><span class="etiqueta"
                     style="background:var(--ac2)">Yorknew City</span><span class="etiqueta"
                     style="background:var(--ac2)">Greed Island</span><span class="etiqueta"
                     style="background:var(--ac2)">Formigas-Quimera</span><span class="etiqueta"
                     style="background:var(--ac2)">Eleição do Presidente Hunter</span></div>
-            <h2>Versão de 1999</h2>
-            <div class="ficha-tecnica">
-                <div><small>Estúdio</small><b>Nippon Animation</b></div>
-                <div><small>Exibição</small><b>Outubro de 1999 a março de 2001, na Fuji Television</b></div>
-                <div><small>Episódios</small><b>62, terminando no arco de Yorknew City</b></div>
-                <div><small>Direção</small><b>Kazuhiro Furuhashi</b></div>
-                <div><small>OVAs</small><b>3 séries, com 30 episódios no total (2002 a 2004)</b></div>
-            </div>
-            <h2>Filmes</h2>
-            <p>Dois filmes originais do Madhouse, ambos de 2013: <b>Phantom Rouge</b> e <b>The Last Mission</b>.</p>
-            <p class="texto-secundario nota">Onde assistir muda conforme o país e com o tempo; confira nos serviços de streaming.
+        <h2>Versão de 1999</h2>
+        <div class="ficha-tecnica">
+            <div><small>Estúdio</small><b>Nippon Animation</b></div>
+            <div><small>Exibição</small><b>Outubro de 1999 a março de 2001, na Fuji Television</b></div>
+            <div><small>Episódios</small><b>62, terminando no arco de Yorknew City</b></div>
+            <div><small>Direção</small><b>Kazuhiro Furuhashi</b></div>
+            <div><small>OVAs</small><b>3 séries, com 30 episódios no total (2002 a 2004)</b></div>
+        </div>
+        <h2>Filmes</h2>
+        <p>Dois filmes originais do Madhouse, ambos de 2013: <b>Phantom Rouge</b> e <b>The Last Mission</b>.</p>
+        <p class="texto-secundario nota">Onde assistir muda conforme o país e com o tempo; confira nos serviços de streaming.
                 Pôster: © POT (Yoshihiro Togashi) 1998-2011 · © VAP · NTV · Madhouse / Shueisha.</p>
-        </template>
-        <template id="t-manga">
-            <h1>Mangá</h1>
-            <div class="duas-colunas"><img src="./assets/manga.jpg" alt="Capa do volume 1 do mangá Hunter x Hunter">
-                <div>
-                    <p>Gon Freecss cresce numa ilha acreditando que o pai está morto, até descobrir que Ging é um Hunter
+    </template>
+    <template id="t-manga">
+        <h1>Mangá</h1>
+        <div class="duas-colunas"><img src="./assets/manga.jpg" alt="Capa do volume 1 do mangá Hunter x Hunter">
+            <div>
+                <p>Gon Freecss cresce numa ilha acreditando que o pai está morto, até descobrir que Ging é um Hunter
                         lendário. Para encontrá-lo, Gon decide fazer o Exame Hunter e, no caminho, conhece Killua,
                         Kurapika e Leorio.</p>
-                    <p>A capa ao lado é a do volume 1, publicado pela Jump Comics.</p>
-                </div>
+                <p>A capa ao lado é a do volume 1, publicado pela Jump Comics.</p>
             </div>
-            <h2>Ficha da obra</h2>
-            <div class="ficha-tecnica">
-                <div><small>Autor</small><b>Yoshihiro Togashi</b></div>
-                <div><small>Publicação</small><b>Weekly Shonen Jump (Shueisha), desde 1998</b></div>
-                <div><small>Volumes</small><b>39 até agora; o volume 39 saiu em 3 de julho de 2026</b></div>
-                <div><small>Exemplares</small><b>Mais de 100 milhões em circulação</b></div>
-                <div><small>No Brasil</small><b>Publicado pela JBC desde 2008</b></div>
-                <div><small>Arco atual</small><b>Sucessão, a disputa pelo trono do Império Kakin</b></div>
-            </div>
-            <h2>Pausas e retorno</h2>
-            <p>Togashi costuma publicar em blocos de dez capítulos e fazer longas pausas entre eles. O mangá voltou em
+        </div>
+        <h2>Ficha da obra</h2>
+        <div class="ficha-tecnica">
+            <div><small>Autor</small><b>Yoshihiro Togashi</b></div>
+            <div><small>Publicação</small><b>Weekly Shonen Jump (Shueisha), desde 1998</b></div>
+            <div><small>Volumes</small><b>39 até agora; o volume 39 saiu em 3 de julho de 2026</b></div>
+            <div><small>Exemplares</small><b>Mais de 100 milhões em circulação</b></div>
+            <div><small>No Brasil</small><b>Publicado pela JBC desde 2008</b></div>
+            <div><small>Arco atual</small><b>Sucessão, a disputa pelo trono do Império Kakin</b></div>
+        </div>
+        <h2>Pausas e retorno</h2>
+        <p>Togashi costuma publicar em blocos de dez capítulos e fazer longas pausas entre eles. O mangá voltou em
                 29 de junho de 2026, com o capítulo 411, publicou até o 420 e entrou em nova pausa, sem data oficial de
                 retorno.</p>
-            <h2>Onde ler</h2>
-            <p>Os capítulos podem ser lidos de forma digital em plataformas oficiais como o Manga Plus e o aplicativo da
+        <h2>Onde ler</h2>
+        <p>Os capítulos podem ser lidos de forma digital em plataformas oficiais como o Manga Plus e o aplicativo da
                 Viz Media.</p>
-            <p class="texto-secundario nota">Informações conferidas em 13 de novembro de 2026; datas de retorno podem mudar. Capa do
+        <p class="texto-secundario nota">Informações conferidas em 13 de novembro de 2026; datas de retorno podem mudar. Capa do
                 volume 1: © Yoshihiro Togashi / Shueisha.</p>
-        </template>
-        <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter
+    </template>
+    <!-- RODAPÉ -->
+    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter
             © Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
-        <script src="js/app.js"></script>
+    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
+    <script src="./js/app.js"></script>
 </body>
 
 </html>

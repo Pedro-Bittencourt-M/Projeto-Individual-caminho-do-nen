@@ -38,7 +38,7 @@
 
 .cabecalho-criatura h3 {
   margin: 0;
-  font-family: Georgia,serif;
+  font-family: var(--fonte-destaque);
   font-size: 22px;
 }
 
@@ -65,7 +65,7 @@
   border: 1.5px solid #000;
   border-radius: 99px;
   padding: 2px 10px;
-  font: 600 12px system-ui,sans-serif;
+  font: 600 12px var(--fonte-site);
   background: var(--bg);
 }
 

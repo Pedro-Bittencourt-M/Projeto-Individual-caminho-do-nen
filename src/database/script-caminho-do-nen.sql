@@ -1,5 +1,11 @@
-CREATE DATABASE IF NOT EXISTS caminho_do_nen;
-USE caminho_do_nen;
+CREATE DATABASE IF NOT EXISTS hunter;
+USE hunter;
+
+CREATE USER 'hunter_user'@'localhost' identified by 'Urubu@100';
+
+GRANT ALL privileges ON hunter.* TO 'hunter_user'@'localhost';
+
+FLUSH PRIVILEGES;
 
 /* Cadastro dos Hunters */
 
@@ -7,8 +13,7 @@ CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(254) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    idade INT,
+    senha VARCHAR(255) NOT NULL,
     motivo_cadastro VARCHAR(500),
     codigo_licenca VARCHAR(8) NOT NULL UNIQUE
 );

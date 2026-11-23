@@ -139,7 +139,7 @@
 }
 
 .descricao-personagem h3 {
-  font-family: Georgia,serif;
+  font-family: var(--fonte-destaque);
   font-size: 24px;
   margin: .3em 0 .2em;
 }

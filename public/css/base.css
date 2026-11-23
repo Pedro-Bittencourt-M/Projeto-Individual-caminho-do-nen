@@ -1,6 +1,8 @@
 /* TEMA E CONFIGURAÇÃO GLOBAL */
 
 :root {
+  --fonte-site: Inter, system-ui, sans-serif;
+  --fonte-destaque: Bungee, Impact, sans-serif;
   --bg: #f4efe0;
   --fg: #1d2b24;
   --card: #fffdf5;
@@ -47,7 +49,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 16px/1.5 Georgia,"Times New Roman",serif;
+  font: 16px/1.5 var(--fonte-site);
 }
 
 /* NAVEGAÇÃO */
@@ -76,7 +78,7 @@ nav a {
   text-decoration: none;
   padding: 4px 9px;
   border-radius: 99px;
-  font: 14px system-ui,sans-serif;
+  font: 14px var(--fonte-site);
 }
 
 nav a:hover,nav a.ativo {
@@ -93,7 +95,8 @@ main {
 }
 
 h1,h2,h3 {
-  line-height: 1.2;
+  font-family: var(--fonte-destaque);
+  font-weight: 400;  line-height: 1.2;
   margin: .2em 0 .5em;
 }
 
@@ -132,7 +135,7 @@ h2 {
 label {
   display: block;
   margin: 10px 0 3px;
-  font: 600 14px system-ui,sans-serif;
+  font: 600 14px var(--fonte-site);
 }
 
 input,textarea,select {
@@ -142,13 +145,13 @@ input,textarea,select {
   border-radius: 8px;
   background: var(--bg);
   color: var(--fg);
-  font: 16px system-ui,sans-serif;
+  font: 16px var(--fonte-site);
 }
 
 .erro {
   display: block;
   color: #c0392b;
-  font: 13px system-ui,sans-serif;
+  font: 13px var(--fonte-site);
   min-height: 16px;
 }
 
@@ -158,7 +161,7 @@ button,.botao {
   border: 0;
   border-radius: 99px;
   padding: 10px 20px;
-  font: 600 15px system-ui,sans-serif;
+  font: 600 15px var(--fonte-site);
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
@@ -196,7 +199,7 @@ button.alternativo {
   padding: 2px 10px;
   border-radius: 99px;
   color: #fff;
-  font: 600 13px system-ui,sans-serif;
+  font: 600 13px var(--fonte-site);
 }
 
 .copo {
@@ -240,7 +243,7 @@ button.alternativo {
   gap: 10px;
   align-items: center;
   margin: 6px 0;
-  font: 14px system-ui,sans-serif;
+  font: 14px var(--fonte-site);
 }
 
 .linha span:first-child {
@@ -310,7 +313,7 @@ svg {
   background: var(--ac);
   color: #1a1405;
   text-align: center;
-  font: 600 13px system-ui,sans-serif;
+  font: 600 13px var(--fonte-site);
   padding: 6px 10px;
 }
 
@@ -351,7 +354,7 @@ body {
   padding: 18px 14px 28px;
   text-align: center;
   color: var(--mut);
-  font: 12px/1.5 system-ui,sans-serif;
+  font: 12px/1.5 var(--fonte-site);
   border-top: 1px solid var(--line);
 }
 
@@ -436,7 +439,7 @@ nav #tema {
   color: #fff;
   padding: 10px 18px;
   border-radius: 99px;
-  font: 600 14px system-ui,sans-serif;
+  font: 600 14px var(--fonte-site);
   z-index: 60;
   opacity: 0;
   transition: opacity .3s,transform .3s;
@@ -486,7 +489,7 @@ nav #tema {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 18px Georgia,serif;
+  font: 700 18px var(--fonte-site);
 }
 
 .botao-perfil img {
@@ -525,7 +528,7 @@ nav #tema {
   border-radius: 8px;
   color: var(--fg);
   text-decoration: none;
-  font: 600 14px system-ui,sans-serif;
+  font: 600 14px var(--fonte-site);
 }
 
 .menu-perfil a:hover {
@@ -541,12 +544,12 @@ nav #tema {
 
 .cabecalho-menu-perfil b {
   display: block;
-  font: 700 15px Georgia,serif;
+  font: 700 15px var(--fonte-site);
 }
 
 .cabecalho-menu-perfil small {
   color: var(--mut);
-  font: 12px system-ui,sans-serif;
+  font: 12px var(--fonte-site);
 }
 
 button:disabled {
@@ -566,7 +569,7 @@ nav {
 
 nav b {
   color: #fff;
-  font: 400 22px Anton,Impact,sans-serif;
+  font: 400 clamp(13px, 1.8vw, 19px) var(--fonte-destaque);
   letter-spacing: .04em;
   text-transform: uppercase;
 }
@@ -576,7 +579,7 @@ nav a {
   border-radius: 0;
   text-transform: uppercase;
   letter-spacing: .06em;
-  font: 600 13px system-ui,sans-serif;
+  font: 600 13px var(--fonte-site);
   border-bottom: 2px solid transparent;
 }
 
@@ -695,7 +698,7 @@ section>.introducao-secao,section>p.texto-secundario,section>.nota {
   border-radius: 8px;
   color: var(--fg);
   text-decoration: none;
-  font: 600 15px system-ui,sans-serif;
+  font: 600 15px var(--fonte-site);
   text-transform: none;
   letter-spacing: 0;
   border-bottom: 0;
@@ -747,7 +750,7 @@ nav button {
   white-space: normal;
 }
 
-#vbox,#pbox,#blist,#mural {
+#area_voto_restricao,#dados_perfil_hunter,#lista_criaturas,#mural {
   overflow-wrap: anywhere;
 }
 
@@ -815,10 +818,40 @@ nav button {
 
 .hexagrama-afinidade text {
   fill: #f4efe0;
-  font: 700 48px system-ui, sans-serif;
+  font: 700 48px var(--fonte-site);
 }
 
 .hexagrama-afinidade .porcentagem-afinidade {
   fill: #ffd34e;
   font-size: 39px;
+}
+
+/* CAMPOS DOS FORMULÁRIOS */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+}
+
+.campo > label {
+  margin: 0 0 4px;
+  font-weight: 800;
+}
+
+.campo input:not([type="checkbox"]):not([type="radio"]),
+.campo select,
+.campo textarea,
+.filtros-bestiario select {
+  background: #fff;
+  color: #1a2427;
+  border: 2px solid #32b9cd;
+  border-radius: 10px;
+  margin: 0;
+  text-align: center;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: #596469;
 }

@@ -1,6 +1,6 @@
 const siteRoot = new URL("../", document.currentScript.src);
-const accountsKey = "caminho-do-nen.accounts";
-const sessionKey = "caminho-do-nen.session";
+const accountsKey = "caminho-do-nen.perfis-api";
+const sessionKey = "caminho-do-nen.sessao-api";
 function read(key, fallback) {
     try {
         return JSON.parse(localStorage.getItem(key)) ?? fallback;
@@ -149,10 +149,10 @@ const characters = [
     ["kurapika", "Kurapika", "Busca recuperar os olhos escarlates do clã Kurta."],
     ["leorio", "Leorio Paradinight", "Quer se tornar médico e usa o Exame Hunter como caminho para realizar esse objetivo."]
 ];
-const panels = document.querySelector("#panels");
+const panels = document.querySelector("#paineis_protagonistas");
 if (panels && hunter) {
     panels.closest(".faixa").hidden = false;
-    document.querySelector("#cast-step").hidden = false;
+    document.querySelector("#etapa_personagens").hidden = false;
 }
 if (panels && hunter) {
     for (const [asset, name, description] of characters) {
@@ -163,7 +163,7 @@ if (panels && hunter) {
     }
 }
 
-const characterList = document.querySelector("#pcs");
+const characterList = document.querySelector("#lista_personagens");
 if (characterList && hunter) {
     const galleryCharacters = [
         ...characters,
@@ -196,7 +196,7 @@ const dialog = document.querySelector("#modal");
 document.querySelectorAll("[data-open]").forEach(button => {
     button.addEventListener("click", () => {
         const content = document.getElementById("t-" + button.dataset.open);
-        document.querySelector("#mbody").replaceChildren(content.content.cloneNode(true));
+        document.querySelector("#conteudo_janela_informacoes").replaceChildren(content.content.cloneNode(true));
         dialog.showModal();
     });
 });
@@ -241,7 +241,7 @@ function drawNenArtwork(hexagon, filterId) {
         <image href="${artwork}" width="1280" height="1280" filter="url(#${filterId})" aria-hidden="true"></image>`;
 }
 
-const hexagon = document.querySelector("#hexsvg");
+const hexagon = document.querySelector("#hexagono_tipos_nen");
 if (hexagon) {
     const types = [
         ["Intensificação", nenColors[0], "Gon", "Reforça o corpo e os objetos. Direto, honesto e determinado.", "A água transborda do copo."],
@@ -252,7 +252,7 @@ if (hexagon) {
         ["Emissão", nenColors[5], "Leorio", "Permite projetar a aura e mantê-la longe do corpo.", "A água muda de cor."]
     ];
     const points = nenPoints;
-    const info = document.querySelector("#hexinfo");
+    const info = document.querySelector("#informacoes_tipo_nen");
     drawNenArtwork(hexagon, "nen-sem-fundo");
     hexagon.setAttribute("role", "group");
     hexagon.setAttribute("aria-label", "Os seis tipos de Nen");
@@ -298,55 +298,69 @@ if (hexagon) {
 const get = id => document.getElementById(id);
 const value = id => get(id).value.trim();
 
-async function passwordHash(password, salt) {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
-    const bits = await crypto.subtle.deriveBits({
-        name: "PBKDF2", salt: encoder.encode(salt), iterations: 600000, hash: "SHA-256"
-    }, key, 256);
-    return Array.from(new Uint8Array(bits), byte => byte.toString(16).padStart(2, "0")).join("");
+async function solicitarConta(rota, dados) {
+    if (siteRoot.protocol !== "http:" && siteRoot.protocol !== "https:") {
+        throw new Error("Abra o site pelo servidor para usar o cadastro ou o login.");
+    }
+
+    let resposta;
+    try {
+        resposta = await fetch(new URL("usuarios/" + rota, siteRoot), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dados)
+        });
+    } catch {
+        throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
+    }
+
+    const conta = await resposta.json().catch(() => null);
+    if (!resposta.ok || !Number.isInteger(conta?.id) || !conta.email) {
+        throw new Error(conta?.mensagem || "A API do Caminho do Nen não respondeu como esperado.");
+    }
+    return conta;
 }
 
-const previewLink = get("preview-link");
+const previewLink = get("link_previa_sem_conta");
 if (previewLink && localSite) {
     previewLink.hidden = false;
 }
 
-const auth = get("fc") || get("fl");
+const auth = get("formulario_cadastro") || get("formulario_login");
 if (auth) {
-    const registering = auth.id === "fc";
+    const registering = auth.id === "formulario_cadastro";
     const feedback = auth.querySelector("[role=status]");
     const submit = auth.querySelector("button[type=submit]");
     if (registering) {
-        get("cs").addEventListener("input", () => {
-            get("forca").style.width = Math.min(100, get("cs").value.length * 8) + "%";
+        get("senha_input").addEventListener("input", () => {
+            get("indicador_forca_senha").style.width = Math.min(100, get("senha_input").value.length * 8) + "%";
         });
     }
     auth.addEventListener("submit", async event => {
         event.preventDefault();
         submit.disabled = true;
         try {
-            const email = value(registering ? "ce" : "le").toLowerCase();
-            const password = get(registering ? "cs" : "ls").value;
-            const saved = read(accountsKey, {});
+            const email = value("email_input").toLowerCase();
+            const password = get("senha_input").value;
+            let dados = { emailServer: email, senhaServer: password };
             if (registering) {
-                if (!value("cn")) throw new Error("Informe um nome de Hunter.");
-                if (password !== get("cs2").value) throw new Error("As senhas precisam ser iguais.");
-                if (Object.hasOwn(saved, email)) throw new Error("Já existe uma conta com esse e-mail neste navegador.");
-                const salt = crypto.randomUUID();
-                saved[email] = {
-                    name: value("cn"), reason: value("cm"),
-                    license: salt.slice(0, 8).toUpperCase(), salt, hash: await passwordHash(password, salt)
+                const nome = value("nome_input");
+                if (!nome) throw new Error("Informe um nome de Hunter.");
+                if (password !== get("confirmacao_senha_input").value) throw new Error("As senhas precisam ser iguais.");
+                dados = {
+                    ...dados,
+                    nomeServer: nome,
+                    motivoServer: value("motivacao_input"),
+                    aceiteServer: get("aceite_input").checked
                 };
-                write(accountsKey, saved);
-            } else {
-                const account = Object.hasOwn(saved, email) && saved[email];
-                if (!account || account.hash !== await passwordHash(password, account.salt)) {
-                    throw new Error("E-mail ou senha incorretos.");
-                }
             }
-            write(sessionKey, email);
-            const nextPage = read("caminho-do-nen.result." + email, null) ? "perfil" : "quiz";
+
+            const conta = await solicitarConta(registering ? "cadastrar" : "autenticar", dados);
+            const perfis = read(accountsKey, {});
+            perfis[conta.email] = { ...conta, ...perfis[conta.email], id: conta.id, license: conta.license };
+            write(accountsKey, perfis);
+            write(sessionKey, conta.email);
+            const nextPage = read("caminho-do-nen.result." + conta.email, null) ? "perfil" : "quiz";
             location.assign(pageUrl("dashboard/" + nextPage + ".html"));
         } catch (error) {
             feedback.textContent = error instanceof TypeError || error instanceof DOMException
@@ -407,11 +421,11 @@ function affinityHexagon(dominant) {
 const resultKey = "caminho-do-nen.result." + current;
 let result = read(resultKey, null);
 
-if (hunter && get("pbox")) {
+if (hunter && get("dados_perfil_hunter")) {
     const edit = get("editar-perfil");
-    const form = get("form-perfil");
-    const name = get("editar-nome");
-    const reason = get("editar-motivo");
+    const form = get("formulario_perfil");
+    const name = get("nome_input");
+    const reason = get("motivacao_input");
     const status = get("status-perfil");
     const vow = read("caminho-do-nen.vow." + current, null);
 
@@ -482,7 +496,7 @@ if (hunter && statistics) {
     }
 }
 
-if (hunter && get("qhub")) {
+if (hunter && get("selecao_quizzes")) {
     const questions = [
         "Diante de um desafio, o que você prefere?", "O que mais valoriza em uma equipe?",
         "Como se prepara para algo inesperado?", "O que mais orienta suas decisões?",
@@ -565,8 +579,8 @@ if (hunter && get("qhub")) {
             ["Qual técnica Kurapika usa para impedir Chrollo de usar Nen após o confronto em Yorknew?", ["Corrente do Julgamento", "Corrente da Cura", "Corrente da Prisão", "Corrente de Dowsing"]]
         ] }
     ];
-    const hub = get("qhub");
-    const box = get("qbox");
+    const hub = get("selecao_quizzes");
+    const box = get("area_perguntas_quiz");
     const startNen = get("iniciar-nen");
     const statisticsUrl = pageUrl("dashboard/perfil.html");
     statisticsUrl.hash = "estatisticas";
@@ -769,17 +783,30 @@ if (hunter && get("qhub")) {
 }
 
 
-if (hunter && get("vbox")) {
+if (hunter && get("area_voto_restricao")) {
     const key = "caminho-do-nen.vow." + current;
-    const box = get("vbox");
+    const box = get("area_voto_restricao");
     box.innerHTML = `<form class="cartao">
-        <label for="goal">Meta</label><input id="goal" required maxlength="150">
-        <label for="restriction">Restrição</label><textarea id="restriction" required maxlength="300"></textarea>
-        <label for="penalty">Penalidade</label><textarea id="penalty" required maxlength="300"></textarea>
-        <label for="severity">Severidade da restrição</label>
-        <select id="severity"><option>Leve</option><option>Moderada</option><option>Severa</option></select>
+        <div class="campo">
+            <label for="meta_input">Meta</label>
+            <input id="meta_input" type="text" placeholder="Ex.: treinar Nen todos os dias" required maxlength="150" />
+        </div>
+        <div class="campo">
+            <label for="restricao_input">Restrição</label>
+            <textarea id="restricao_input" required maxlength="300" placeholder="Ex.: treinar apenas depois das aulas"></textarea>
+        </div>
+        <div class="campo">
+            <label for="penalidade_input">Penalidade</label>
+            <textarea id="penalidade_input" required maxlength="300" placeholder="Ex.: ficar um dia sem usar a habilidade"></textarea>
+        </div>
+        <div class="campo">
+            <label for="severidade_input">Severidade da restrição</label>
+            <select id="severidade_input"><option>Leve</option><option>Moderada</option><option>Severa</option></select>
+        </div>
         <button>Selar voto</button><p role="status"></p>
-    </form><div id="saved-vow"></div>`;
+    </form><div id="voto_salvo"></div>`;
+    const fields = {"goal": "meta_input", "restriction": "restricao_input", "penalty": "penalidade_input", "severity": "severidade_input"};
+
     function updateVow() {
         const vow = read(key, null);
         if (!vow) return;
@@ -787,19 +814,18 @@ if (hunter && get("vbox")) {
         const penalty = document.createElement("p");
         penalty.textContent = "Penalidade: " + vow.penalty;
         summary.append(penalty);
-        get("saved-vow").replaceChildren(summary);
-        Object.keys(vow).forEach(field => { get(field).value = vow[field]; });
+        get("voto_salvo").replaceChildren(summary);
+        for (const [field, id] of Object.entries(fields)) get(id).value = vow[field];
     }
     updateVow();
     box.querySelector("form").onsubmit = event => {
         event.preventDefault();
-        const fields = ["goal", "restriction", "penalty", "severity"];
-        if (fields.some(field => !value(field))) {
+        if (Object.values(fields).some(id => !value(id))) {
             box.querySelector("[role=status]").textContent = "Preencha todos os campos do voto.";
             return;
         }
         try {
-            write(key, Object.fromEntries(fields.map(field => [field, value(field)])));
+            write(key, Object.fromEntries(Object.entries(fields).map(([field, id]) => [field, value(id)])));
             updateVow();
             box.querySelector("[role=status]").textContent = "Voto salvo.";
         } catch {
@@ -808,10 +834,10 @@ if (hunter && get("vbox")) {
     };
 }
 
-if (hunter && get("bform")) {
+if (hunter && get("formulario_criatura")) {
     const key = preview ? "caminho-do-nen.preview.creatures" : "caminho-do-nen.creatures";
-    const form = get("bform");
-    const list = get("blist");
+    const form = get("formulario_criatura");
+    const list = get("lista_criaturas");
     const categories = {
         bp: ["Baixo", "Moderado", "Alto", "Extremo"],
         bev: ["Baixo", "Moderado", "Alto"],
@@ -821,15 +847,16 @@ if (hunter && get("bform")) {
         bc: ["Dócil", "Territorial", "Agressivo", "Desconhecido"],
         bnn: ["Desconhecida", ...nenTypes]
     };
+    const categoryInputs = {"bp": "perigo_input", "bev": "evolucao_input", "bt": "tipo_input", "bh": "habitat_input", "bo": "porte_input", "bc": "comportamento_input", "bnn": "afinidade_nen_input"};
     for (const [id, options] of Object.entries(categories)) {
-        get(id).replaceChildren(...options.map(label => new Option(label)));
+        get(categoryInputs[id]).replaceChildren(...options.map(label => new Option(label)));
     }
-    get("ftipo").replaceChildren(new Option("Todos os tipos", ""), ...categories.bt.map(label => new Option(label)));
-    get("fper").replaceChildren(new Option("Todos os níveis de perigo", ""), ...categories.bp.map(label => new Option(label)));
+    get("filtro_tipo_input").replaceChildren(new Option("Todos os tipos", ""), ...categories.bt.map(label => new Option(label)));
+    get("filtro_perigo_input").replaceChildren(new Option("Todos os níveis de perigo", ""), ...categories.bp.map(label => new Option(label)));
     function renderCreatures() {
         const entries = read(key, []).filter(item =>
-            (!value("ftipo") || item.bt === value("ftipo")) && (!value("fper") || item.bp === value("fper")));
-        get("bcount").textContent = entries.length + (entries.length === 1 ? " criatura" : " criaturas");
+            (!value("filtro_tipo_input") || item.bt === value("filtro_tipo_input")) && (!value("filtro_perigo_input") || item.bp === value("filtro_perigo_input")));
+        get("total_criaturas").textContent = entries.length + (entries.length === 1 ? " criatura" : " criaturas");
         list.replaceChildren(...entries.map(item => {
             const entry = card(item.name, item.description);
             const details = document.createElement("p");
@@ -842,34 +869,34 @@ if (hunter && get("bform")) {
         }));
         if (!entries.length) list.append(card("Nenhuma criatura encontrada", "Registre uma criatura ou altere os filtros."));
     }
-    get("bnew").disabled = false;
-    get("bnew").onclick = () => { form.hidden = false; get("bn").focus(); };
-    get("bcancel").onclick = () => { form.reset(); form.hidden = true; get("bnew").focus(); };
-    get("ftipo").onchange = renderCreatures;
-    get("fper").onchange = renderCreatures;
+    get("botao_registrar_criatura").disabled = false;
+    get("botao_registrar_criatura").onclick = () => { form.hidden = false; get("nome_input").focus(); };
+    get("botao_cancelar_criatura").onclick = () => { form.reset(); form.hidden = true; get("botao_registrar_criatura").focus(); };
+    get("filtro_tipo_input").onchange = renderCreatures;
+    get("filtro_perigo_input").onchange = renderCreatures;
     form.onsubmit = event => {
         event.preventDefault();
-        const feedback = get("bd").nextElementSibling;
-        if (!value("bd")) {
+        const feedback = get("descricao_input").nextElementSibling;
+        if (!value("descricao_input")) {
             feedback.textContent = "Descreva a criatura.";
             return;
         }
         const entries = read(key, []);
         entries.unshift({
-            name: value("bn") || "Criatura sem nome", description: value("bd"), author: hunter.name,
-            ...Object.fromEntries(Object.keys(categories).map(id => [id, value(id)]))
+            name: value("nome_input") || "Criatura sem nome", description: value("descricao_input"), author: hunter.name,
+            ...Object.fromEntries(Object.entries(categoryInputs).map(([id, input]) => [id, value(input)]))
         });
         try {
             write(key, entries);
             feedback.textContent = "";
             form.reset();
             form.hidden = true;
-            get("bnew").focus();
+            get("botao_registrar_criatura").focus();
             renderCreatures();
         } catch {
             feedback.textContent = "O navegador não conseguiu salvar a criatura.";
         }
     };
-    get("ftipo").parentElement.hidden = false;
+    get("filtro_tipo_input").parentElement.hidden = false;
     renderCreatures();
 }

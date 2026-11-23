@@ -9,7 +9,7 @@ Caminho do Nen é um projeto individual inspirado em *Hunter × Hunter*. O site 
 - **Cadastro e login** — formulários temáticos do Exame Hunter e da Licença Hunter.
 - **Área Hunter** — telas de dashboard, perfil, quizzes, personagens, bestiário e Voto e Restrição.
 
-O projeto está em desenvolvimento. Cadastro, sessão, resultados, votos e criaturas ficam no armazenamento local do navegador. A área Hunter é um protótipo local e a sessão não oferece autenticação de servidor. Para obter armazenamento compartilhado entre as páginas, abra o site pelo servidor local. A API e o script SQL ainda usam a estrutura do projeto-base AquaTech.
+O cadastro e o login usam a API Node.js e o MySQL. A interface guarda a sessão de navegação, as edições de perfil, os resultados, os votos e as criaturas no navegador. Contas antigas criadas no protótipo local precisam ser cadastradas novamente para usar a API.
 
 ## Como executar localmente
 
@@ -35,16 +35,16 @@ Você precisa de Node.js e npm para servir as páginas. O MySQL é necessário p
    npm start
    ```
 
-4. Acesse [http://localhost:3333](http://localhost:3333) ou o endereço exibido no terminal.
+4. Acesse [http://localhost:3333](http://localhost:3333) ou o endereço exibido no terminal. Abra o cadastro por esse endereço para que o formulário possa enviar os dados à API.
 
 ### Banco de dados da API
 
-Para executar as rotas do projeto-base, rode [`src/database/script-tabelas.sql`](src/database/script-tabelas.sql) em uma instância MySQL local onde o banco `aquatech` ainda não exista. O script cria o banco, as tabelas e os dados iniciais do AquaTech. Acrescente as configurações abaixo ao `.env.dev` e use as credenciais da sua instância.
+Configure o banco `hunter` com o esquema de [`src/database/script-caminho-do-nen.sql`](src/database/script-caminho-do-nen.sql). Se o banco já estiver montado, confira se a tabela `usuario` tem as colunas `nome`, `email`, `senha`, `motivo_cadastro` e `codigo_licenca`. Acrescente as configurações abaixo ao `.env.dev` com os dados da sua instância.
 
 ```dotenv
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=aquatech
+DB_DATABASE=hunter
 DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 ```

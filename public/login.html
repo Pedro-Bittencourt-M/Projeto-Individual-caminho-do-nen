@@ -7,34 +7,47 @@
     <title>Entrar · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body data-v="login">
+    <!-- MENU DE NAVEGAÇÃO -->
     <nav id="nav"></nav>
+    <!-- CONTEÚDO DA PÁGINA -->
     <main>
         <section id="login">
             <h1>Licença Hunter</h1>
             <div class="cartao-licenca"><img src="./assets/cardtop.png" alt="Cartão da Associação Hunter">
-                <form id="fl" class="formulario-licenca">
+                <!-- FORMULÁRIO DE LOGIN -->
+                <form id="formulario_login" class="formulario-licenca">
                     <small>Associação Hunter · Identificação</small>
-                    <label for="le">E-mail</label>
-                    <div><input required id="le" type="email" autocomplete="email"></div>
-                    <label for="ls">Senha</label>
-                    <div><input required id="ls" type="password" autocomplete="current-password"><small class="erro"
-                            id="le2"></small></div>
+
+                    <div class="campo">
+                        <label for="email_input">E-mail</label>
+                        <input id="email_input" type="email" placeholder="seuemail@exemplo.com" required autocomplete="email" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="senha_input">Senha</label>
+                        <input id="senha_input" type="password" placeholder="Digite sua senha" required autocomplete="current-password" />
+                        <small class="erro"
+                        id="mensagem_erro_senha"></small>
+                    </div>
+
                     <p class="erro" role="status"></p><button type="submit">Apresentar licença</button>
-                    <p class="troca-formulario" id="preview-link" hidden><a href="./dashboard/quiz.html?preview=1">Acessar prévia sem conta</a></p>
+                    <p class="troca-formulario" id="link_previa_sem_conta" hidden><a href="./dashboard/quiz.html?preview=1">Acessar prévia sem conta</a></p>
                     <p class="troca-formulario">Ainda não é Hunter? <a href="cadastro.html">Registre-se</a></p>
                 </form>
             </div>
         </section>
     </main>
+    <!-- RODAPÉ -->
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script src="js/app.js"></script>
 </body>
 

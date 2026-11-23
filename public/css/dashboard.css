@@ -56,7 +56,7 @@ svg.radar {
 
 .hexagrama-afinidade text {
   fill: var(--fg);
-  font: 700 14px system-ui, sans-serif;
+  font: 700 14px var(--fonte-site);
   text-anchor: middle;
 }
 

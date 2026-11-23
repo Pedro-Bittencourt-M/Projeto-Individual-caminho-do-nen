@@ -1,94 +1,64 @@
-var usuarioModel = require("../models/usuarioModel");
-var aquarioModel = require("../models/aquarioModel");
+const { randomBytes, scrypt, timingSafeEqual } = require("node:crypto");
+const { promisify } = require("node:util");
+const usuarioModel = require("../models/usuarioModel");
 
-function autenticar(req, res) {
-    var email = req.body.emailServer;
-    var senha = req.body.senhaServer;
+const derivarHash = promisify(scrypt);
 
-    if (email == undefined) {
-        res.status(400).send("Seu email está undefined!");
-    } else if (senha == undefined) {
-        res.status(400).send("Sua senha está indefinida!");
-    } else {
-
-        usuarioModel.autenticar(email, senha)
-            .then(
-                function (resultadoAutenticar) {
-                    console.log(`\nResultados encontrados: ${resultadoAutenticar.length}`);
-                    console.log(`Resultados: ${JSON.stringify(resultadoAutenticar)}`); // transforma JSON em String
-
-                    if (resultadoAutenticar.length == 1) {
-                        console.log(resultadoAutenticar);
-
-                        aquarioModel.buscarAquariosPorEmpresa(resultadoAutenticar[0].empresaId)
-                            .then((resultadoAquarios) => {
-                                if (resultadoAquarios.length > 0) {
-                                    res.json({
-                                        id: resultadoAutenticar[0].id,
-                                        email: resultadoAutenticar[0].email,
-                                        nome: resultadoAutenticar[0].nome,
-                                        senha: resultadoAutenticar[0].senha,
-                                        aquarios: resultadoAquarios
-                                    });
-                                } else {
-                                    res.status(204).json({ aquarios: [] });
-                                }
-                            })
-                    } else if (resultadoAutenticar.length == 0) {
-                        res.status(403).send("Email e/ou senha inválido(s)");
-                    } else {
-                        res.status(403).send("Mais de um usuário com o mesmo login e senha!");
-                    }
-                }
-            ).catch(
-                function (erro) {
-                    console.log(erro);
-                    console.log("\nHouve um erro ao realizar o login! Erro: ", erro.sqlMessage);
-                    res.status(500).json(erro.sqlMessage);
-                }
-            );
-    }
-
+function lerTexto(valor) {
+    return typeof valor === "string" ? valor.trim() : "";
 }
 
-function cadastrar(req, res) {
-    // Crie uma variável que vá recuperar os valores do arquivo cadastro.html
-    var nome = req.body.nomeServer;
-    var email = req.body.emailServer;
-    var senha = req.body.senhaServer;
-    var fkEmpresa = req.body.idEmpresaVincularServer;
+async function cadastrar(req, res) {
+    const { nomeServer, emailServer, senhaServer, motivoServer, aceiteServer } = req.body || {};
+    const nome = lerTexto(nomeServer);
+    const email = lerTexto(emailServer).toLowerCase();
+    const motivo = lerTexto(motivoServer);
 
-    // Faça as validações dos valores
-    if (nome == undefined) {
-        res.status(400).send("Seu nome está undefined!");
-    } else if (email == undefined) {
-        res.status(400).send("Seu email está undefined!");
-    } else if (senha == undefined) {
-        res.status(400).send("Sua senha está undefined!");
-    } else if (fkEmpresa == undefined) {
-        res.status(400).send("Sua empresa a vincular está undefined!");
-    } else {
+    if (!nome || nome.length > 100 || email.length > 254 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+        typeof senhaServer !== "string" || senhaServer.length < 8 || senhaServer.length > 128 ||
+        motivo.length > 500 || aceiteServer !== true) {
+        return res.status(400).json({ mensagem: "Confira os campos do cadastro e aceite os termos do Exame." });
+    }
 
-        // Passe os valores como parâmetro e vá para o arquivo usuarioModel.js
-        usuarioModel.cadastrar(nome, email, senha, fkEmpresa)
-            .then(
-                function (resultado) {
-                    res.json(resultado);
-                }
-            ).catch(
-                function (erro) {
-                    console.log(erro);
-                    console.log(
-                        "\nHouve um erro ao realizar o cadastro! Erro: ",
-                        erro.sqlMessage
-                    );
-                    res.status(500).json(erro.sqlMessage);
-                }
-            );
+    try {
+        const sal = randomBytes(16).toString("hex");
+        const hash = await derivarHash(senhaServer, sal, 64);
+        const usuario = await usuarioModel.cadastrar(nome, email, sal + ":" + hash.toString("hex"), motivo);
+        return res.status(201).json(usuario);
+    } catch (erro) {
+        if (erro.code === "ER_DUP_ENTRY" && !/codigo_licenca/i.test(erro.sqlMessage || "")) {
+            return res.status(409).json({ mensagem: "Já existe uma conta com esse e-mail." });
+        }
+        console.error("Falha no cadastro Hunter:", erro.code || "ERRO_INTERNO");
+        return res.status(503).json({ mensagem: "Não foi possível gravar o cadastro no banco. Tente novamente." });
     }
 }
 
-module.exports = {
-    autenticar,
-    cadastrar
+async function autenticar(req, res) {
+    const { emailServer, senhaServer } = req.body || {};
+    const email = lerTexto(emailServer).toLowerCase();
+    if (!email || email.length > 254 || typeof senhaServer !== "string" || !senhaServer || senhaServer.length > 128) {
+        return res.status(400).json({ mensagem: "Informe seu e-mail e senha." });
+    }
+
+    try {
+        const usuario = await usuarioModel.buscarPorEmail(email);
+        const senha = usuario?.senhaHash;
+        if (typeof senha !== "string" || !/^[a-f0-9]{32}:[a-f0-9]{128}$/.test(senha)) {
+            return res.status(401).json({ mensagem: "E-mail ou senha incorretos." });
+        }
+        const [sal, hashSalvo] = senha.split(":");
+        const hash = await derivarHash(senhaServer, sal, 64);
+        if (!timingSafeEqual(hash, Buffer.from(hashSalvo, "hex"))) {
+            return res.status(401).json({ mensagem: "E-mail ou senha incorretos." });
+        }
+        const { senhaHash, ...perfil } = usuario;
+        return res.json(perfil);
+    } catch (erro) {
+        console.error("Falha no login Hunter:", erro.code || "ERRO_INTERNO");
+        return res.status(503).json({ mensagem: "Não foi possível consultar o banco. Tente novamente." });
+    }
 }
+
+module.exports = { cadastrar, autenticar };

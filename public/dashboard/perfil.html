@@ -7,19 +7,22 @@
     <title>Perfil · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/auth.css">
     <link rel="stylesheet" href="../css/perfil.css">
 </head>
 
 <body data-v="perfil">
+    <!-- MENU DE NAVEGAÇÃO -->
     <nav id="nav"></nav>
+    <!-- CONTEÚDO DA PÁGINA -->
     <main hidden>
         <section id="perfil">
             <h1>Perfil do Hunter</h1>
+            <!-- CARTÃO HUNTER E ESTATÍSTICAS DE NEN -->
             <div class="layout-perfil">
-                <div id="pbox">
+                <div id="dados_perfil_hunter">
                     <article class="cartao licenca-perfil">
                         <img class="imagem-licenca-perfil" src="../assets/cardtop.png" alt="Cartão da Associação Hunter">
                         <div class="dados-licenca">
@@ -29,13 +32,17 @@
                             <p><strong>Motivação</strong> · <span id="motivo-hunter"></span></p>
                             <p><strong>Voto</strong> · <span id="voto-hunter"></span></p>
                         </div>
-                        <button class="editar-perfil" type="button" id="editar-perfil" aria-controls="form-perfil" aria-expanded="false">Editar perfil</button>
+                        <button class="editar-perfil" type="button" id="editar-perfil" aria-controls="formulario_perfil" aria-expanded="false">Editar perfil</button>
                     </article>
-                    <form id="form-perfil" class="cartao form-perfil" hidden>
-                        <label for="editar-nome">Nome de Hunter</label>
-                        <input id="editar-nome" required maxlength="100">
-                        <label for="editar-motivo">Motivação</label>
-                        <textarea id="editar-motivo" maxlength="500"></textarea>
+                    <form id="formulario_perfil" class="cartao form-perfil" hidden>
+                        <div class="campo">
+                            <label for="nome_input">Nome de Hunter</label>
+                            <input id="nome_input" type="text" placeholder="Seu nome" required maxlength="100" />
+                        </div>
+                        <div class="campo">
+                            <label for="motivacao_input">Motivação</label>
+                            <textarea id="motivacao_input" maxlength="500" placeholder="Conte sua motivação"></textarea>
+                        </div>
                         <button type="submit">Salvar perfil</button>
                         <p id="status-perfil" class="status-perfil" role="status"></p>
                     </form>
@@ -47,8 +54,10 @@
             </div>
         </section>
     </main>
+    <!-- RODAPÉ -->
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script src="../js/app.js"></script>
 </body>
 

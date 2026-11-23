@@ -99,13 +99,6 @@ body[data-v="perfil"] main {
   border-color: #2a4035;
 }
 
-.form-perfil input,
-.form-perfil textarea {
-  background: #101e17;
-  color: inherit;
-  border-color: #2a4035;
-}
-
 .form-perfil button {
   margin-top: 12px;
   background: #49bd89;

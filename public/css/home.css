@@ -69,7 +69,7 @@
 
 .capa-simples .introducao {
   color: #fff;
-  font: 600 18px system-ui,sans-serif;
+  font: 600 18px var(--fonte-site);
   margin: 0 0 6px;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .passos b {
-  font: 700 30px/1 Georgia,serif;
+  font: 700 30px/1 var(--fonte-site);
   color: var(--ac);
 }
 
@@ -207,12 +207,12 @@
   background: #000;
   color: #fff;
   padding: 4px 22px 4px 14px;
-  font: 600 14px system-ui,sans-serif;
+  font: 600 14px var(--fonte-site);
   clip-path: polygon(0 8%,100% 0,96% 100%,2% 92%);
 }
 
 .painel-protagonista h3 {
-  font-family: Georgia,serif;
+  font-family: var(--fonte-destaque);
   font-size: clamp(28px,6vw,40px);
   margin: .25em 0 .15em;
 }
@@ -284,7 +284,7 @@
 
 .cartaz .legenda-cartaz h3 {
   margin: 0 0 2px;
-  font-family: Georgia,serif;
+  font-family: var(--fonte-destaque);
   font-size: clamp(20px,5vw,30px);
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -293,7 +293,7 @@
 
 .cartaz .legenda-cartaz p {
   margin: 0 0 10px;
-  font: 600 12px system-ui,sans-serif;
+  font: 600 12px var(--fonte-site);
   color: #ddd;
 }
 
@@ -301,7 +301,7 @@
   position: relative;
   display: inline-block;
   padding: 10px 14px;
-  font: 700 clamp(11px,2.8vw,14px) system-ui,sans-serif;
+  font: 700 clamp(11px,2.8vw,14px) var(--fonte-site);
   letter-spacing: .06em;
   text-transform: uppercase;
   color: #ffd23f;
@@ -331,7 +331,7 @@
   display: inline-block;
   margin: 4px 0 8px;
   color: var(--fg);
-  font: 600 14px system-ui,sans-serif;
+  font: 600 14px var(--fonte-site);
 }
 
 .ficha-tecnica {
@@ -351,13 +351,13 @@
 .ficha-tecnica small {
   display: block;
   color: var(--mut);
-  font: 600 11px system-ui,sans-serif;
+  font: 600 11px var(--fonte-site);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
 
 .ficha-tecnica b {
-  font: 700 16px/1.3 Georgia,serif;
+  font: 700 16px/1.3 var(--fonte-site);
 }
 
 .capa-lateral {
@@ -398,14 +398,14 @@
   background: #000;
   color: #fff;
   padding: 5px 24px 5px 14px;
-  font: 700 13px system-ui,sans-serif;
+  font: 700 13px var(--fonte-site);
   letter-spacing: .1em;
   text-transform: uppercase;
   clip-path: polygon(0 8%,100% 0,96% 100%,2% 92%);
 }
 
 .capa-lateral h1 {
-  font: 900 clamp(46px,9.5vw,96px)/.95 Georgia,serif;
+  font: 400 clamp(32px, 6vw, 76px)/1.02 var(--fonte-destaque);
   text-transform: uppercase;
   margin: .2em 0 .1em;
   color: #fff;
@@ -413,7 +413,7 @@
 }
 
 .capa-lateral .introducao {
-  font: 700 clamp(16px,2.6vw,22px) system-ui,sans-serif;
+  font: 700 clamp(16px,2.6vw,22px) var(--fonte-site);
   margin: 0 0 6px;
   color: #ffd23f;
 }
@@ -437,7 +437,7 @@
   z-index: 2;
   text-align: center;
   margin: -34px 0 0;
-  font: 700 clamp(26px,6vw,54px)/1.05 Georgia,serif;
+  font: 400 clamp(26px,6vw,54px)/1.05 var(--fonte-destaque);
   color: var(--fg);
   text-shadow: -2px -2px 0 var(--bg),2px -2px 0 var(--bg),-2px 2px 0 var(--bg),2px 2px 0 var(--bg),0 0 14px var(--bg);
 }
@@ -454,7 +454,7 @@
   padding: 40px 9%;
   max-width: 760px;
   margin: 26px auto;
-  font: 600 15px/1.75 system-ui,sans-serif;
+  font: 600 15px/1.75 var(--fonte-site);
   text-transform: uppercase;
   letter-spacing: .02em;
   clip-path: polygon(2% 5%,12% 0,30% 4%,55% 0,80% 3%,98% 0,100% 20%,97% 45%,100% 70%,98% 100%,70% 96%,45% 100%,20% 96%,3% 100%,0 72%,3% 48%,0 22%);
@@ -499,7 +499,7 @@ button.mais-informacoes {
   border-radius: 50%;
   background: #000;
   color: #fff;
-  font: 700 22px/1 system-ui,sans-serif;
+  font: 700 22px/1 var(--fonte-site);
 }
 
 .janela-informacoes h1 {
@@ -592,11 +592,11 @@ button.mais-informacoes {
 }
 
 .vertice-nen text {
-  font: 700 54px system-ui,sans-serif;
+  font: 700 54px var(--fonte-site);
   fill: var(--bt,var(--fg));
 }
 
-#hexinfo {
+#informacoes_tipo_nen {
   border-left: 6px solid var(--ac);
   margin: 0;
 }
@@ -645,13 +645,14 @@ button.mais-informacoes {
 
 .linha-tempo b {
   display: block;
-  font: 700 28px/1 Georgia,serif;
+  font: 700 28px/1 var(--fonte-site);
   color: var(--ac);
 }
 
 .linha-tempo h3 {
-  margin: .2em 0;
+  margin-top: 14px;
   font-size: 16px;
+  color: white;
 }
 
 .linha-tempo p {
@@ -690,20 +691,20 @@ button.mais-informacoes {
   display: block;
   letter-spacing: .16em;
   color: #ffd23f;
-  font: 700 12px system-ui,sans-serif;
+  font: 700 12px var(--fonte-site);
   text-transform: uppercase;
 }
 
 .quadro-divinacao h3 {
   color: #fff;
-  font: 700 26px/1.2 Georgia,serif;
+  font: 700 26px/1.2 var(--fonte-site);
   text-transform: none;
   margin: .3em 0;
 }
 
 .quadro-divinacao p {
   margin: 0;
-  font: 600 15px/1.7 system-ui,sans-serif;
+  font: 600 15px/1.7 var(--fonte-site);
   text-transform: none;
 }
 
@@ -728,7 +729,7 @@ button.mais-informacoes {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 22px Georgia,serif;
+  font: 700 22px var(--fonte-site);
   color: #000;
 }
 
@@ -771,7 +772,7 @@ button.mais-informacoes {
 }
 
 .texto-capa-principal h1 {
-  font: 400 clamp(56px,10vw,132px)/.92 Anton,Impact,"Arial Narrow",sans-serif;
+  font: 400 clamp(32px, 5.1vw, 82px)/1.02 var(--fonte-destaque);
   text-transform: uppercase;
   color: #fff;
   margin: 0 0 18px;
@@ -780,7 +781,7 @@ button.mais-informacoes {
 
 .texto-capa-principal p {
   max-width: min(520px,90%);
-  font: 500 clamp(16px,1.9vw,22px)/1.5 system-ui,sans-serif;
+  font: 500 clamp(16px,1.9vw,22px)/1.5 var(--fonte-site);
   color: #e6e6e6;
   margin: 0;
 }
@@ -860,7 +861,7 @@ button.mais-informacoes {
 
 .resumo-capa b {
   display: block;
-  font: 400 clamp(20px,2.4vw,28px)/1.1 Anton,Impact,sans-serif;
+  font: 400 clamp(20px,2.4vw,28px)/1.1 var(--fonte-destaque);
   color: #7be0a8;
   text-transform: uppercase;
   letter-spacing: .02em;
@@ -868,7 +869,7 @@ button.mais-informacoes {
 
 .resumo-capa span {
   color: #ccc;
-  font: 600 13px system-ui,sans-serif;
+  font: 600 13px var(--fonte-site);
 }
 
 /* FAIXAS E CORES DAS SEÇÕES */
@@ -1083,12 +1084,12 @@ body[data-v="inicio"] {
 
 /* DETALHES DO HEXÁGONO */
 
-#hexsvg {
+#hexagono_tipos_nen {
   display: block;
   width: 100%;
 }
 
-#hexinfo {
+#informacoes_tipo_nen {
   background: #16251d;
   color: #f4efe0;
   border-color: #2a3d33;
@@ -1096,15 +1097,15 @@ body[data-v="inicio"] {
   min-height: 265px;
 }
 
-#hexinfo .etiqueta {
+#informacoes_tipo_nen .etiqueta {
   background: var(--nen-color,#2c9954);
 }
 
-#hexinfo .texto-secundario {
+#informacoes_tipo_nen .texto-secundario {
   color: #bbccc2;
 }
 
-#hexinfo p:last-child {
+#informacoes_tipo_nen p:last-child {
   margin-bottom: 0;
 }
 
