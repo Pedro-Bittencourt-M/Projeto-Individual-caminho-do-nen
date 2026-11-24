@@ -800,31 +800,11 @@ button.mais-informacoes {
 }
 
 .personagens-capa img {
-  width: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
   filter: drop-shadow(0 0 28px rgba(76,195,138,.4)) brightness(.96) contrast(1.04);
-}
-
-.personagens-capa img:nth-child(1) {
-  height: 82%;
-  z-index: 2;
-}
-
-.personagens-capa img:nth-child(2) {
-  height: 66%;
-  margin-left: -5%;
-  z-index: 3;
-}
-
-.personagens-capa img:nth-child(3) {
-  height: 96%;
-  margin-left: -4%;
-  z-index: 1;
-}
-
-.personagens-capa img:nth-child(4) {
-  height: 74%;
-  margin-left: -5%;
-  z-index: 2;
 }
 
 @media (max-width:760px) {
@@ -1071,11 +1051,6 @@ body[data-v="inicio"] {
 @media (max-width:420px) {
   .personagens-capa {
     height: 230px;
-  }
-  .personagens-capa img {
-    max-width: 30%;
-    object-fit: contain;
-    object-position: bottom;
   }
   .grade-cartazes {
     grid-template-columns: 1fr;

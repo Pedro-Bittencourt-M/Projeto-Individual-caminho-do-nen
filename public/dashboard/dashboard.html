@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Hunter · Caminho do Nen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body data-v="dashboard">
+    <!-- MENU DA ÁREA HUNTER -->
+    <nav id="nav"></nav>
+
+    <main class="painel-hunter" hidden>
+        <header class="cabecalho-dashboard">
+            <div>
+                <h1>Dashboard Hunter</h1>
+                <p>Dados fictícios para visualizar o painel.</p>
+            </div>
+        </header>
+
+        <!-- INDICADORES -->
+        <dl class="indicadores-hunter">
+            <div><dt>Hunters cadastrados</dt><dd>15</dd></div>
+            <div><dt>Testes de Nen concluídos</dt><dd>12</dd></div>
+            <div><dt>Tentativas de quiz</dt><dd>24</dd></div>
+            <div><dt>Criaturas registradas</dt><dd>8</dd></div>
+        </dl>
+
+        <!-- GRÁFICOS -->
+        <section class="graficos-hunter" aria-label="Gráficos da Área Hunter">
+            <article class="grafico-hunter">
+                <h2>Tipos de Nen</h2>
+                <p>Quantidade de Hunters por tipo dominante</p>
+                <canvas id="grafico_tipos_nen" width="390" height="214" role="img"
+                    aria-label="Intensificação 3, Transmutação 3, Materialização 2, Especialização 1, Manipulação 1, Emissão 2."></canvas>
+            </article>
+            <article class="grafico-hunter">
+                <h2>Média de nota por quiz</h2>
+                <p>Média de acertos de um total de 15</p>
+                <canvas id="grafico_medias_quiz" width="390" height="214" role="img"
+                    aria-label="Killua 12,4; Leorio 9,6; Gon 11,8; Kurapika 10,7, de 15."></canvas>
+            </article>
+            <article class="grafico-hunter">
+                <h2>Perigo das criaturas</h2>
+                <p>Registros do bestiário por classificação</p>
+                <canvas id="grafico_perigo_criaturas" width="390" height="214" role="img"
+                    aria-label="Baixo 4, Moderado 3, Alto 1, Extremo 0."></canvas>
+            </article>
+        </section>
+    </main>
+
+    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos. Hunter × Hunter © Yoshihiro Togashi / Shueisha.</footer>
+    <script src="../js/app.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+
+</html>

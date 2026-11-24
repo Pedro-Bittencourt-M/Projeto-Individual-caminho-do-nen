@@ -59,12 +59,6 @@ async function iniciarPagina() {
     const hunter = preview ? { name: "Hunter de teste", license: "PRÉVIA" } : estado.hunter;
     const current = "preview";
     if (paginasHunter.includes(pagina)) {
-        if (hunter && pagina === "dashboard") {
-            const destino = pageUrl("dashboard/perfil.html");
-            destino.hash = "estatisticas";
-            location.replace(destino);
-            return;
-        }
         if (hunter) {
             document.querySelector("main").hidden = false;
         } else if (erroAoConsultar) {
@@ -87,6 +81,7 @@ async function iniciarPagina() {
         ["sobre.html", "Sobre mim"],
         ["dashboard/personagens.html", "Personagens"],
         ["dashboard/perfil.html", "Perfil"],
+        ["dashboard/dashboard.html", "Dashboard"],
         ["dashboard/quiz.html", "Quizzes"],
         ["dashboard/voto.html", "Voto e Restrição"],
         ["dashboard/bestiario.html", "Bestiário"],

@@ -1,64 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>Perfil · Caminho do Nen</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/auth.css">
-    <link rel="stylesheet" href="../css/perfil.css">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
+    <link rel="stylesheet" href="../css/perfil.css" />
+  </head>
 
-<body data-v="perfil">
+  <body data-v="perfil">
     <!-- MENU DE NAVEGAÇÃO -->
     <nav id="nav"></nav>
     <!-- CONTEÚDO DA PÁGINA -->
     <main hidden>
-        <section id="perfil">
-            <h1>Perfil do Hunter</h1>
-            <!-- CARTÃO HUNTER E ESTATÍSTICAS DE NEN -->
-            <div class="layout-perfil">
-                <div id="dados_perfil_hunter">
-                    <article class="cartao licenca-perfil">
-                        <img class="imagem-licenca-perfil" src="../assets/cardtop.png" alt="Cartão da Associação Hunter">
-                        <div class="dados-licenca">
-                            <h2 id="nome-hunter"></h2>
-                            <p><strong>Licença Hunter</strong> · <span id="licenca-hunter"></span></p>
-                            <p><strong>Tipo de Nen</strong> · <span id="nen-hunter"></span></p>
-                            <p><strong>Motivação</strong> · <span id="motivo-hunter"></span></p>
-                            <p><strong>Voto</strong> · <span id="voto-hunter"></span></p>
-                        </div>
-                        <button class="editar-perfil" type="button" id="editar-perfil" aria-controls="formulario_perfil" aria-expanded="false">Editar perfil</button>
-                    </article>
-                    <form id="formulario_perfil" class="cartao form-perfil" hidden>
-                        <div class="campo">
-                            <label for="nome_input">Nome de Hunter</label>
-                            <input id="nome_input" type="text" placeholder="Seu nome" required maxlength="100" />
-                        </div>
-                        <div class="campo">
-                            <label for="motivacao_input">Motivação</label>
-                            <textarea id="motivacao_input" maxlength="500" placeholder="Conte sua motivação"></textarea>
-                        </div>
-                        <button type="submit">Salvar perfil</button>
-                        <p id="status-perfil" class="status-perfil" role="status"></p>
-                    </form>
-                </div>
-                <section id="estatisticas" class="cartao">
-                    <h2>Estatísticas de Nen</h2>
-                    <div id="afinidades-hunter"></div>
-                </section>
-            </div>
-        </section>
+      <section id="perfil">
+        <h1>Perfil do Hunter</h1>
+        <!-- CARTÃO HUNTER E ESTATÍSTICAS DE NEN -->
+        <div class="layout-perfil">
+          <div id="dados_perfil_hunter">
+            <article class="cartao licenca-perfil">
+              <img
+                class="imagem-licenca-perfil"
+                src="../assets/cardtop.png"
+                alt="Cartão da Associação Hunter"
+              />
+              <div class="dados-licenca">
+                <h2 id="nome-hunter"></h2>
+                <p>
+                  <strong>Licença Hunter</strong> ·
+                  <span id="licenca-hunter"></span>
+                </p>
+                <p>
+                  <strong>Tipo de Nen</strong> · <span id="nen-hunter"></span>
+                </p>
+                <p>
+                  <strong>Motivação</strong> · <span id="motivo-hunter"></span>
+                </p>
+                <p><strong>Voto</strong> · <span id="voto-hunter"></span></p>
+              </div>
+              <button
+                class="editar-perfil"
+                type="button"
+                id="editar-perfil"
+                aria-controls="formulario_perfil"
+                aria-expanded="false"
+              >
+                Editar perfil
+              </button>
+            </article>
+            <form id="formulario_perfil" class="cartao form-perfil" hidden>
+              <div class="campo">
+                <label for="nome_input">Nome de Hunter</label>
+                <input
+                  id="nome_input"
+                  type="text"
+                  placeholder="Seu nome"
+                  required
+                  maxlength="100"
+                />
+              </div>
+              <div class="campo">
+                <label for="motivacao_input">Motivação</label>
+                <textarea
+                  id="motivacao_input"
+                  maxlength="500"
+                  placeholder="Conte sua motivação"
+                ></textarea>
+              </div>
+              <button type="submit">Salvar perfil</button>
+              <p id="status-perfil" class="status-perfil" role="status"></p>
+            </form>
+          </div>
+          <section id="estatisticas" class="cartao">
+            <h2>Estatísticas de Nen</h2>
+            <div id="afinidades-hunter"></div>
+          </section>
+        </div>
+      </section>
     </main>
     <!-- RODAPÉ -->
-    <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
-        Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
+    <footer class="rodape">
+      Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
+      Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
+      pertencem aos seus criadores.
+    </footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script src="../js/app.js"></script>
-</body>
-
+  </body>
 </html>

@@ -2,15 +2,15 @@
 <html lang="pt-br">
 
 <head>
-    <link rel="shortcut icon" href="../assets/icon/favicon2.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AquaTech | Dashboards</title>
 
     
-    <link rel="stylesheet" href="./../css/dashboards.css">
-    <link rel="stylesheet" href="./../css/estilo.css" />
+    <link rel="stylesheet" href="../css/dashboards-aquatech.css">
+    <link rel="stylesheet" href="../css/estilo-aquatech.css" />
     <script src="../js/sessao.js"></script>
     <script src="./../js/alerta.js"></script>
 
@@ -20,7 +20,7 @@
         rel="stylesheet">
 
     <!-- scripts do Chart.js - 2022-1 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!--FONT AWESOME-->
     <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="btn-nav-white">
-                <a href="./cards.html">
+                <a href="./cards-aquatech.html">
                     <h3>Aquários e Terrários</h3>
                 </a>
             </div>
@@ -51,12 +51,12 @@
             </div>
 
             <div class="btn-nav-white">
-                <a href="./mural.html">
+                <a href="./mural-aquatech.html">
                     <h3>Mural de Avisos</h3>
                 </a>
             </div>
 
-            <div class="btn-logout" onclick="limparSessao()">
+            <div class="btn-logout" onclick="sairAquaTech()">
                 <h3>Sair</h3>
             </div>
 
@@ -75,19 +75,72 @@
     </div>
 
 
-</body>
-
-</html>
-
 <script>
-    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
-
     let proximaAtualizacao;
+    let aquariosDaSessao = [];
 
-    window.onload = exibirAquariosDoUsuario();
+    document.addEventListener("DOMContentLoaded", function () {
+        try {
+            if (location.protocol !== "file:") {
+                aquariosDaSessao = JSON.parse(sessionStorage.AQUARIOS || "[]");
+            }
+        } catch {
+            aquariosDaSessao = [];
+        }
+
+        if (Array.isArray(aquariosDaSessao) && aquariosDaSessao.length && typeof Chart === "function") {
+            document.getElementById("b_usuario").textContent = sessionStorage.NOME_USUARIO || "usuário";
+            exibirAquariosDoUsuario();
+        } else {
+            mostrarPrevia();
+        }
+    });
+
+    function sairAquaTech() {
+        sessionStorage.removeItem("NOME_USUARIO");
+        sessionStorage.removeItem("EMAIL_USUARIO");
+        sessionStorage.removeItem("AQUARIOS");
+        location.assign("../login-aquatech.html");
+    }
+
+    function mostrarPrevia() {
+        document.getElementById("b_usuario").textContent = "visitante";
+        document.getElementById("btnAquario").innerHTML = '<button type="button" class="btn-chart btn-pink" aria-pressed="true">Aquário de exemplo</button>';
+        document.getElementById("graficos").innerHTML = '<h3 class="tituloGraficos">Últimas medidas do aquário de exemplo</h3>' +
+            '<div class="graph"><canvas id="graficoPrevio" width="760" height="320" role="img" aria-label="Gráfico de exemplo de temperatura de 24 a 26 graus entre 10h e 11h."></canvas></div>' +
+            '<div class="label-captura"><p style="color: white">Prévia com dados fictícios de temperatura.</p></div>';
+
+        var grafico = document.getElementById("graficoPrevio");
+        var contexto = grafico.getContext("2d");
+        var temperaturas = [24, 25, 24.5, 26, 25, 25.5, 25];
+        contexto.font = "15px sans-serif";
+        for (var grau = 23; grau <= 27; grau++) {
+            var altura = 265 - (grau - 23) * 55;
+            contexto.strokeStyle = "#444";
+            contexto.beginPath();
+            contexto.moveTo(62, altura);
+            contexto.lineTo(726, altura);
+            contexto.stroke();
+            contexto.fillStyle = "#ddd";
+            contexto.fillText(grau + " °C", 10, altura + 5);
+        }
+
+        contexto.strokeStyle = "#e6005a";
+        contexto.lineWidth = 3;
+        contexto.beginPath();
+        temperaturas.forEach(function (temperatura, indice) {
+            var x = 62 + indice * 110;
+            var y = 265 - (temperatura - 23) * 55;
+            if (indice === 0) contexto.moveTo(x, y);
+            else contexto.lineTo(x, y);
+            var minutos = indice * 10;
+            contexto.fillText(minutos === 60 ? "11:00" : "10:" + String(minutos).padStart(2, "0"), x - 16, 294);
+        });
+        contexto.stroke();
+    }
 
     function exibirAquariosDoUsuario() {
-        var aquarios = JSON.parse(sessionStorage.AQUARIOS);
+        var aquarios = aquariosDaSessao;
         aquarios.forEach(item => {
             document.getElementById("btnAquario").innerHTML += `
             <button class="btn-chart" onclick="exibirAquario(${item.id})" id="btnAquario${item.id}">${item.descricao}</button>
@@ -117,12 +170,12 @@
 
     function alterarTitulo(idAquario) {
         var tituloAquario = document.getElementById(`tituloAquario${idAquario}`)
-        var descricao = JSON.parse(sessionStorage.AQUARIOS).find(item => item.id == idAquario).descricao;
+        var descricao = aquariosDaSessao.find(item => item.id == idAquario).descricao;
         tituloAquario.innerHTML = "Últimas medidas do <span style='color: #e6005a'>" + descricao + "</span>"
     }
 
     function exibirAquario(idAquario) {
-        let todosOsGraficos = JSON.parse(sessionStorage.AQUARIOS);
+        let todosOsGraficos = aquariosDaSessao;
 
         for (i = 0; i < todosOsGraficos.length; i++) {
             // exibindo - ou não - o gráfico
@@ -306,3 +359,7 @@
 
     }
 </script>
+
+</body>
+
+</html>
