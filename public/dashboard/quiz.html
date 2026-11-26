@@ -20,10 +20,32 @@
 
   <body data-v="quiz">
     <!-- MENU DE NAVEGAÇÃO -->
-    <nav id="nav"></nav>
+    <nav id="nav" class="navegacao-hunter" style="display: none;">
+        <div class="controle-menu-hunter">
+            <button id="botao_menu" type="button" class="botao-menu" aria-label="Menu Hunter" aria-controls="menu_hunter" aria-expanded="false" onclick="alternarMenu()">
+                <i></i><i></i><i></i>
+            </button>
+            <ul id="menu_hunter" class="lista-menu-hunter" style="display: none;">
+                <li><a href="personagens.html">Personagens</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="quiz.html" class="ativo" aria-current="page">Quizzes</a></li>
+                <li><a href="voto.html">Voto e Restrição</a></li>
+                <li><a href="bestiario.html">Bestiário</a></li>
+            </ul>
+        </div>
+        <b><img src="../assets/logo.png" alt="">Caminho do Nen</b>
+        <div class="controle-perfil">
+            <button id="botao_perfil" type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="menu_perfil" aria-expanded="false" onclick="alternarPerfil()"></button>
+            <div id="menu_perfil" class="menu-perfil" style="display: none;">
+                <div class="cabecalho-menu-perfil"><b id="nome_hunter"></b></div>
+                <a href="perfil.html">Perfil</a>
+                <button type="button" id="botao_sair" onclick="sair()">Sair</button>
+            </div>
+        </div>
+    </nav>
     <!-- CONTEÚDO DA PÁGINA -->
     <div id="aviso_area_hunter"></div>
-    <main hidden>
+    <main id="conteudo_quiz" style="display: none;">
       <section id="quiz">
         <h1>Quizzes</h1>
         <!-- LISTA DE QUIZZES DISPONÍVEIS E CONCLUÍDOS -->
@@ -33,7 +55,7 @@
             sem resposta valem como erro.
           </p>
           <ul class="lista-etapas lista-quizzes" id="lista-quizzes-disponiveis">
-            <li class="cartao-etapa quiz-obrigatorio">
+            <li id="cartao_nen" class="cartao-etapa quiz-obrigatorio">
               <article class="conteudo-etapa">
                 <span class="rotulo">Comece por aqui</span>
                 <h2>Descubra seu Nen</h2>
@@ -41,10 +63,42 @@
                   14 perguntas no estilo da Divinação do Copo de Água. O
                   resultado é definitivo.
                 </p>
-                <button type="button" id="iniciar-nen">
+                <button type="button" id="iniciar-nen" onclick="comecarQuiz(-1)">
                   Começar teste de Nen
                 </button>
                 <span class="numero-etapa" aria-hidden="true">念</span>
+              </article>
+            </li>
+            <li class="cartao-etapa">
+              <article class="conteudo-etapa conteudo-quiz-personagem">
+                <div><span class="rotulo">Iniciante</span><h2>Killua</h2><p>15 perguntas · 4 min</p>
+                <button id="comecar_0" type="button" onclick="comecarQuiz(0)" disabled>Começar</button>
+                <p id="espera_0">Conclua o teste de Nen para liberar.</p></div>
+                <img class="imagem-quiz-personagem" src="../assets/killua.webp" alt="">
+              </article>
+            </li>
+            <li class="cartao-etapa">
+              <article class="conteudo-etapa conteudo-quiz-personagem">
+                <div><span class="rotulo">Iniciante</span><h2>Leorio</h2><p>15 perguntas · 4 min</p>
+                <button id="comecar_1" type="button" onclick="comecarQuiz(1)" disabled>Começar</button>
+                <p id="espera_1">Conclua o teste de Nen para liberar.</p></div>
+                <img class="imagem-quiz-personagem" src="../assets/leorio.webp" alt="">
+              </article>
+            </li>
+            <li class="cartao-etapa">
+              <article class="conteudo-etapa conteudo-quiz-personagem">
+                <div><span class="rotulo">Iniciante</span><h2>Gon</h2><p>15 perguntas · 4 min</p>
+                <button id="comecar_2" type="button" onclick="comecarQuiz(2)" disabled>Começar</button>
+                <p id="espera_2">Conclua o teste de Nen para liberar.</p></div>
+                <img class="imagem-quiz-personagem" src="../assets/gon.webp" alt="">
+              </article>
+            </li>
+            <li class="cartao-etapa">
+              <article class="conteudo-etapa conteudo-quiz-personagem">
+                <div><span class="rotulo">Iniciante</span><h2>Kurapika</h2><p>15 perguntas · 4 min</p>
+                <button id="comecar_3" type="button" onclick="comecarQuiz(3)" disabled>Começar</button>
+                <p id="espera_3">Conclua o teste de Nen para liberar.</p></div>
+                <img class="imagem-quiz-personagem" src="../assets/kurapika.webp" alt="">
               </article>
             </li>
             <li class="cartao-etapa quiz-em-breve" id="quiz-arcos">
@@ -57,7 +111,64 @@
           </ul>
         </div>
         <!-- PERGUNTAS E RESULTADO DO QUIZ -->
-        <div id="area_perguntas_quiz" class="cartao" hidden></div>
+        <div id="area_perguntas_quiz" class="cartao" style="display: none;">
+          <article id="painel_pergunta" class="cartao">
+            <div id="cabecalho_personagem" class="cabecalho-quiz-personagem">
+              <img id="retrato_quiz" alt=""><span id="nome_quiz"></span><span id="tempo_quiz" class="tempo-quiz"></span>
+            </div>
+            <h2 id="titulo_pergunta"></h2><p id="texto_pergunta"></p>
+          </article>
+          <button id="alternativa_0" class="opcao-resposta" type="button" onclick="responder(0)"></button>
+          <button id="alternativa_1" class="opcao-resposta" type="button" onclick="responder(1)"></button>
+          <button id="alternativa_2" class="opcao-resposta" type="button" onclick="responder(2)"></button>
+          <button id="alternativa_3" class="opcao-resposta" type="button" onclick="responder(3)"></button>
+          <button id="alternativa_4" class="opcao-resposta" type="button" onclick="responder(4)"></button>
+          <button id="alternativa_5" class="opcao-resposta" type="button" onclick="responder(5)"></button>
+          <article id="painel_resultado" class="cartao" style="display: none;">
+            <h2 id="titulo_resultado"></h2><p id="mensagem_resultado" role="status"></p>
+            <figure id="recompensa_quiz" class="personagem-recompensa" style="display: none;">
+              <img id="imagem_recompensa" alt=""><figcaption id="legenda_recompensa"></figcaption>
+            </figure>
+            <div id="afinidade_quiz" style="display: none;">
+              <svg class="hexagrama-afinidade" viewBox="-265 38 1810 1260" role="img" aria-label="Afinidades de Nen">
+
+                    <defs>
+                        <filter id="nen-afinidade-sem-fundo" color-interpolation-filters="sRGB">
+                            <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                                 0 0 0 0 0
+                                                                 0 0 0 0 0
+                                                                 4 4 4 0 -.18" result="mascara"></feColorMatrix>
+                            <feComposite in="SourceGraphic" in2="mascara" operator="in"></feComposite>
+                        </filter>
+                    </defs>
+                    <g aria-hidden="true" fill="#fff">
+                        <path d="M 552 278 L 370 384 M 728 278 L 910 384
+                                 M 997 534 V 746 M 910 896 L 728 1002
+                                 M 552 1002 L 370 896 M 283 746 V 534"
+                              fill="none" stroke="#fff" stroke-width="33" stroke-linecap="butt"></path>
+                        <path fill-rule="evenodd"
+                              d="M 482 457 H 607 L 628 480 Q 607 541 558 585 H 724
+                                 Q 660 526 641 453 L 681 446 Q 688 473 698 490
+                                 L 748 445 L 775 474 L 721 524 L 739 543
+                                 L 797 493 L 823 523 L 770 571 Q 792 589 829 610
+                                 L 811 645 Q 781 630 753 609 V 626 H 709 V 676
+                                 H 805 V 717 H 709 V 773 Q 709 785 719 785 H 766
+                                 Q 776 785 776 776 V 738 L 817 754 V 778
+                                 Q 815 827 764 827 H 718 Q 668 827 668 776 V 717
+                                 H 605 Q 581 798 486 835 L 473 797
+                                 Q 544 768 563 717 H 472 V 676 H 565 V 626 H 527 V 610
+                                 Q 499 634 470 650 L 451 616 Q 486 594 517 569
+                                 L 477 533 L 504 502 L 545 540 Q 563 521 576 498 H 482 Z
+                                 M 607 626 V 676 H 668 V 626 Z"></path>
+                    </g>
+                    <image href="../assets/hexagono-nen.png" width="1280" height="1280" filter="url(#nen-afinidade-sem-fundo)" aria-hidden="true"></image>
+                <g id="rotulos_afinidade"></g>
+              </svg>
+              <a class="botao" href="perfil.html#estatisticas">Ver estatísticas no perfil</a>
+            </div>
+            <button id="botao_voltar" type="button" style="display: none;" onclick="voltarAosQuizzes()">Voltar aos quizzes</button>
+          </article>
+        </div>
       </section>
     </main>
     <!-- RODAPÉ -->
@@ -68,7 +179,7 @@
     </footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script>
-        const quizzesPersonagens = [
+const quizzesPersonagens = [
                 { id: "killua", name: "Killua", questions: [
                     ["Qual é o sobrenome de Killua?", ["Zoldyck", "Freecss", "Kurta", "Nostrade"]],
                     ["Que profissão tornou a família de Killua conhecida?", ["Assassinos", "Médicos", "Caçadores de tesouros", "Artistas marciais"]],
@@ -138,298 +249,7 @@
                     ["Qual técnica Kurapika usa para impedir Chrollo de usar Nen após o confronto em Yorknew?", ["Corrente do Julgamento", "Corrente da Cura", "Corrente da Prisão", "Corrente de Dowsing"]]
                 ] }
             ];
-
-
-
-        var pastaSite = "../";
-
-        function pageUrl(caminho2) {
-            var partes = caminho2.split("#");
-            var url = pastaSite + partes[0];
-            if (partes.length > 1) url += "#" + partes[1];
-            return url;
-        }
-        const pagina = document.body.dataset.v;
-        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
-
-
-        function apiHunter(caminho, metodo, dados) {
-            var opcoes = { method: metodo || "GET" };
-            if (dados !== undefined) {
-                opcoes.headers = { "Content-Type": "application/json" };
-                opcoes.body = JSON.stringify(dados);
-            }
-            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
-                return resposta.json().catch(function () {
-                    return null;
-                }).then(function (conteudo) {
-                    if (!resposta.ok || !conteudo) {
-                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
-                        erro.status = resposta.status;
-                        if (conteudo) erro.completedAt = conteudo.completedAt;
-                        throw erro;
-                    }
-                    return conteudo;
-                });
-            }, function () {
-                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
-            });
-        }
-        function iniciarPagina() {
-            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
-            if (location.protocol !== "http:" && location.protocol !== "https:") {
-                return Promise.resolve().then(function () {
-                    montarPagina(estadoInicial);
-                });
-            }
-            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
-                montarPagina(estado);
-            }, function (erro) {
-                if (erro.status === 401) erro = null;
-                montarPagina(estadoInicial, erro);
-            });
-        }
-
-        function montarPagina(estado, erroAoConsultar) {
-            const hunter = estado.hunter;
-            if (paginasHunter.includes(pagina)) {
-                if (hunter) {
-                    document.querySelector("main").hidden = false;
-                } else if (erroAoConsultar) {
-                    const aviso = document.createElement("p");
-                    aviso.className = "cartao";
-                    aviso.textContent = erroAoConsultar.message;
-                    document.getElementById("aviso_area_hunter").appendChild(aviso);
-                } else {
-                    location.replace(pastaSite + "login.html");
-                    return;
-                }
-            }
-            window.addEventListener("pageshow", function (evento) {
-                if (evento.persisted) window.location = location.href;
-            });
-
-            const navegacao = document.querySelector("#nav");
-            const ligacoes = [
-                ["index.html", "Início"],
-                ["sobre.html", "Sobre mim"],
-                ["dashboard/personagens.html", "Personagens"],
-                ["dashboard/perfil.html", "Perfil"],
-                ["dashboard/dashboard.html", "Dashboard"],
-                ["dashboard/quiz.html", "Quizzes"],
-                ["dashboard/voto.html", "Voto e Restrição"],
-                ["dashboard/bestiario.html", "Bestiário"],
-                ["cadastro.html", "Cadastro"],
-                ["login.html", "Entrar"]
-            ];
-            navegacao.setAttribute("aria-label", "Navegação principal");
-            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
-            function navigationLink(url, rotulo) {
-                const ligacao = document.createElement("a");
-                ligacao.href = pageUrl(url);
-                ligacao.textContent = rotulo;
-                if (url === "login.html") ligacao.classList.add("botao-destaque");
-                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
-                    ligacao.classList.add("ativo");
-                    ligacao.setAttribute("aria-current", "page");
-                }
-                return ligacao;
-            }
-
-            if (hunter) {
-                navegacao.classList.add("navegacao-hunter");
-                navegacao.innerHTML += `
-                    <div class="controle-menu-hunter">
-                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
-                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
-                        </button>
-                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
-                    </div>
-                    <div class="controle-perfil">
-                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
-                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
-                    </div>`;
-
-                navegacao.appendChild(navegacao.querySelector("b"));
-                navegacao.appendChild(navegacao.querySelector(".controle-perfil"));
-                const menu = navegacao.querySelector("#hunter-menu");
-                const perfil = navegacao.querySelector("#hunter-profile");
-                const botaoPerfil = navegacao.querySelector(".botao-perfil");
-                botaoPerfil.textContent = hunter.name[0].toUpperCase();
-                perfil.querySelector("b").textContent = hunter.name;
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) continue;
-                    const ligacao = navigationLink(url, rotulo);
-                    if (rotulo === "Perfil") {
-                        perfil.appendChild(ligacao);
-                    } else {
-                        const item = document.createElement("li");
-                        item.appendChild(ligacao);
-                        menu.appendChild(item);
-                    }
-                }
-
-                const botaoSair = document.createElement("button");
-                botaoSair.type = "button";
-                botaoSair.textContent = "Sair";
-                botaoSair.addEventListener("click", function () {
-                    var operacao = apiHunter("sair", "POST");
-                    operacao.then(function () {
-                        window.location = pastaSite + "index.html";
-                    }).catch(function (erro) {
-                        botaoSair.title = erro.message;
-                        botaoSair.textContent = "Tentar sair novamente";
-                    });
-                });
-                perfil.appendChild(botaoSair);
-
-                function bindDisclosure(botao, painel) {
-                    function close() {
-                        painel.hidden = true;
-                        botao.setAttribute("aria-expanded", "false");
-                    }
-                    botao.addEventListener("click", function () {
-                        if (!painel.hidden) {
-                            close();
-                            return;
-                        }
-                        painel.hidden = false;
-                        botao.setAttribute("aria-expanded", "true");
-                    });
-                    document.addEventListener("click", function (evento) {
-                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
-                    });
-                    document.addEventListener("keydown", function (evento) {
-                        if (evento.key === "Escape" && !painel.hidden) {
-                            close();
-                            botao.focus();
-                        }
-                    });
-                }
-
-                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
-                bindDisclosure(botaoPerfil, perfil);
-                perfil.addEventListener("click", function (evento) {
-                    if (evento.target.closest("a")) {
-                        perfil.hidden = true;
-                        botaoPerfil.setAttribute("aria-expanded", "false");
-                    }
-                });
-            } else {
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
-                }
-            }
-
-
-
-            function get(id) {
-                return document.getElementById(id);
-            }
-            function value(id) {
-                return get(id).value.trim();
-            }
-
-            const coresNen = ["#2c9954", "#8942a1", "#247eaf", "#bd3528", "#dc9119", "#169d89"];
-            const pontosHexagono = [[640, 228], [997, 434], [997, 846], [640, 1052], [283, 846], [283, 434]];
-            function drawNenArtwork(hexagono, filterId) {
-                const imagemHexagono = pastaSite + "assets/hexagono-nen.png";
-                hexagono.setAttribute("viewBox", "-265 38 1810 1204");
-
-
-                hexagono.innerHTML = `
-                    <defs>
-                        <filter id="${filterId}" color-interpolation-filters="sRGB">
-                            <feColorMatrix type="matrix" values="0 0 0 0 0
-                                                                 0 0 0 0 0
-                                                                 0 0 0 0 0
-                                                                 4 4 4 0 -.18" result="mascara"></feColorMatrix>
-                            <feComposite in="SourceGraphic" in2="mascara" operator="in"></feComposite>
-                        </filter>
-                    </defs>
-                    <g aria-hidden="true" fill="#fff">
-                        <path d="M 552 278 L 370 384 M 728 278 L 910 384
-                                 M 997 534 V 746 M 910 896 L 728 1002
-                                 M 552 1002 L 370 896 M 283 746 V 534"
-                              fill="none" stroke="#fff" stroke-width="33" stroke-linecap="butt"></path>
-                        <path fill-rule="evenodd"
-                              d="M 482 457 H 607 L 628 480 Q 607 541 558 585 H 724
-                                 Q 660 526 641 453 L 681 446 Q 688 473 698 490
-                                 L 748 445 L 775 474 L 721 524 L 739 543
-                                 L 797 493 L 823 523 L 770 571 Q 792 589 829 610
-                                 L 811 645 Q 781 630 753 609 V 626 H 709 V 676
-                                 H 805 V 717 H 709 V 773 Q 709 785 719 785 H 766
-                                 Q 776 785 776 776 V 738 L 817 754 V 778
-                                 Q 815 827 764 827 H 718 Q 668 827 668 776 V 717
-                                 H 605 Q 581 798 486 835 L 473 797
-                                 Q 544 768 563 717 H 472 V 676 H 565 V 626 H 527 V 610
-                                 Q 499 634 470 650 L 451 616 Q 486 594 517 569
-                                 L 477 533 L 504 502 L 545 540 Q 563 521 576 498 H 482 Z
-                                 M 607 626 V 676 H 668 V 626 Z"></path>
-                    </g>
-                    <image href="${imagemHexagono}" width="1280" height="1280" filter="url(#${filterId})" aria-hidden="true"></image>`;
-            }
-
-
-            function card(title, descricao) {
-                const artigo = document.createElement("article");
-                artigo.className = "cartao";
-                const titulo = document.createElement("h2");
-                titulo.textContent = title;
-                const detalhes = document.createElement("p");
-                detalhes.textContent = descricao;
-                artigo.appendChild(titulo);
-                artigo.appendChild(detalhes);
-                return artigo;
-            }
-
-
-            const tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
-            function affinityHexagon(dominant) {
-                var afinidades = [];
-                var nomesAfinidades = [];
-                for (var indice = 0; indice < tiposNen.length; indice++) {
-                    const distancia = indice > dominant ? indice - dominant : dominant - indice;
-                    var porcentagem = 100 - 20 * (distancia < tiposNen.length - distancia ? distancia : tiposNen.length - distancia);
-                    afinidades.push(porcentagem);
-                    nomesAfinidades.push(tiposNen[indice] + " " + porcentagem + "%");
-                }
-                var suporteHexagono = document.createElement("div");
-                suporteHexagono.innerHTML = "<svg></svg>";
-                const svg = suporteHexagono.firstElementChild;
-                svg.setAttribute("class", "hexagrama-afinidade");
-                svg.setAttribute("role", "img");
-                svg.setAttribute("aria-label", nomesAfinidades.join(", "));
-                drawNenArtwork(svg, "nen-afinidade-sem-fundo");
-                svg.setAttribute("viewBox", "-265 38 1810 1260");
-                for (var indice = 0; indice < pontosHexagono.length; indice++) {
-                    var x = pontosHexagono[indice][0];
-                    var y = pontosHexagono[indice][1];
-                    const horizontal = (x < 640 ? -1 : x > 640 ? 1 : 0) * 122;
-                    const posicaoTexto = y + [-129, -12, -12, 152, -12, -12][indice];
-                    const alinhamento = horizontal === 0 ? "middle" : horizontal > 0 ? "start" : "end";
-                    const destaque = indice === dominant
-                        ? `<circle cx="${x}" cy="${y}" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>`
-                        : "";
-                    svg.innerHTML += `<g aria-hidden="true">${destaque}
-                        <text x="${x + horizontal}" y="${posicaoTexto}" text-anchor="${alinhamento}">${tiposNen[indice]}
-                            <tspan class="porcentagem-afinidade" x="${x + horizontal}" dy="47">${afinidades[indice]}%</tspan>
-                        </text>
-                    </g>`;
-                }
-                return svg;
-            }
-
-
-            let resultadoNen = estado.resultado;
-
-
-            if (hunter && get("selecao_quizzes")) {
-                const perguntas = [
+const perguntas = [
                     "Diante de um desafio, o que você prefere?", "O que mais valoriza em uma equipe?",
                     "Como se prepara para algo inesperado?", "O que mais orienta suas decisões?",
                     "Como gosta de aprender?", "O que faz quando um plano falha?",
@@ -441,247 +261,285 @@
                 const alternativas = ["Persistir e agir de frente", "Mudar de abordagem e improvisar",
                     "Preparar uma ferramenta para o problema", "Buscar um caminho fora do comum",
                     "Organizar as pessoas e o ambiente", "Agir rapidamente e manter distância"];
-                var quizzesConhecimento = [];
-                for (var i = 0; i < quizzesPersonagens.length; i++) {
-                    var quizPersonagem = quizzesPersonagens[i];
-                    quizzesConhecimento.push({ id: quizPersonagem.id, name: quizPersonagem.name, questions: quizPersonagem.questions });
-                }
-                const listaQuizzes = get("selecao_quizzes");
-                const areaQuiz = get("area_perguntas_quiz");
-                const botaoIniciarNen = get("iniciar-nen");
-                const cartaoNen = botaoIniciarNen.closest(".quiz-obrigatorio");
-                const tempoEspera = 3 * 60 * 60 * 1000;
-
-
-                const listaDisponiveis = get("lista-quizzes-disponiveis");
-                for (const quiz of quizzesConhecimento) {
-                    const item = document.createElement("li");
-                    item.className = "cartao-etapa";
-                    item.innerHTML = `<article class="conteudo-etapa conteudo-quiz-personagem">
-                        <div>
-                            <span class="rotulo">Iniciante</span>
-                            <h2>${quiz.name}</h2>
-                            <p>${quiz.questions.length} perguntas · 4 min</p>
-                            <button type="button" aria-label="Começar quiz de ${quiz.name}" aria-describedby="espera-${quiz.id}" disabled>Começar</button>
-                            <p id="espera-${quiz.id}">Conclua o teste de Nen para liberar.</p>
-                        </div>
-                        <img class="imagem-quiz-personagem" src="${pastaSite + "assets/" + quiz.id + ".webp"}" alt="">
-                    </article>`;
-                    quiz.button = item.querySelector("button");
-                    quiz.wait = item.querySelector("p[id]");
-                    quiz.button.onclick = function () {
-                        runQuiz(quiz);
-                    };
-                    listaDisponiveis.appendChild(item);
-                    listaDisponiveis.appendChild(get("quiz-arcos"));
-                }
-
-                function explainWait(message, tentativa2) {
-                    var tempoRestante = (tentativa2 ? tentativa2.completedAt : 0) + tempoEspera - Date.now();
-                    if (tempoRestante < 0) tempoRestante = 0;
-                    const minutos = Math.ceil(tempoRestante / 60000);
-                    const horas = Math.floor(minutos / 60);
-                    var partes2 = [];
-                    if (horas > 0) partes2.push(horas + " h");
-                    if (minutos % 60 > 0) partes2.push(minutos % 60 + " min");
-                    const descricao = tempoRestante ? "Disponível em " + partes2.join(" ") + "." : "";
-                    if (message.textContent !== descricao) message.textContent = descricao;
-                    message.hidden = !tempoRestante;
-                    return Boolean(tempoRestante);
-                }
-
-                function updateQuizList() {
-                    if (resultadoNen) cartaoNen.remove();
-                    for (const quiz of quizzesConhecimento) {
-                        quiz.button.disabled = !resultadoNen || explainWait(quiz.wait, estado.tentativas[quiz.id]);
-                    }
-                }
-                updateQuizList();
-                setInterval(function () {
-                    if (!listaQuizzes.hidden) updateQuizList();
-                }, 1000);
-
-                function runQuiz(quiz) {
-                    const quizConhecimento = Boolean(quiz);
-                    updateQuizList();
-                    if ((quiz ? quiz.button : botaoIniciarNen).disabled) return;
-                    const total = quiz ? quiz.questions.length : perguntas.length;
-                    var pontuacoes = [0, 0, 0, 0, 0, 0];
-                    const horaLimite = Date.now() + 4 * 60 * 1000;
-                    const cronometro = document.createElement("span");
-                    cronometro.className = "tempo-quiz";
-                    let indice = 0;
-                    let acertos = 0;
-                    const respostas = [];
-                    let intervalo;
-                    let finalizado = false;
-                    listaQuizzes.hidden = true;
-                    areaQuiz.hidden = false;
-
-                    function finish() {
-                        if (finalizado) return;
-                        finalizado = true;
-                        clearInterval(intervalo);
-                        areaQuiz.innerHTML = "";
-                        areaQuiz.appendChild(card("Salvando resultado", "Aguarde a confirmação."));
-                        if (quizConhecimento) {
-                            var resumo = indice < total ? "O tempo acabou. Questões sem resposta contam como erro." : "Você respondeu a todas as perguntas.";
-                        var tentativa = { correct: acertos, total, completedAt: Date.now() };
-                        var operacao = apiHunter("quizzes/" + quiz.id + "/tentativas", "POST", { respostas });
-                        return operacao.then(function (salvo) {
-                            estado.tentativas[quiz.id] = salvo;
-                            acertos = salvo.correct;
-                            resumo += " Você pode repetir este quiz em 3 horas.";
-                        }).catch(function (erro) {
-                            if (erro.completedAt) estado.tentativas[quiz.id] = { completedAt: erro.completedAt };
-                            resumo += " " + erro.message;
-                        }).then(function () {
-                            const faixasPontuacao = [
-                                [0, "Leorio", "leorio.webp"],
-                                [4, "Gon", "gon.webp"],
-                                [7, "Killua", "killua.webp"],
-                                [9, "Netero", "netero.svg"],
-                                [12, "Meruem", "meruem.svg"]
-                            ];
-                            var faixa = faixasPontuacao[0];
-                            for (var i = 1; i < faixasPontuacao.length; i++) {
-                                if (acertos * 12 >= faixasPontuacao[i][0] * total) faixa = faixasPontuacao[i];
-                            }
-                            var personagem = faixa[1];
-                            var imagem = faixa[2];
-                            const cartaoResultado = card("Você acertou " + acertos + " de " + total + " questões", resumo);
-                            const recompensa = document.createElement("figure");
-                            recompensa.className = "personagem-recompensa";
-                            const retrato = document.createElement("img");
-                            retrato.src = pastaSite + "assets/" + imagem;
-                            retrato.alt = personagem;
-                            const legenda = document.createElement("figcaption");
-                            legenda.textContent = "Personagem da sua faixa de pontuação: " + personagem;
-                            recompensa.appendChild(retrato);
-                            recompensa.appendChild(legenda);
-                            cartaoResultado.appendChild(recompensa);
-                            areaQuiz.innerHTML = "";
-                            areaQuiz.appendChild(cartaoResultado);
-                            mostrarVoltar();
-                        });
-                    } else {
-                            const anterior = resultadoNen;
-                        var tipo = 0;
-                        for (var i = 1; i < pontuacoes.length; i++) {
-                            if (pontuacoes[i] > pontuacoes[tipo]) tipo = i;
-                        }
-                        if (anterior) tipo = anterior.type;
-                        var operacaoNen = apiHunter("nen", "POST", { scores: pontuacoes });
-                        return operacaoNen.then(function (resultado) {
-                            resultadoNen = resultado;
-                            updateQuizList();
-                            areaQuiz.innerHTML = "";
-                            areaQuiz.appendChild(card("Seu Nen: " + tiposNen[resultado.type], "Afinidade principal de 100%. Seu tipo de Nen é definitivo. Os quizzes de personagens estão liberados."));
-                            areaQuiz.appendChild(affinityHexagon(resultado.type));
-                            const ligacao = navigationLink("dashboard/perfil.html#estatisticas", "Ver estatísticas no perfil");
-                            ligacao.className = "botao";
-                            areaQuiz.appendChild(ligacao);
-                        }).catch(function (erro) {
-                            areaQuiz.innerHTML = "";
-                            areaQuiz.appendChild(card("Resultado não salvo", erro.message));
-                        }).then(mostrarVoltar);
-                    }
-                }
-
-                function mostrarVoltar() {
-                    const botaoVoltar = document.createElement("button");
-                        botaoVoltar.type = "button";
-                        botaoVoltar.textContent = "Voltar aos quizzes";
-                        botaoVoltar.onclick = function () {
-                            areaQuiz.hidden = true;
-                            listaQuizzes.hidden = false;
-                            updateQuizList();
-                            var proximo = botaoIniciarNen;
-                            for (var i = 0; i < quizzesConhecimento.length; i++) {
-                                if (!quizzesConhecimento[i].button.disabled) {
-                                    proximo = quizzesConhecimento[i].button;
-                                    break;
-                                }
-                            }
-                            (proximo.disabled || !proximo.isConnected ? listaQuizzes : proximo).focus();
-                        };
-                        areaQuiz.appendChild(botaoVoltar);
-                        botaoVoltar.focus();
-                    }
-
-                    function updateTimer() {
-                        var segundos = Math.ceil((horaLimite - Date.now()) / 1000);
-                        if (segundos < 0) segundos = 0;
-                        cronometro.textContent = Math.floor(segundos / 60) + ":" + String(segundos % 60).padStart(2, "0");
-                        if (!segundos) finish();
-                    }
-
-                    function showQuestion() {
-                        if (indice === total) {
-                            finish();
-                            return;
-                        }
-                        const pergunta = quizConhecimento ? quiz.questions[indice][0] : perguntas[indice];
-                        const opcoes2 = quizConhecimento ? quiz.questions[indice][1] : alternativas;
-                        const painel = card("Pergunta " + (indice + 1) + " de " + total, pergunta);
-                        if (quiz) {
-                            const cabecalho = document.createElement("div");
-                            cabecalho.className = "cabecalho-quiz-personagem";
-                            const retrato = document.createElement("img");
-                            retrato.src = pastaSite + "assets/" + quiz.id + ".webp";
-                            retrato.alt = "";
-                            cabecalho.appendChild(retrato);
-                            cabecalho.appendChild(document.createTextNode(quiz.name));
-                            cabecalho.appendChild(cronometro);
-                            painel.appendChild(cabecalho);
-                            painel.appendChild(painel.querySelector("h2"));
-                            painel.appendChild(painel.querySelector("p"));
-                        }
-                        areaQuiz.innerHTML = "";
-                        areaQuiz.appendChild(painel);
-                        for (let deslocamento = 0; deslocamento < opcoes2.length; deslocamento++) {
-                            const alternativa = (deslocamento + indice) % opcoes2.length;
-                            const botao = document.createElement("button");
-                            botao.type = "button";
-                            botao.className = "opcao-resposta";
-                            botao.textContent = opcoes2[alternativa];
-                            botao.onclick = function () {
-                                if (finalizado) return;
-                                if (quizConhecimento) {
-                                    if (Date.now() >= horaLimite) {
-                                        finish();
-                                        return;
-                                    }
-                                    respostas.push(alternativa);
-                                    if (alternativa === 0) acertos++;
-                                } else {
-                                    pontuacoes[alternativa]++;
-                                }
-                                indice++;
-                                showQuestion();
-                            };
-                            areaQuiz.appendChild(botao);
-                        }
-                        areaQuiz.querySelector("button").focus();
-                    }
-
-                    showQuestion();
-                    if (quizConhecimento) {
-                        intervalo = setInterval(updateTimer, 250);
-                        updateTimer();
-                    }
-                }
-                botaoIniciarNen.onclick = function () {
-                    runQuiz(null);
-                };
+        function alternarMenu() {
+            if (menu_hunter.style.display == "none") {
+                menu_hunter.style.display = "block";
+                menu_perfil.style.display = "none";
+                botao_menu.setAttribute("aria-expanded", "true");
+                botao_perfil.setAttribute("aria-expanded", "false");
+            } else {
+                menu_hunter.style.display = "none";
+                botao_menu.setAttribute("aria-expanded", "false");
             }
-
-
-
         }
 
-        iniciarPagina().catch(function (erro) {
-            console.error(erro);
+        function alternarPerfil() {
+            if (menu_perfil.style.display == "none") {
+                menu_perfil.style.display = "block";
+                menu_hunter.style.display = "none";
+                botao_perfil.setAttribute("aria-expanded", "true");
+                botao_menu.setAttribute("aria-expanded", "false");
+            } else {
+                menu_perfil.style.display = "none";
+                botao_perfil.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function sair() {
+            fetch("/hunter/sair", { method: "POST" }).then(function (resposta) {
+                if (resposta.ok) {
+                    window.location = "../index.html";
+                } else {
+                    botao_sair.innerHTML = "Tentar sair novamente";
+                }
+            }).catch(function () {
+                botao_sair.innerHTML = "Tentar sair novamente";
+            });
+        }
+
+        function tratarTexto(texto) {
+            texto = texto.replaceAll("&", "&amp;");
+            texto = texto.replaceAll("<", "&lt;");
+            texto = texto.replaceAll(">", "&gt;");
+            return texto;
+        }
+
+
+        let botoesQuiz = [comecar_0, comecar_1, comecar_2, comecar_3];
+        let avisosQuiz = [espera_0, espera_1, espera_2, espera_3];
+        let botoesAlternativas = [alternativa_0, alternativa_1, alternativa_2, alternativa_3, alternativa_4, alternativa_5];
+        let tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
+        let resultadoNen;
+        let tentativas = {};
+        let quizAtual;
+        let indicePergunta;
+        let totalPerguntas;
+        let respostas;
+        let pontuacoes;
+        let acertos;
+        let horaLimite;
+        let cronometro;
+        let finalizado = true;
+
+        function tratarTexto(texto) {
+            texto = texto.replaceAll("&", "&amp;");
+            texto = texto.replaceAll("<", "&lt;");
+            return texto.replaceAll(">", "&gt;");
+        }
+
+        function atualizarLista() {
+            if (resultadoNen) cartao_nen.style.display = "none";
+            for (let i = 0; i < quizzesPersonagens.length; i++) {
+                let tentativa = tentativas[quizzesPersonagens[i].id];
+                botoesQuiz[i].disabled = true;
+                avisosQuiz[i].innerHTML = "Conclua o teste de Nen para liberar.";
+                if (resultadoNen) {
+                    let restante = 0;
+                    if (tentativa) restante = tentativa.completedAt + 3 * 60 * 60 * 1000 - Date.now();
+                    if (restante > 0) {
+                        let minutos = Math.ceil(restante / 60000);
+                        let horas = Math.floor(minutos / 60);
+                        avisosQuiz[i].innerHTML = "Disponível em " + horas + " h " + minutos % 60 + " min.";
+                    } else {
+                        botoesQuiz[i].disabled = false;
+                        avisosQuiz[i].innerHTML = "";
+                    }
+                }
+            }
+        }
+
+        function comecarQuiz(numero) {
+            atualizarLista();
+            if (numero == -1 && resultadoNen) return;
+            if (numero != -1 && botoesQuiz[numero].disabled) return;
+            quizAtual = quizzesPersonagens[numero];
+            indicePergunta = 0;
+            totalPerguntas = perguntas.length;
+            respostas = [];
+            pontuacoes = [0, 0, 0, 0, 0, 0];
+            acertos = 0;
+            finalizado = false;
+            selecao_quizzes.style.display = "none";
+            area_perguntas_quiz.style.display = "";
+            painel_pergunta.style.display = "";
+            painel_resultado.style.display = "none";
+            cabecalho_personagem.style.display = "none";
+            if (quizAtual) {
+                totalPerguntas = quizAtual.questions.length;
+                cabecalho_personagem.style.display = "";
+                nome_quiz.innerHTML = quizAtual.name;
+                retrato_quiz.src = "../assets/" + quizAtual.id + ".webp";
+                horaLimite = Date.now() + 4 * 60 * 1000;
+                cronometro = setInterval(atualizarTempo, 250);
+                atualizarTempo();
+            }
+            mostrarPergunta();
+        }
+
+        function atualizarTempo() {
+            let segundos = Math.ceil((horaLimite - Date.now()) / 1000);
+            if (segundos <= 0) {
+                finalizarQuiz();
+                return;
+            }
+            let segundosRelogio = segundos % 60;
+            if (segundosRelogio < 10) segundosRelogio = "0" + segundosRelogio;
+            tempo_quiz.innerHTML = Math.floor(segundos / 60) + ":" + segundosRelogio;
+        }
+
+        function mostrarPergunta() {
+            let pergunta = perguntas[indicePergunta];
+            let opcoes = alternativas;
+            if (quizAtual) {
+                pergunta = quizAtual.questions[indicePergunta][0];
+                opcoes = quizAtual.questions[indicePergunta][1];
+            }
+            titulo_pergunta.innerHTML = "Pergunta " + (indicePergunta + 1) + " de " + totalPerguntas;
+            texto_pergunta.innerHTML = pergunta;
+            for (let i = 0; i < botoesAlternativas.length; i++) {
+                if (i < opcoes.length) {
+                    botoesAlternativas[i].innerHTML = opcoes[(i + indicePergunta) % opcoes.length];
+                    botoesAlternativas[i].style.display = "";
+                } else {
+                    botoesAlternativas[i].style.display = "none";
+                }
+            }
+        }
+
+        function responder(posicao) {
+            if (finalizado) return;
+            if (quizAtual) {
+                if (Date.now() >= horaLimite) {
+                    finalizarQuiz();
+                    return;
+                }
+                let resposta = (posicao + indicePergunta) % quizAtual.questions[indicePergunta][1].length;
+                respostas.push(resposta);
+                if (resposta == 0) acertos++;
+            } else {
+                pontuacoes[(posicao + indicePergunta) % alternativas.length]++;
+            }
+            indicePergunta++;
+            if (indicePergunta == totalPerguntas) {
+                finalizarQuiz();
+            } else {
+                mostrarPergunta();
+            }
+        }
+
+        function mostrarRecompensa() {
+            let faixas = [[0,"Leorio","leorio.webp"], [4,"Gon","gon.webp"], [7,"Killua","killua.webp"], [9,"Netero","netero.svg"], [12,"Meruem","meruem.svg"]];
+            let faixa = faixas[0];
+            for (let i = 1; i < faixas.length; i++) {
+                if (acertos * 12 >= faixas[i][0] * totalPerguntas) faixa = faixas[i];
+            }
+            titulo_resultado.innerHTML = "Você acertou " + acertos + " de " + totalPerguntas + " questões";
+            imagem_recompensa.src = "../assets/" + faixa[2];
+            imagem_recompensa.alt = faixa[1];
+            legenda_recompensa.innerHTML = "Personagem da sua faixa de pontuação: " + faixa[1];
+            recompensa_quiz.style.display = "";
+            botao_voltar.style.display = "";
+        }
+
+        function mostrarAfinidade() {
+            let posicoes = [[640,228,640,99,"middle"],[997,434,1119,422,"start"],[997,846,1119,834,"start"],[640,1052,640,1204,"middle"],[283,846,161,834,"end"],[283,434,161,422,"end"]];
+            let desenho = "";
+            for (let i = 0; i < tiposNen.length; i++) {
+                let posicao = posicoes[i];
+                let distancia = Math.abs(i - resultadoNen.type);
+                if (distancia > 3) distancia = 6 - distancia;
+                if (i == resultadoNen.type) desenho += '<circle cx="' + posicao[0] + '" cy="' + posicao[1] + '" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>';
+                desenho += '<text x="' + posicao[2] + '" y="' + posicao[3] + '" text-anchor="' + posicao[4] + '">' + tiposNen[i] +
+                    '<tspan class="porcentagem-afinidade" x="' + posicao[2] + '" dy="47">' + (100 - 20 * distancia) + '%</tspan></text>';
+            }
+            document.getElementById("rotulos_afinidade").innerHTML = desenho;
+            afinidade_quiz.style.display = "";
+        }
+
+        function finalizarQuiz() {
+            if (finalizado) return;
+            finalizado = true;
+            clearInterval(cronometro);
+            painel_pergunta.style.display = "none";
+            for (let i = 0; i < botoesAlternativas.length; i++) botoesAlternativas[i].style.display = "none";
+            painel_resultado.style.display = "";
+            recompensa_quiz.style.display = "none";
+            afinidade_quiz.style.display = "none";
+            botao_voltar.style.display = "none";
+            titulo_resultado.innerHTML = "Salvando resultado";
+            mensagem_resultado.innerHTML = "Aguarde a confirmação.";
+
+            let caminho = "/hunter/nen";
+            let dados = { scores: pontuacoes };
+            if (quizAtual) {
+                caminho = "/hunter/quizzes/" + quizAtual.id + "/tentativas";
+                dados = { respostas: respostas };
+            }
+            fetch(caminho, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dados)
+            }).then(function (resposta) {
+                if (resposta.status == 401) {
+                    window.location = "../login.html";
+                    return;
+                }
+                return resposta.json().then(function (resultado) {
+                    if (!resposta.ok) {
+                        if (quizAtual && resultado.completedAt) tentativas[quizAtual.id] = { completedAt: resultado.completedAt };
+                        throw resultado.mensagem || "Não foi possível salvar o resultado.";
+                    }
+                    if (quizAtual) {
+                        tentativas[quizAtual.id] = resultado;
+                        acertos = resultado.correct;
+                        mostrarRecompensa();
+                        mensagem_resultado.innerHTML = "Você respondeu a todas as perguntas. Pode repetir este quiz em 3 horas.";
+                        if (indicePergunta < totalPerguntas) mensagem_resultado.innerHTML = "O tempo acabou. Questões sem resposta contam como erro. Pode repetir este quiz em 3 horas.";
+                    } else {
+                        resultadoNen = resultado;
+                        atualizarLista();
+                        titulo_resultado.innerHTML = "Seu Nen: " + tiposNen[resultadoNen.type];
+                        mensagem_resultado.innerHTML = "Afinidade principal de 100%. Seu tipo de Nen é definitivo. Os quizzes de personagens estão liberados.";
+                        mostrarAfinidade();
+                        botao_voltar.style.display = "";
+                    }
+                });
+            }).catch(function (erro) {
+                titulo_resultado.innerHTML = "Resultado não salvo";
+                mensagem_resultado.innerHTML = "Não foi possível salvar o resultado. Tente novamente.";
+                if (typeof erro == "string") mensagem_resultado.innerHTML = tratarTexto(erro);
+                if (quizAtual) mostrarRecompensa();
+                botao_voltar.style.display = "";
+            });
+        }
+
+        function voltarAosQuizzes() {
+            area_perguntas_quiz.style.display = "none";
+            selecao_quizzes.style.display = "";
+            atualizarLista();
+        }
+
+        fetch("/hunter/estado?pagina=quiz").then(function (resposta) {
+            if (resposta.status == 401) {
+                window.location = "../login.html";
+            } else if (resposta.ok) {
+                return resposta.json().then(function (estado) {
+                    nome_hunter.innerHTML = tratarTexto(estado.hunter.name);
+                    botao_perfil.innerHTML = tratarTexto(estado.hunter.name[0].toUpperCase());
+                    resultadoNen = estado.resultado;
+                    tentativas = estado.tentativas;
+                    atualizarLista();
+                    nav.style.display = "";
+                    conteudo_quiz.style.display = "";
+                    setInterval(function () {
+                        if (selecao_quizzes.style.display != "none") atualizarLista();
+                    }, 1000);
+                });
+            } else {
+                aviso_area_hunter.innerHTML = "Não foi possível carregar os quizzes.";
+            }
+        }).catch(function () {
+            aviso_area_hunter.innerHTML = "Não foi possível carregar os quizzes. Confira se o servidor está ligado.";
         });
     </script>
   </body>
