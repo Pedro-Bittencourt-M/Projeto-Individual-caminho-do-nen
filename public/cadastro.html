@@ -226,18 +226,23 @@
             })
         })
             .then(function (resposta) {
-                if (resposta.ok) {
-                    window.location = "dashboard/quiz.html";
-                } else if (resposta.status == 409) {
-                    mensagem_cadastro.innerHTML = "Já existe uma conta com esse e-mail.";
+                var tipo = resposta.headers.get("Content-Type") || "";
+                if (!tipo.includes("application/json")) {
+                    mensagem_cadastro.textContent = "A API de cadastro não respondeu. Abra o site pelo endereço mostrado no terminal do Node.";
                     botao_cadastrar.disabled = false;
-                } else {
-                    mensagem_cadastro.innerHTML = "Não foi possível cadastrar.";
-                    botao_cadastrar.disabled = false;
+                    return;
                 }
+                return resposta.json().then(function (dados) {
+                    if (resposta.status === 201) {
+                        window.location = "dashboard/quiz.html";
+                        return;
+                    }
+                    mensagem_cadastro.textContent = dados.mensagem || "Não foi possível cadastrar.";
+                    botao_cadastrar.disabled = false;
+                });
             })
             .catch(function () {
-                mensagem_cadastro.innerHTML = "Não foi possível cadastrar. Confira se o servidor está ligado.";
+                mensagem_cadastro.textContent = "Não foi possível comunicar com a API de cadastro. Confira se o servidor Node está ligado.";
                 botao_cadastrar.disabled = false;
             });
 

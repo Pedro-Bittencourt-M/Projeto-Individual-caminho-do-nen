@@ -680,33 +680,7 @@ button.mais-informacoes {
   }
 }
 
-/* DIVINAÇÃO E MURAL */
-
-.quadro-divinacao {
-  text-align: center;
-  padding: 44px 10%;
-}
-
-.quadro-divinacao small {
-  display: block;
-  letter-spacing: .16em;
-  color: #ffd23f;
-  font: 700 12px var(--fonte-site);
-  text-transform: uppercase;
-}
-
-.quadro-divinacao h3 {
-  color: #fff;
-  font: 700 26px/1.2 var(--fonte-site);
-  text-transform: none;
-  margin: .3em 0;
-}
-
-.quadro-divinacao p {
-  margin: 0;
-  font: 600 15px/1.7 var(--fonte-site);
-  text-transform: none;
-}
+/* MURAL */
 
 .entrada-mural {
   display: flex;
