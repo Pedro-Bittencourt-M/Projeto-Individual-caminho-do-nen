@@ -251,6 +251,7 @@
                     </div>`;
 
                 navegacao.appendChild(navegacao.querySelector("b"));
+                navegacao.appendChild(navegacao.querySelector(".controle-perfil"));
                 const menu = navegacao.querySelector("#hunter-menu");
                 const perfil = navegacao.querySelector("#hunter-profile");
                 const botaoPerfil = navegacao.querySelector(".botao-perfil");
@@ -633,7 +634,7 @@
                             cabecalho.appendChild(document.createTextNode(quiz.name));
                             cabecalho.appendChild(cronometro);
                             painel.appendChild(cabecalho);
-                            painel.appendChild(painel.querySelector("h3"));
+                            painel.appendChild(painel.querySelector("h2"));
                             painel.appendChild(painel.querySelector("p"));
                         }
                         areaQuiz.innerHTML = "";

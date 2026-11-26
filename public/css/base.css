@@ -505,10 +505,11 @@ nav #tema {
 }
 
 .menu-perfil {
+  width: min(240px, calc(100vw - 32px));
+  overflow-wrap: anywhere;
   position: absolute;
   right: 0;
   top: calc(100% + 8px);
-  min-width: 210px;
   background: var(--card);
   color: var(--fg);
   border: 2px solid #000;
