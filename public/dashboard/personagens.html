@@ -10,19 +10,237 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/personagens.css">
+    <style>
+        #nome_hunter {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: bold;
+        }
+
+        .fechado {
+            display: none;
+        }
+    </style>
 </head>
 
 <body data-v="personagens">
     <!-- MENU DE NAVEGAÇÃO -->
-    <nav id="nav"></nav>
+    <nav id="nav" class="navegacao-hunter fechado">
+        <div class="controle-menu-hunter">
+            <button id="botao_menu" type="button" class="botao-menu" aria-label="Menu Hunter" aria-controls="menu_hunter" aria-expanded="false" onclick="alternarMenu()">
+                <i></i><i></i><i></i>
+            </button>
+            <ul id="menu_hunter" class="lista-menu-hunter fechado">
+                <li><a href="personagens.html" class="ativo" aria-current="page">Personagens</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="quiz.html">Quizzes</a></li>
+                <li><a href="voto.html">Voto e Restrição</a></li>
+                <li><a href="bestiario.html">Bestiário</a></li>
+            </ul>
+        </div>
+        <b><img src="../assets/logo.png" alt="">Caminho do Nen</b>
+        <div class="controle-perfil">
+            <button id="botao_perfil" type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="menu_perfil" aria-expanded="false" onclick="alternarPerfil()"></button>
+            <div id="menu_perfil" class="menu-perfil fechado">
+                <div class="cabecalho-menu-perfil"><input id="nome_hunter" type="text" aria-label="Nome do Hunter" readonly></div>
+                <a href="perfil.html">Perfil</a>
+                <button type="button" id="botao_sair" onclick="sair()">Sair</button>
+            </div>
+        </div>
+    </nav>
     <!-- CONTEÚDO DA PÁGINA -->
-    <div id="aviso_area_hunter"></div>
-    <main hidden>
+    <p id="aviso_area_hunter" role="status"></p>
+    <main id="conteudo_personagens" class="fechado">
         <section id="personagens">
             <h1>Personagens principais do universo</h1>
             <p class="texto-secundario">Passe o cursor (ou toque) sobre um quadro para conhecer o personagem.</p>
-            <!-- LISTA DE PERSONAGENS PREENCHIDA PELO JAVASCRIPT -->
-            <div class="grade-personagens" id="lista_personagens"></div>
+            <div class="grade-personagens" id="lista_personagens">
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/gon.webp" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Gon Freecss</h3>
+                            <p>Sai da Ilha da Baleia para se tornar Hunter e encontrar seu pai.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/killua.webp" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Killua Zoldyck</h3>
+                            <p>Deixa para trás a vida de assassino e segue sua própria jornada ao lado de Gon.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/kurapika.webp" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Kurapika</h3>
+                            <p>Busca recuperar os olhos escarlates do clã Kurta.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/leorio.webp" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Leorio Paradinight</h3>
+                            <p>Quer se tornar médico e usa o Exame Hunter como caminho para realizar esse objetivo.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/shizuku.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Shizuku Murasaki</h3>
+                            <p>Integrante da Trupe Fantasma que materializa um aspirador para recolher objetos.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/chrollo.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Chrollo Lucilfer</h3>
+                            <p>Líder da Trupe Fantasma. Seu livro de Nen permite usar habilidades que ele rouba de outras pessoas.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/hisoka.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Hisoka Morow</h3>
+                            <p>Procura adversários fortes e dá à própria aura propriedades elásticas e adesivas.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/meruem.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Meruem</h3>
+                            <p>Rei das Formigas Quimera. Encontra em Komugi uma adversária à altura no jogo de Gungi.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/netero.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Isaac Netero</h3>
+                            <p>Presidente da Associação Hunter e mestre de artes marciais com décadas de treinamento em Nen.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/zeno.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Zeno Zoldyck</h3>
+                            <p>Avô de Killua e veterano da família Zoldyck, conhecido por dar forma de dragão à sua aura.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/illumi.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Illumi Zoldyck</h3>
+                            <p>Irmão mais velho de Killua. Usa agulhas para manipular pessoas e alterar a própria aparência.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/feitan.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Feitan Portor</h3>
+                            <p>Integrante da Trupe Fantasma que luta com espada e pode converter a dor que sofre em calor intenso.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/ging.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Ging Freecss</h3>
+                            <p>Pai de Gon e Hunter arqueólogo. A busca por ele leva Gon a deixar a Ilha da Baleia.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/neferpitou.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Neferpitou</h3>
+                            <p>Integrante da Guarda Real de Meruem. Pode usar Nen para realizar cirurgias e controlar corpos.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/youpi.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Menthuthuyoupi</h3>
+                            <p>Conhecido como Youpi, integra a Guarda Real de Meruem e muda a forma do próprio corpo durante as lutas.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/shaiapouf.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Shaiapouf</h3>
+                            <p>Integrante da Guarda Real de Meruem que espalha escamas de suas asas e pode dividir o corpo em cópias menores.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/mito.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Mito Freecss</h3>
+                            <p>Criou Gon na Ilha da Baleia e o acompanhou até a partida para o Exame Hunter.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/kite.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Kite</h3>
+                            <p>Discípulo de Ging que investiga as Formigas Quimera. Sua habilidade Crazy Slots sorteia a arma que ele pode usar.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/pariston.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Pariston Hill</h3>
+                            <p>Vice-presidente da Associação Hunter na época de Netero e figura central na eleição para escolher seu sucessor.</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-personagem" tabindex="0">
+                    <div class="conteudo-personagem">
+                        <img src="../assets/silva.svg" loading="lazy" alt="">
+                        <div class="descricao-personagem">
+                            <h3>Silva Zoldyck</h3>
+                            <p>Pai de Killua e chefe da família Zoldyck. Atua como assassino ao lado de seu pai, Zeno.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
             <p class="texto-secundario nota" style="text-align:center">As frases em destaque resumem a ideia de cada personagem; não
                 são citações literais.</p>
         </section>
@@ -32,257 +250,64 @@
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script>
-        var pastaSite = "../";
-
-        function pageUrl(caminho2) {
-            var partes = caminho2.split("#");
-            var url = pastaSite + partes[0];
-            if (partes.length > 1) url += "#" + partes[1];
-            return url;
-        }
-        const pagina = document.body.dataset.v;
-        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
-
-
-        function apiHunter(caminho, metodo, dados) {
-            var opcoes = { method: metodo || "GET" };
-            if (dados !== undefined) {
-                opcoes.headers = { "Content-Type": "application/json" };
-                opcoes.body = JSON.stringify(dados);
+        function alternarMenu() {
+            if (menu_hunter.className == "lista-menu-hunter fechado") {
+                menu_hunter.className = "lista-menu-hunter";
+                menu_perfil.className = "menu-perfil fechado";
+                botao_menu.setAttribute("aria-expanded", "true");
+                botao_perfil.setAttribute("aria-expanded", "false");
+            } else {
+                menu_hunter.className = "lista-menu-hunter fechado";
+                botao_menu.setAttribute("aria-expanded", "false");
             }
-            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
-                return resposta.json().catch(function () {
-                    return null;
-                }).then(function (conteudo) {
-                    if (!resposta.ok || !conteudo) {
-                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
-                        erro.status = resposta.status;
-                        if (conteudo) erro.completedAt = conteudo.completedAt;
-                        throw erro;
-                    }
-                    return conteudo;
-                });
-            }, function () {
-                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
-            });
-        }
-        function iniciarPagina() {
-            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
-            if (location.protocol !== "http:" && location.protocol !== "https:") {
-                return Promise.resolve().then(function () {
-                    montarPagina(estadoInicial);
-                });
-            }
-            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
-                montarPagina(estado);
-            }, function (erro) {
-                if (erro.status === 401) erro = null;
-                montarPagina(estadoInicial, erro);
-            });
         }
 
-        function montarPagina(estado, erroAoConsultar) {
-            const hunter = estado.hunter;
-            if (paginasHunter.includes(pagina)) {
-                if (hunter) {
-                    document.querySelector("main").hidden = false;
-                } else if (erroAoConsultar) {
-                    const aviso = document.createElement("p");
-                    aviso.className = "cartao";
-                    aviso.textContent = erroAoConsultar.message;
-                    document.getElementById("aviso_area_hunter").appendChild(aviso);
+        function alternarPerfil() {
+            if (menu_perfil.className == "menu-perfil fechado") {
+                menu_perfil.className = "menu-perfil";
+                menu_hunter.className = "lista-menu-hunter fechado";
+                botao_perfil.setAttribute("aria-expanded", "true");
+                botao_menu.setAttribute("aria-expanded", "false");
+            } else {
+                menu_perfil.className = "menu-perfil fechado";
+                botao_perfil.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function sair() {
+            fetch("/hunter/sair", { method: "POST" }).then(function (resposta) {
+                if (resposta.ok) {
+                    window.location = "../index.html";
                 } else {
-                    location.replace(pastaSite + "login.html");
-                    return;
+                    botao_sair.innerHTML = "Tentar sair novamente";
                 }
-            }
-            window.addEventListener("pageshow", function (evento) {
-                if (evento.persisted) window.location = location.href;
+            }).catch(function () {
+                botao_sair.innerHTML = "Tentar sair novamente";
             });
+        }
 
-            const navegacao = document.querySelector("#nav");
-            const ligacoes = [
-                ["index.html", "Início"],
-                ["sobre.html", "Sobre mim"],
-                ["dashboard/personagens.html", "Personagens"],
-                ["dashboard/perfil.html", "Perfil"],
-                ["dashboard/dashboard.html", "Dashboard"],
-                ["dashboard/quiz.html", "Quizzes"],
-                ["dashboard/voto.html", "Voto e Restrição"],
-                ["dashboard/bestiario.html", "Bestiário"],
-                ["cadastro.html", "Cadastro"],
-                ["login.html", "Entrar"]
-            ];
-            navegacao.setAttribute("aria-label", "Navegação principal");
-            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
-            function navigationLink(url, rotulo) {
-                const ligacao = document.createElement("a");
-                ligacao.href = pageUrl(url);
-                ligacao.textContent = rotulo;
-                if (url === "login.html") ligacao.classList.add("botao-destaque");
-                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
-                    ligacao.classList.add("ativo");
-                    ligacao.setAttribute("aria-current", "page");
-                }
-                return ligacao;
-            }
-
-            if (hunter) {
-                navegacao.classList.add("navegacao-hunter");
-                navegacao.innerHTML += `
-                    <div class="controle-menu-hunter">
-                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
-                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
-                        </button>
-                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
-                    </div>
-                    <div class="controle-perfil">
-                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
-                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
-                    </div>`;
-
-                navegacao.appendChild(navegacao.querySelector("b"));
-                navegacao.appendChild(navegacao.querySelector(".controle-perfil"));
-                const menu = navegacao.querySelector("#hunter-menu");
-                const perfil = navegacao.querySelector("#hunter-profile");
-                const botaoPerfil = navegacao.querySelector(".botao-perfil");
-                botaoPerfil.textContent = hunter.name[0].toUpperCase();
-                perfil.querySelector("b").textContent = hunter.name;
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) continue;
-                    const ligacao = navigationLink(url, rotulo);
-                    if (rotulo === "Perfil") {
-                        perfil.appendChild(ligacao);
-                    } else {
-                        const item = document.createElement("li");
-                        item.appendChild(ligacao);
-                        menu.appendChild(item);
-                    }
-                }
-
-                const botaoSair = document.createElement("button");
-                botaoSair.type = "button";
-                botaoSair.textContent = "Sair";
-                botaoSair.addEventListener("click", function () {
-                    var operacao = apiHunter("sair", "POST");
-                    operacao.then(function () {
-                        window.location = pastaSite + "index.html";
-                    }).catch(function (erro) {
-                        botaoSair.title = erro.message;
-                        botaoSair.textContent = "Tentar sair novamente";
-                    });
-                });
-                perfil.appendChild(botaoSair);
-
-                function bindDisclosure(botao, painel) {
-                    function close() {
-                        painel.hidden = true;
-                        botao.setAttribute("aria-expanded", "false");
-                    }
-                    botao.addEventListener("click", function () {
-                        if (!painel.hidden) {
-                            close();
-                            return;
+        fetch("/hunter/estado?pagina=personagens").then(function (resposta) {
+            if (resposta.status == 401) {
+                window.location = "../login.html";
+            } else if (resposta.ok) {
+                return resposta.json().then(function (estado) {
+                    nome_hunter.value = estado.hunter.name;
+                    let inicial = estado.hunter.name[0];
+                    botao_perfil.innerHTML = "?";
+                    if (inicial) {
+                        inicial = inicial.toUpperCase();
+                        if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(inicial)) {
+                            botao_perfil.innerHTML = inicial;
                         }
-                        painel.hidden = false;
-                        botao.setAttribute("aria-expanded", "true");
-                    });
-                    document.addEventListener("click", function (evento) {
-                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
-                    });
-                    document.addEventListener("keydown", function (evento) {
-                        if (evento.key === "Escape" && !painel.hidden) {
-                            close();
-                            botao.focus();
-                        }
-                    });
-                }
-
-                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
-                bindDisclosure(botaoPerfil, perfil);
-                perfil.addEventListener("click", function (evento) {
-                    if (evento.target.closest("a")) {
-                        perfil.hidden = true;
-                        botaoPerfil.setAttribute("aria-expanded", "false");
                     }
+                    nav.className = "navegacao-hunter";
+                    conteudo_personagens.className = "";
                 });
             } else {
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
-                }
+                aviso_area_hunter.innerHTML = "Não foi possível carregar os personagens.";
             }
-
-
-
-            function get(id) {
-                return document.getElementById(id);
-            }
-            function value(id) {
-                return get(id).value.trim();
-            }
-
-            const personagens = [
-                ["gon", "Gon Freecss", "Sai da Ilha da Baleia para se tornar Hunter e encontrar seu pai."],
-                ["killua", "Killua Zoldyck", "Deixa para trás a vida de assassino e segue sua própria jornada ao lado de Gon."],
-                ["kurapika", "Kurapika", "Busca recuperar os olhos escarlates do clã Kurta."],
-                ["leorio", "Leorio Paradinight", "Quer se tornar médico e usa o Exame Hunter como caminho para realizar esse objetivo."]
-            ];
-
-            const listaPersonagens = document.querySelector("#lista_personagens");
-            if (listaPersonagens && hunter) {
-                const personagensGaleria = [
-                    
-                    ["shizuku", "Shizuku Murasaki", "Integrante da Trupe Fantasma que materializa um aspirador para recolher objetos.", "svg"],
-                    ["chrollo", "Chrollo Lucilfer", "Líder da Trupe Fantasma. Seu livro de Nen permite usar habilidades que ele rouba de outras pessoas.", "svg"],
-                    ["hisoka", "Hisoka Morow", "Procura adversários fortes e dá à própria aura propriedades elásticas e adesivas.", "svg"],
-                    ["meruem", "Meruem", "Rei das Formigas Quimera. Encontra em Komugi uma adversária à altura no jogo de Gungi.", "svg"],
-                    ["netero", "Isaac Netero", "Presidente da Associação Hunter e mestre de artes marciais com décadas de treinamento em Nen.", "svg"],
-                    ["zeno", "Zeno Zoldyck", "Avô de Killua e veterano da família Zoldyck, conhecido por dar forma de dragão à sua aura.", "svg"],
-                    ["illumi", "Illumi Zoldyck", "Irmão mais velho de Killua. Usa agulhas para manipular pessoas e alterar a própria aparência.", "svg"],
-                    ["feitan", "Feitan Portor", "Integrante da Trupe Fantasma que luta com espada e pode converter a dor que sofre em calor intenso.", "svg"],
-                    ["ging", "Ging Freecss", "Pai de Gon e Hunter arqueólogo. A busca por ele leva Gon a deixar a Ilha da Baleia.", "svg"],
-                    ["neferpitou", "Neferpitou", "Integrante da Guarda Real de Meruem. Pode usar Nen para realizar cirurgias e controlar corpos.", "svg"],
-                    ["youpi", "Menthuthuyoupi", "Conhecido como Youpi, integra a Guarda Real de Meruem e muda a forma do próprio corpo durante as lutas.", "svg"],
-                    ["shaiapouf", "Shaiapouf", "Integrante da Guarda Real de Meruem que espalha escamas de suas asas e pode dividir o corpo em cópias menores.", "svg"],
-                    ["mito", "Mito Freecss", "Criou Gon na Ilha da Baleia e o acompanhou até a partida para o Exame Hunter.", "svg"],
-                    ["kite", "Kite", "Discípulo de Ging que investiga as Formigas Quimera. Sua habilidade Crazy Slots sorteia a arma que ele pode usar.", "svg"],
-                    ["pariston", "Pariston Hill", "Vice-presidente da Associação Hunter na época de Netero e figura central na eleição para escolher seu sucessor.", "svg"],
-                    ["silva", "Silva Zoldyck", "Pai de Killua e chefe da família Zoldyck. Atua como assassino ao lado de seu pai, Zeno.", "svg"]
-                ];
-                var todosPersonagens = [];
-                for (var i = 0; i < personagens.length; i++) todosPersonagens.push(personagens[i]);
-                for (var i = 0; i < personagensGaleria.length; i++) todosPersonagens.push(personagensGaleria[i]);
-                for (var i = 0; i < todosPersonagens.length; i++) {
-                    var arquivoImagem = todosPersonagens[i][0];
-                    var nome = todosPersonagens[i][1];
-                    var descricao = todosPersonagens[i][2];
-                    var extensao = todosPersonagens[i][3] || "webp";
-                    listaPersonagens.innerHTML += `<article class="cartao-personagem" tabindex="0"><div class="conteudo-personagem">
-                        <img src="${pastaSite + "assets/" + arquivoImagem + "." + extensao}" loading="lazy" alt=""><div class="descricao-personagem"><h3>${nome}</h3><p>${descricao}</p></div>
-                    </div></article>`;
-                }
-            }
-
-
-            const janela = document.querySelector("#modal");
-            document.querySelectorAll("[data-open]").forEach(function (botao) {
-                botao.addEventListener("click", function () {
-                    const conteudo2 = document.getElementById("t-" + botao.dataset.open);
-                    document.querySelector("#conteudo_janela_informacoes").innerHTML = "";
-                    document.querySelector("#conteudo_janela_informacoes").innerHTML = conteudo2.innerHTML;
-                    janela.showModal();
-                });
-            });
-
-
-        }
-
-        iniciarPagina().catch(function (erro) {
-            console.error(erro);
+        }).catch(function () {
+            aviso_area_hunter.innerHTML = "Não foi possível carregar os personagens. Confira se o servidor está ligado.";
         });
     </script>
 </body>
