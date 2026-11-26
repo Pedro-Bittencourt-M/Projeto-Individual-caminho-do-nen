@@ -29,7 +29,7 @@ roteador.post("/nen", function (requisicao, resposta, proximo) {
     return Promise.resolve(hunterController.salvarNen(requisicao, resposta)).catch(proximo);
 });
 
-roteador.put("/voto", function (requisicao, resposta, proximo) {
+roteador.post("/voto", function (requisicao, resposta, proximo) {
     return Promise.resolve(hunterController.salvarVoto(requisicao, resposta)).catch(proximo);
 });
 

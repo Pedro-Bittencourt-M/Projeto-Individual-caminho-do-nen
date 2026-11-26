@@ -16,10 +16,32 @@
 
 <body data-v="voto">
     <!-- MENU DE NAVEGAÇÃO -->
-    <nav id="nav"></nav>
+    <nav id="nav" class="navegacao-hunter" style="display: none;">
+        <div class="controle-menu-hunter">
+            <button id="botao_menu" type="button" class="botao-menu" aria-label="Menu Hunter" aria-controls="menu_hunter" aria-expanded="false" onclick="alternarMenu()">
+                <i></i><i></i><i></i>
+            </button>
+            <ul id="menu_hunter" class="lista-menu-hunter" style="display: none;">
+                <li><a href="personagens.html">Personagens</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="quiz.html">Quizzes</a></li>
+                <li><a href="voto.html" class="ativo" aria-current="page">Voto e Restrição</a></li>
+                <li><a href="bestiario.html">Bestiário</a></li>
+            </ul>
+        </div>
+        <b><img src="../assets/logo.png" alt="">Caminho do Nen</b>
+        <div class="controle-perfil">
+            <button id="botao_perfil" type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="menu_perfil" aria-expanded="false" onclick="alternarPerfil()"></button>
+            <div id="menu_perfil" class="menu-perfil" style="display: none;">
+                <div class="cabecalho-menu-perfil"><b id="nome_hunter"></b></div>
+                <a href="perfil.html">Perfil</a>
+                <button type="button" id="botao_sair" onclick="sair()">Sair</button>
+            </div>
+        </div>
+    </nav>
     <!-- CONTEÚDO DA PÁGINA -->
-    <div id="aviso_area_hunter"></div>
-    <main hidden>
+    <p id="aviso_area_hunter" role="status"></p>
+    <main id="conteudo_voto" style="display: none;">
         <section id="voto">
             <h1>Voto e Restrição</h1>
             <p class="texto-secundario">
@@ -27,227 +49,8 @@
                 restrição, maior o poder do voto, e a penalidade vale se você
                 quebrá-lo.
             </p>
-            <!-- FORMULÁRIO DE VOTO PREENCHIDO PELO JAVASCRIPT -->
-            <div id="area_voto_restricao"></div>
-        </section>
-    </main>
-    <!-- RODAPÉ -->
-    <footer class="rodape">
-        Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
-        Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
-        pertencem aos seus criadores.
-    </footer>
-    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
-    <script>
-        var pastaSite = "../";
-
-        function pageUrl(caminho2) {
-            var partes = caminho2.split("#");
-            var url = pastaSite + partes[0];
-            if (partes.length > 1) url += "#" + partes[1];
-            return url;
-        }
-        const pagina = document.body.dataset.v;
-        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
-
-
-        function apiHunter(caminho, metodo, dados) {
-            var opcoes = { method: metodo || "GET" };
-            if (dados !== undefined) {
-                opcoes.headers = { "Content-Type": "application/json" };
-                opcoes.body = JSON.stringify(dados);
-            }
-            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
-                return resposta.json().catch(function () {
-                    return null;
-                }).then(function (conteudo) {
-                    if (!resposta.ok || !conteudo) {
-                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
-                        erro.status = resposta.status;
-                        if (conteudo) erro.completedAt = conteudo.completedAt;
-                        throw erro;
-                    }
-                    return conteudo;
-                });
-            }, function () {
-                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
-            });
-        }
-        function iniciarPagina() {
-            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
-            if (location.protocol !== "http:" && location.protocol !== "https:") {
-                return Promise.resolve().then(function () {
-                    montarPagina(estadoInicial);
-                });
-            }
-            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
-                montarPagina(estado);
-            }, function (erro) {
-                if (erro.status === 401) erro = null;
-                montarPagina(estadoInicial, erro);
-            });
-        }
-
-        function montarPagina(estado, erroAoConsultar) {
-            const hunter = estado.hunter;
-            if (paginasHunter.includes(pagina)) {
-                if (hunter) {
-                    document.querySelector("main").hidden = false;
-                } else if (erroAoConsultar) {
-                    const aviso = document.createElement("p");
-                    aviso.className = "cartao";
-                    aviso.textContent = erroAoConsultar.message;
-                    document.getElementById("aviso_area_hunter").appendChild(aviso);
-                } else {
-                    location.replace(pastaSite + "login.html");
-                    return;
-                }
-            }
-            window.addEventListener("pageshow", function (evento) {
-                if (evento.persisted) window.location = location.href;
-            });
-
-            const navegacao = document.querySelector("#nav");
-            const ligacoes = [
-                ["index.html", "Início"],
-                ["sobre.html", "Sobre mim"],
-                ["dashboard/personagens.html", "Personagens"],
-                ["dashboard/perfil.html", "Perfil"],
-                ["dashboard/dashboard.html", "Dashboard"],
-                ["dashboard/quiz.html", "Quizzes"],
-                ["dashboard/voto.html", "Voto e Restrição"],
-                ["dashboard/bestiario.html", "Bestiário"],
-                ["cadastro.html", "Cadastro"],
-                ["login.html", "Entrar"]
-            ];
-            navegacao.setAttribute("aria-label", "Navegação principal");
-            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
-            function navigationLink(url, rotulo) {
-                const ligacao = document.createElement("a");
-                ligacao.href = pageUrl(url);
-                ligacao.textContent = rotulo;
-                if (url === "login.html") ligacao.classList.add("botao-destaque");
-                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
-                    ligacao.classList.add("ativo");
-                    ligacao.setAttribute("aria-current", "page");
-                }
-                return ligacao;
-            }
-
-            if (hunter) {
-                navegacao.classList.add("navegacao-hunter");
-                navegacao.innerHTML += `
-                    <div class="controle-menu-hunter">
-                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
-                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
-                        </button>
-                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
-                    </div>
-                    <div class="controle-perfil">
-                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
-                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
-                    </div>`;
-
-                navegacao.appendChild(navegacao.querySelector("b"));
-                navegacao.appendChild(navegacao.querySelector(".controle-perfil"));
-                const menu = navegacao.querySelector("#hunter-menu");
-                const perfil = navegacao.querySelector("#hunter-profile");
-                const botaoPerfil = navegacao.querySelector(".botao-perfil");
-                botaoPerfil.textContent = hunter.name[0].toUpperCase();
-                perfil.querySelector("b").textContent = hunter.name;
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) continue;
-                    const ligacao = navigationLink(url, rotulo);
-                    if (rotulo === "Perfil") {
-                        perfil.appendChild(ligacao);
-                    } else {
-                        const item = document.createElement("li");
-                        item.appendChild(ligacao);
-                        menu.appendChild(item);
-                    }
-                }
-
-                const botaoSair = document.createElement("button");
-                botaoSair.type = "button";
-                botaoSair.textContent = "Sair";
-                botaoSair.addEventListener("click", function () {
-                    var operacao = apiHunter("sair", "POST");
-                    operacao.then(function () {
-                        window.location = pastaSite + "index.html";
-                    }).catch(function (erro) {
-                        botaoSair.title = erro.message;
-                        botaoSair.textContent = "Tentar sair novamente";
-                    });
-                });
-                perfil.appendChild(botaoSair);
-
-                function bindDisclosure(botao, painel) {
-                    function close() {
-                        painel.hidden = true;
-                        botao.setAttribute("aria-expanded", "false");
-                    }
-                    botao.addEventListener("click", function () {
-                        if (!painel.hidden) {
-                            close();
-                            return;
-                        }
-                        painel.hidden = false;
-                        botao.setAttribute("aria-expanded", "true");
-                    });
-                    document.addEventListener("click", function (evento) {
-                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
-                    });
-                    document.addEventListener("keydown", function (evento) {
-                        if (evento.key === "Escape" && !painel.hidden) {
-                            close();
-                            botao.focus();
-                        }
-                    });
-                }
-
-                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
-                bindDisclosure(botaoPerfil, perfil);
-                perfil.addEventListener("click", function (evento) {
-                    if (evento.target.closest("a")) {
-                        perfil.hidden = true;
-                        botaoPerfil.setAttribute("aria-expanded", "false");
-                    }
-                });
-            } else {
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
-                }
-            }
-
-
-
-            function get(id) {
-                return document.getElementById(id);
-            }
-            function value(id) {
-                return get(id).value.trim();
-            }
-
-            function card(title, descricao) {
-                const artigo = document.createElement("article");
-                artigo.className = "cartao";
-                const titulo = document.createElement("h2");
-                titulo.textContent = title;
-                const detalhes = document.createElement("p");
-                detalhes.textContent = descricao;
-                artigo.appendChild(titulo);
-                artigo.appendChild(detalhes);
-                return artigo;
-            }
-
-
-            if (hunter && get("area_voto_restricao")) {
-                const areaQuiz = get("area_voto_restricao");
-                areaQuiz.innerHTML = `<form class="cartao">
+            <div id="area_voto_restricao">
+                <form class="cartao" onsubmit="return salvarVoto();">
                     <div class="campo">
                         <label for="meta_input">Meta</label>
                         <input id="meta_input" type="text" placeholder="Ex.: treinar Nen todos os dias" required maxlength="150" />
@@ -264,50 +67,146 @@
                         <label for="severidade_input">Severidade da restrição</label>
                         <select id="severidade_input"><option>Leve</option><option>Moderada</option><option>Severa</option></select>
                     </div>
-                    <button>Selar voto</button><p role="status"></p>
-                </form><div id="voto_salvo"></div>`;
-                const campos = { "goal": "meta_input", "restriction": "restricao_input", "penalty": "penalidade_input", "severity": "severidade_input" };
+                    <button id="botao_salvar" type="submit">Selar voto</button>
+                    <p id="mensagem_voto" role="status"></p>
+                </form>
+                <div id="voto_salvo" style="display: none;">
+                    <article class="cartao">
+                        <h2 id="resumo_meta"></h2>
+                        <p id="resumo_restricao"></p>
+                        <p id="resumo_penalidade"></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- RODAPÉ -->
+    <footer class="rodape">
+        Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
+        Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
+        pertencem aos seus criadores.
+    </footer>
+    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
+    <script>
+        let votoAtual = null;
 
-                function updateVow() {
-                    const voto2 = estado.voto;
-                    if (!voto2) return;
-                    const resumo = card(voto2.goal, "Restrição " + voto2.severity.toLowerCase() + " · " + voto2.restriction);
-                    const penalidade = document.createElement("p");
-                    penalidade.textContent = "Penalidade: " + voto2.penalty;
-                    resumo.appendChild(penalidade);
-                    get("voto_salvo").innerHTML = "";
-                    get("voto_salvo").appendChild(resumo);
-                    for (var campo in campos) {
-                        get(campos[campo]).value = voto2[campo];
-                    }
-                }
-                updateVow();
-                areaQuiz.querySelector("form").onsubmit = function (evento) {
-                    evento.preventDefault();
-                    var voto = {};
-                    for (var campo in campos) {
-                        voto[campo] = value(campos[campo]);
-                    }
-                    if (!voto.goal || !voto.restriction || !voto.penalty || !voto.severity) {
-                        areaQuiz.querySelector("[role=status]").textContent = "Preencha todos os campos do voto.";
-                        return;
-                    }
-                    var operacao = apiHunter("voto", "PUT", voto);
-                    operacao.then(function (salvo) {
-                        estado.voto = salvo;
-                        updateVow();
-                        areaQuiz.querySelector("[role=status]").textContent = "Voto salvo.";
-                    }).catch(function (erro) {
-                        areaQuiz.querySelector("[role=status]").textContent = erro.message;
-                    });
-                };
+        function alternarMenu() {
+            if (menu_hunter.style.display == "none") {
+                menu_hunter.style.display = "block";
+                menu_perfil.style.display = "none";
+                botao_menu.setAttribute("aria-expanded", "true");
+                botao_perfil.setAttribute("aria-expanded", "false");
+            } else {
+                menu_hunter.style.display = "none";
+                botao_menu.setAttribute("aria-expanded", "false");
             }
-
-
         }
 
-        iniciarPagina().catch(function (erro) {
-            console.error(erro);
+        function alternarPerfil() {
+            if (menu_perfil.style.display == "none") {
+                menu_perfil.style.display = "block";
+                menu_hunter.style.display = "none";
+                botao_perfil.setAttribute("aria-expanded", "true");
+                botao_menu.setAttribute("aria-expanded", "false");
+            } else {
+                menu_perfil.style.display = "none";
+                botao_perfil.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function sair() {
+            fetch("/hunter/sair", { method: "POST" }).then(function (resposta) {
+                if (resposta.ok) {
+                    window.location = "../index.html";
+                } else {
+                    botao_sair.innerHTML = "Tentar sair novamente";
+                }
+            }).catch(function () {
+                botao_sair.innerHTML = "Tentar sair novamente";
+            });
+        }
+
+        function tratarTexto(texto) {
+            texto = texto.replaceAll("&", "&amp;");
+            texto = texto.replaceAll("<", "&lt;");
+            texto = texto.replaceAll(">", "&gt;");
+            return texto;
+        }
+
+        function mostrarVoto() {
+            if (votoAtual) {
+                meta_input.value = votoAtual.goal;
+                restricao_input.value = votoAtual.restriction;
+                penalidade_input.value = votoAtual.penalty;
+                severidade_input.value = votoAtual.severity;
+                resumo_meta.innerHTML = tratarTexto(votoAtual.goal);
+                resumo_restricao.innerHTML = tratarTexto("Restrição " + votoAtual.severity + " · " + votoAtual.restriction);
+                resumo_penalidade.innerHTML = tratarTexto("Penalidade: " + votoAtual.penalty);
+                voto_salvo.style.display = "";
+            }
+        }
+
+        function salvarVoto() {
+            let meta = meta_input.value;
+            let restricao = restricao_input.value;
+            let penalidade = penalidade_input.value;
+            let severidade = severidade_input.value;
+
+            if (botao_salvar.disabled) return false;
+            if (meta == "" || restricao == "" || penalidade == "" || severidade == "") {
+                mensagem_voto.innerHTML = "Preencha todos os campos do voto.";
+                return false;
+            }
+
+            botao_salvar.disabled = true;
+            mensagem_voto.innerHTML = "";
+            fetch("/hunter/voto", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    goal: meta,
+                    restriction: restricao,
+                    penalty: penalidade,
+                    severity: severidade
+                })
+            }).then(function (resposta) {
+                if (resposta.status == 401) {
+                    window.location = "../login.html";
+                } else if (resposta.ok) {
+                    return resposta.json().then(function (voto) {
+                        votoAtual = voto;
+                        mostrarVoto();
+                        mensagem_voto.innerHTML = "Voto salvo.";
+                        botao_salvar.disabled = false;
+                    });
+                } else {
+                    mensagem_voto.innerHTML = "Não foi possível salvar o voto. Confira os campos.";
+                    botao_salvar.disabled = false;
+                }
+            }).catch(function () {
+                mensagem_voto.innerHTML = "Não foi possível salvar o voto. Confira se o servidor está ligado.";
+                botao_salvar.disabled = false;
+            });
+            return false;
+        }
+
+        fetch("/hunter/estado?pagina=voto").then(function (resposta) {
+            if (resposta.status == 401) {
+                window.location = "../login.html";
+            } else if (resposta.ok) {
+                return resposta.json().then(function (estado) {
+                    nome_hunter.textContent = estado.hunter.name;
+                    botao_perfil.textContent = estado.hunter.name[0].toUpperCase();
+                    votoAtual = estado.voto;
+                    mostrarVoto();
+                    nav.style.display = "";
+                    conteudo_voto.style.display = "";
+                });
+            } else {
+                aviso_area_hunter.innerHTML = "Não foi possível carregar os dados do Hunter.";
+            }
+        }).catch(function () {
+            aviso_area_hunter.innerHTML = "Não foi possível carregar os dados. Confira se o servidor está ligado.";
         });
     </script>
 </body>
