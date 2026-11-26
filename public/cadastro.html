@@ -30,14 +30,14 @@
                 inscrição.
             </p>
             <div class="cartao-licenca"><img src="./assets/cardtop.png" alt="Cartão da Associação Hunter">
-                <form id="formulario_cadastro" class="formulario-licenca" novalidate onsubmit="cadastrar(); return false;">
+                <form id="formulario_cadastro" class="formulario-licenca" novalidate onsubmit="return cadastrar();">
                     <div class="campo">
                         <label for="nome_input">Nome de Hunter</label>
                         <input id="nome_input" type="text" placeholder="Seu nome" required autocomplete="nickname" />
                     </div>
                     <div class="campo">
                         <label for="email_input">E-mail</label>
-                        <input id="email_input" type="email" placeholder="seuemail@exemplo.com" required
+                        <input id="email_input" type="text" inputmode="email" placeholder="seuemail@exemplo.com" required
                             autocomplete="email" />
                     </div>
                     <div class="campo">
@@ -46,7 +46,7 @@
                             <input id="senha_input" type="password" oninput="validarSenha()" placeholder="Digite sua senha" required
                                 minlength="8" maxlength="70" aria-describedby="requisitos_senha"
                                 autocomplete="new-password" />
-                            <button type="button" id="mostrar_senha" aria-pressed="false" onclick="alternarVisibilidadeSenha(this, 'senha_input')">Mostrar</button>
+                            <button type="button" id="mostrar_senha" aria-pressed="false" onclick="alternarVisibilidadeSenha()">Mostrar</button>
                         </div>
                         <div id="requisitos_senha" class="requisitos-senha">
                             <p>Sua senha deve conter:</p>
@@ -72,8 +72,8 @@
                         <input id="aceite_input" type="checkbox" required />
                         <label for="aceite_input">Aceito os riscos do Exame e honro a palavra que der.</label>
                     </div>
-                    <p class="erro" role="status"></p>
-                    <button type="submit">Entrar no Exame</button>
+                    <p id="mensagem_cadastro" class="erro" role="status"></p>
+                    <button id="botao_cadastrar" type="submit">Entrar no Exame</button>
                     <p class="troca-formulario">Já tem uma licença? <a href="login.html">Entre</a></p>
                 </form>
             </div>
@@ -82,126 +82,166 @@
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
     <script>
-    function alternarVisibilidadeSenha(botao, idInput) {
-        var campo = document.getElementById(idInput);
-        if (campo.type === "password") {
-            campo.type = "text";
-            botao.textContent = "Ocultar";
-            botao.setAttribute("aria-pressed", "true");
+    function alternarVisibilidadeSenha() {
+        if (senha_input.type === "password") {
+            senha_input.type = "text";
+            mostrar_senha.innerHTML = "Ocultar";
+            mostrar_senha.setAttribute("aria-pressed", "true");
         } else {
-            campo.type = "password";
-            botao.textContent = "Mostrar";
-            botao.setAttribute("aria-pressed", "false");
-        }
-    }
-
-    function marcarRequisito(id, passou) {
-        var requisito = document.getElementById(id);
-        if (passou) {
-            requisito.classList.add("valido");
-            requisito.querySelector("span").textContent = "✓";
-        } else {
-            requisito.classList.remove("valido");
-            requisito.querySelector("span").textContent = "✕";
+            senha_input.type = "password";
+            mostrar_senha.innerHTML = "Mostrar";
+            mostrar_senha.setAttribute("aria-pressed", "false");
         }
     }
 
     function validarSenha() {
-        var senha = document.getElementById("senha_input").value;
-        var minusculas = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
-        var maiusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ";
-        var numeros = "0123456789";
-        var temMaiuscula = false;
-        var temMinuscula = false;
-        var temNumero = false;
-        var temSimbolo = false;
+        let senha = senha_input.value;
+        let numeros = "0123456789";
+        let temMaiuscula = false;
+        let temMinuscula = false;
+        let temNumero = false;
+        let temSimbolo = false;
 
-        for (var i = 0; i < senha.length; i++) {
-            var caractere = senha[i];
-            if (maiusculas.includes(caractere)) {
-                temMaiuscula = true;
-            } else if (minusculas.includes(caractere)) {
-                temMinuscula = true;
-            } else if (numeros.includes(caractere)) {
+        for (let i = 0; i < senha.length; i++) {
+            let caractere = senha[i];
+            let maiuscula = caractere.toUpperCase();
+            let minuscula = caractere.toLowerCase();
+
+            if (numeros.includes(caractere)) {
                 temNumero = true;
-            } else if (caractere.trim() !== "") {
+            } else if (maiuscula !== minuscula) {
+                if (caractere === maiuscula) {
+                    temMaiuscula = true;
+                } else {
+                    temMinuscula = true;
+                }
+            } else if (!/\s/.test(caractere)) {
                 temSimbolo = true;
             }
         }
 
-        var tamanhoValido = senha.length >= 8 && senha.length <= 70;
-        marcarRequisito("senha_tamanho", tamanhoValido);
-        marcarRequisito("senha_minuscula", temMinuscula);
-        marcarRequisito("senha_maiuscula", temMaiuscula);
-        marcarRequisito("senha_numero", temNumero);
-        marcarRequisito("senha_simbolo", temSimbolo);
+        let tamanhoValido = senha.length >= 8 && senha.length <= 70;
+
+        if (tamanhoValido) {
+            senha_tamanho.style.color = "#125836";
+            senha_tamanho.innerHTML = '<span aria-hidden="true">✓</span> De 8 a 70 caracteres';
+        } else {
+            senha_tamanho.style.color = "";
+            senha_tamanho.innerHTML = '<span aria-hidden="true">✕</span> De 8 a 70 caracteres';
+        }
+
+        if (temMinuscula) {
+            senha_minuscula.style.color = "#125836";
+            senha_minuscula.innerHTML = '<span aria-hidden="true">✓</span> Letra minúscula';
+        } else {
+            senha_minuscula.style.color = "";
+            senha_minuscula.innerHTML = '<span aria-hidden="true">✕</span> Letra minúscula';
+        }
+
+        if (temMaiuscula) {
+            senha_maiuscula.style.color = "#125836";
+            senha_maiuscula.innerHTML = '<span aria-hidden="true">✓</span> Letra maiúscula';
+        } else {
+            senha_maiuscula.style.color = "";
+            senha_maiuscula.innerHTML = '<span aria-hidden="true">✕</span> Letra maiúscula';
+        }
+
+        if (temNumero) {
+            senha_numero.style.color = "#125836";
+            senha_numero.innerHTML = '<span aria-hidden="true">✓</span> Número';
+        } else {
+            senha_numero.style.color = "";
+            senha_numero.innerHTML = '<span aria-hidden="true">✕</span> Número';
+        }
+
+        if (temSimbolo) {
+            senha_simbolo.style.color = "#125836";
+            senha_simbolo.innerHTML = '<span aria-hidden="true">✓</span> Símbolo, como !, @, # ou %';
+        } else {
+            senha_simbolo.style.color = "";
+            senha_simbolo.innerHTML = '<span aria-hidden="true">✕</span> Símbolo, como !, @, # ou %';
+        }
+
         return tamanhoValido && temMinuscula && temMaiuscula && temNumero && temSimbolo;
     }
 
     function cadastrar() {
-        var nomeInput = document.getElementById("nome_input");
-        var emailInput = document.getElementById("email_input");
-        var senhaInput = document.getElementById("senha_input");
-        var confirmacaoInput = document.getElementById("confirmacao_senha_input");
-        var motivacaoInput = document.getElementById("motivacao_input");
-        var aceiteInput = document.getElementById("aceite_input");
-        var formulario = document.getElementById("formulario_cadastro");
-        var mensagem = formulario.querySelector("[role=status]");
-        var botao = formulario.querySelector("button[type=submit]");
+        let nomeVar = nome_input.value;
+        let emailVar = email_input.value;
+        let senhaVar = senha_input.value;
+        let confirmacaoSenhaVar = confirmacao_senha_input.value;
+        let motivoVar = motivacao_input.value;
 
-        var nomeVar = nomeInput.value.trim();
-        var emailVar = emailInput.value.trim().toLowerCase();
-        var senhaVar = senhaInput.value;
-        var confirmacaoSenhaVar = confirmacaoInput.value;
-        var motivoVar = motivacaoInput.value.trim();
-        var aceiteVar = aceiteInput.checked;
+        if (botao_cadastrar.disabled) {
+            return false;
+        }
 
-        if (botao.disabled) return;
-        if (nomeVar === "") {
-            mensagem.textContent = "Informe um nome de Hunter.";
-            nomeInput.focus();
-        } else if (emailVar === "" || !emailInput.validity.valid) {
-            mensagem.textContent = "Informe um e-mail válido.";
-            emailInput.focus();
+        if (nomeVar == "") {
+            mensagem_cadastro.innerHTML = "Informe um nome de Hunter.";
+            return false;
+        } else if (/\s/.test(emailVar)) {
+            mensagem_cadastro.innerHTML = "O e-mail não pode conter espaços.";
+            return false;
+        } else if (emailVar == "") {
+            mensagem_cadastro.innerHTML = "Informe um e-mail válido.";
+            return false;
+        }
+
+        let partesEmail = emailVar.split("@");
+        if (partesEmail.length != 2 || partesEmail[0] == "") {
+            mensagem_cadastro.innerHTML = "Informe um e-mail válido.";
+            return false;
+        }
+
+        let dominio = partesEmail[1];
+        let posicaoPonto = dominio.indexOf(".");
+        if (posicaoPonto <= 0 || dominio.endsWith(".")) {
+            mensagem_cadastro.innerHTML = "Informe um e-mail válido.";
+            return false;
         } else if (!validarSenha()) {
-            mensagem.textContent = "A senha precisa atender a todos os requisitos.";
-            senhaInput.focus();
-        } else if (senhaVar !== confirmacaoSenhaVar) {
-            mensagem.textContent = "As senhas precisam ser iguais.";
-            confirmacaoInput.focus();
-        } else if (!aceiteVar) {
-            mensagem.textContent = "Aceite os termos do Exame para continuar.";
-            aceiteInput.focus();
-        } else if (location.protocol === "file:") {
-            mensagem.textContent = "Abra o site pelo servidor para fazer o cadastro.";
-        } else {
-            botao.disabled = true;
-            mensagem.textContent = "";
+            mensagem_cadastro.innerHTML = "A senha precisa atender a todos os requisitos.";
+            return false;
+        } else if (senhaVar != confirmacaoSenhaVar) {
+            mensagem_cadastro.innerHTML = "As senhas precisam ser iguais.";
+            return false;
+        } else if (aceite_input.checked == false) {
+            mensagem_cadastro.innerHTML = "Aceite os termos do Exame para continuar.";
+            return false;
+        }
 
-            return fetch("/usuarios/cadastrar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nomeServer: nomeVar,
-                    emailServer: emailVar,
-                    senhaServer: senhaVar,
-                    motivoServer: motivoVar,
-                    aceiteServer: aceiteVar
-                })
-            }).then(function (resposta) {
+        mensagem_cadastro.innerHTML = "";
+        botao_cadastrar.disabled = true;
+
+        fetch("/usuarios/cadastrar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nomeServer: nomeVar,
+                emailServer: emailVar,
+                senhaServer: senhaVar,
+                motivoServer: motivoVar,
+                aceiteServer: true
+            })
+        })
+            .then(function (resposta) {
                 if (resposta.ok) {
                     window.location = "dashboard/quiz.html";
+                } else if (resposta.status == 409) {
+                    mensagem_cadastro.innerHTML = "Já existe uma conta com esse e-mail.";
+                    botao_cadastrar.disabled = false;
                 } else {
-                    return resposta.json().then(function (dados) {
-                        mensagem.textContent = dados.mensagem || "Não foi possível cadastrar.";
-                        botao.disabled = false;
-                    });
+                    mensagem_cadastro.innerHTML = "Não foi possível cadastrar.";
+                    botao_cadastrar.disabled = false;
                 }
-            }).catch(function () {
-                mensagem.textContent = "Não foi possível cadastrar. Confira se o servidor está ligado.";
-                botao.disabled = false;
+            })
+            .catch(function () {
+                mensagem_cadastro.innerHTML = "Não foi possível cadastrar. Confira se o servidor está ligado.";
+                botao_cadastrar.disabled = false;
             });
-        }
+
+        return false;
     }
 
     validarSenha();
