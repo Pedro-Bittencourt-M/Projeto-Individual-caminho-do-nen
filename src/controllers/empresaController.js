@@ -1,44 +1,44 @@
 var empresaModel = require("../models/empresaModel");
 
-function buscarPorCnpj(req, res) {
-    var cnpj = req.query.cnpj;
+function buscarPorCnpj(requisicao, resposta) {
+    var cnpj = requisicao.query.cnpj;
 
     empresaModel.buscarPorCnpj(cnpj)
         .then(function (resultado) {
-            res.status(200).json(resultado);
+            resposta.status(200).json(resultado);
         });
 }
 
-function listar(req, res) {
+function listar(requisicao, resposta) {
     empresaModel.listar()
         .then(function (resultado) {
-            res.status(200).json(resultado);
+            resposta.status(200).json(resultado);
         });
 }
 
-function buscarPorId(req, res) {
-    var id = req.params.id;
+function buscarPorId(requisicao, resposta) {
+    var id = requisicao.params.id;
 
     empresaModel.buscarPorId(id)
         .then(function (resultado) {
-            res.status(200).json(resultado);
+            resposta.status(200).json(resultado);
         });
 }
 
-function cadastrar(req, res) {
-    var cnpj = req.body.cnpj;
-    var razaoSocial = req.body.razaoSocial;
+function cadastrar(requisicao, resposta) {
+    var cnpj = requisicao.body.cnpj;
+    var razaoSocial = requisicao.body.razaoSocial;
 
     empresaModel.buscarPorCnpj(cnpj)
         .then(function (resultado) {
             if (resultado.length > 0) {
-                res
+                resposta
                     .status(401)
                     .json({ mensagem: `a empresa com o cnpj ${cnpj} já existe` });
             } else {
                 empresaModel.cadastrar(razaoSocial, cnpj)
                     .then(function (resultado) {
-                        res.status(201).json(resultado);
+                        resposta.status(201).json(resultado);
                     });
             }
         });

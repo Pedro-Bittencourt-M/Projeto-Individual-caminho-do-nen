@@ -9,11 +9,11 @@ require("dotenv").config({ path: caminho_env });
 
 var express = require("express");
 var cors = require("cors");
-var path = require("path");
-var PORTA_APP = process.env.APP_PORT;
-var HOST_APP = process.env.APP_HOST;
+var caminho = require("path");
+var PORTA_APLICACAO = process.env.APP_PORT;
+var ENDERECO_APLICACAO = process.env.APP_HOST;
 
-var app = express();
+var aplicacao = express();
 
 var indexRouter = require("./src/routes/index");
 var usuarioRouter = require("./src/routes/usuarios");
@@ -22,21 +22,21 @@ var medidasRouter = require("./src/routes/medidas");
 var aquariosRouter = require("./src/routes/aquarios");
 var empresasRouter = require("./src/routes/empresas");
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
+aplicacao.use(express.json());
+aplicacao.use(express.urlencoded({ extended: false }));
+aplicacao.use(express.static(caminho.join(__dirname, "public")));
 
-app.use(cors());
+aplicacao.use(cors());
 
-app.use("/", indexRouter);
-app.use("/usuarios", usuarioRouter);
-app.use("/hunter", require("./src/routes/hunter"));
-app.use("/avisos", avisosRouter);
-app.use("/medidas", medidasRouter);
-app.use("/aquarios", aquariosRouter);
-app.use("/empresas", empresasRouter);
+aplicacao.use("/", indexRouter);
+aplicacao.use("/usuarios", usuarioRouter);
+aplicacao.use("/hunter", require("./src/routes/hunter"));
+aplicacao.use("/avisos", avisosRouter);
+aplicacao.use("/medidas", medidasRouter);
+aplicacao.use("/aquarios", aquariosRouter);
+aplicacao.use("/empresas", empresasRouter);
 
-app.listen(PORTA_APP, function () {
+aplicacao.listen(PORTA_APLICACAO, function () {
     console.log(`
     ##   ##  ######   #####             ####       ##     ######     ##              ##  ##    ####    ######  
     ##   ##  ##       ##  ##            ## ##     ####      ##      ####             ##  ##     ##         ##  
@@ -46,7 +46,7 @@ app.listen(PORTA_APP, function () {
     ### ###  ##       ##  ##            ## ##    ##  ##     ##     ##  ##             ####      ##     ##      
     ##   ##  ######   #####             ####     ##  ##     ##     ##  ##              ##      ####    ######  
     \n\n\n                                                                                                 
-    Servidor do seu site já está rodando! Acesse o caminho a seguir para visualizar .: http://${HOST_APP}:${PORTA_APP} :. \n\n
+    Servidor do seu site já está rodando! Acesse o caminho a seguir para visualizar .: http://${ENDERECO_APLICACAO}:${PORTA_APLICACAO} :. \n\n
     Você está rodando sua aplicação em ambiente de .:${process.env.AMBIENTE_PROCESSO}:. \n\n
     \tSe .:desenvolvimento:. você está se conectando ao banco local. \n
     \tSe .:producao:. você está se conectando ao banco remoto. \n\n

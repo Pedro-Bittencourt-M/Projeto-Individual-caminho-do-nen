@@ -1,4 +1,4 @@
-var database = require("../database/config");
+var bancoDados = require("../database/config");
 
 function autenticar(email) {
     var instrucaoSql = `
@@ -7,7 +7,7 @@ function autenticar(email) {
         WHERE email = ?;
     `;
 
-    return database.executar(instrucaoSql, [email]);
+    return bancoDados.executar(instrucaoSql, [email]);
 }
 
 function cadastrar(nome, email, senha, motivo, codigoLicenca) {
@@ -16,7 +16,7 @@ function cadastrar(nome, email, senha, motivo, codigoLicenca) {
         VALUES (?, ?, ?, ?, ?);
     `;
 
-    return database.executar(instrucaoSql, [nome, email, senha, motivo, codigoLicenca]);
+    return bancoDados.executar(instrucaoSql, [nome, email, senha, motivo, codigoLicenca]);
 }
 
 module.exports = {

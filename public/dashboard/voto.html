@@ -1,45 +1,314 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
+
+<head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Voto · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
-      rel="stylesheet"
-    />
+        href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../css/base.css" />
     <link rel="stylesheet" href="../css/voto.css" />
-  </head>
+</head>
 
-  <body data-v="voto">
+<body data-v="voto">
     <!-- MENU DE NAVEGAÇÃO -->
     <nav id="nav"></nav>
     <!-- CONTEÚDO DA PÁGINA -->
+    <div id="aviso_area_hunter"></div>
     <main hidden>
-      <section id="voto">
-        <h1>Voto e Restrição</h1>
-        <p class="texto-secundario">
-          Como Kurapika, você assume um compromisso. Quanto mais severa a
-          restrição, maior o poder do voto, e a penalidade vale se você
-          quebrá-lo.
-        </p>
-        <!-- FORMULÁRIO DE VOTO PREENCHIDO PELO JAVASCRIPT -->
-        <div id="area_voto_restricao"></div>
-      </section>
+        <section id="voto">
+            <h1>Voto e Restrição</h1>
+            <p class="texto-secundario">
+                Como Kurapika, você assume um compromisso. Quanto mais severa a
+                restrição, maior o poder do voto, e a penalidade vale se você
+                quebrá-lo.
+            </p>
+            <!-- FORMULÁRIO DE VOTO PREENCHIDO PELO JAVASCRIPT -->
+            <div id="area_voto_restricao"></div>
+        </section>
     </main>
     <!-- RODAPÉ -->
     <footer class="rodape">
-      Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
-      Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
-      pertencem aos seus criadores.
+        Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
+        Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
+        pertencem aos seus criadores.
     </footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
-    <script src="../js/app.js"></script>
-  </body>
+    <script>
+        var pastaSite = "../";
+
+        function pageUrl(caminho2) {
+            var partes = caminho2.split("#");
+            var url = pastaSite + partes[0];
+            if (partes.length > 1) url += "#" + partes[1];
+            return url;
+        }
+        const pagina = document.body.dataset.v;
+        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
+
+
+        function apiHunter(caminho, metodo, dados) {
+            var opcoes = { method: metodo || "GET" };
+            if (dados !== undefined) {
+                opcoes.headers = { "Content-Type": "application/json" };
+                opcoes.body = JSON.stringify(dados);
+            }
+            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
+                return resposta.json().catch(function () {
+                    return null;
+                }).then(function (conteudo) {
+                    if (!resposta.ok || !conteudo) {
+                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
+                        erro.status = resposta.status;
+                        if (conteudo) erro.completedAt = conteudo.completedAt;
+                        throw erro;
+                    }
+                    return conteudo;
+                });
+            }, function () {
+                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
+            });
+        }
+        function iniciarPagina() {
+            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
+            if (location.protocol !== "http:" && location.protocol !== "https:") {
+                return Promise.resolve().then(function () {
+                    montarPagina(estadoInicial);
+                });
+            }
+            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
+                montarPagina(estado);
+            }, function (erro) {
+                if (erro.status === 401) erro = null;
+                montarPagina(estadoInicial, erro);
+            });
+        }
+
+        function montarPagina(estado, erroAoConsultar) {
+            const hunter = estado.hunter;
+            if (paginasHunter.includes(pagina)) {
+                if (hunter) {
+                    document.querySelector("main").hidden = false;
+                } else if (erroAoConsultar) {
+                    const aviso = document.createElement("p");
+                    aviso.className = "cartao";
+                    aviso.textContent = erroAoConsultar.message;
+                    document.getElementById("aviso_area_hunter").appendChild(aviso);
+                } else {
+                    location.replace(pastaSite + "login.html");
+                    return;
+                }
+            }
+            window.addEventListener("pageshow", function (evento) {
+                if (evento.persisted) window.location = location.href;
+            });
+
+            const navegacao = document.querySelector("#nav");
+            const ligacoes = [
+                ["index.html", "Início"],
+                ["sobre.html", "Sobre mim"],
+                ["dashboard/personagens.html", "Personagens"],
+                ["dashboard/perfil.html", "Perfil"],
+                ["dashboard/dashboard.html", "Dashboard"],
+                ["dashboard/quiz.html", "Quizzes"],
+                ["dashboard/voto.html", "Voto e Restrição"],
+                ["dashboard/bestiario.html", "Bestiário"],
+                ["cadastro.html", "Cadastro"],
+                ["login.html", "Entrar"]
+            ];
+            navegacao.setAttribute("aria-label", "Navegação principal");
+            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
+            function navigationLink(url, rotulo) {
+                const ligacao = document.createElement("a");
+                ligacao.href = pageUrl(url);
+                ligacao.textContent = rotulo;
+                if (url === "login.html") ligacao.classList.add("botao-destaque");
+                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
+                    ligacao.classList.add("ativo");
+                    ligacao.setAttribute("aria-current", "page");
+                }
+                return ligacao;
+            }
+
+            if (hunter) {
+                navegacao.classList.add("navegacao-hunter");
+                navegacao.innerHTML += `
+                    <div class="controle-menu-hunter">
+                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
+                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+                        </button>
+                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
+                    </div>
+                    <div class="controle-perfil">
+                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
+                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
+                    </div>`;
+
+                navegacao.appendChild(navegacao.querySelector("b"));
+                const menu = navegacao.querySelector("#hunter-menu");
+                const perfil = navegacao.querySelector("#hunter-profile");
+                const botaoPerfil = navegacao.querySelector(".botao-perfil");
+                botaoPerfil.textContent = hunter.name[0].toUpperCase();
+                perfil.querySelector("b").textContent = hunter.name;
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) continue;
+                    const ligacao = navigationLink(url, rotulo);
+                    if (rotulo === "Perfil") {
+                        perfil.appendChild(ligacao);
+                    } else {
+                        const item = document.createElement("li");
+                        item.appendChild(ligacao);
+                        menu.appendChild(item);
+                    }
+                }
+
+                const botaoSair = document.createElement("button");
+                botaoSair.type = "button";
+                botaoSair.textContent = "Sair";
+                botaoSair.addEventListener("click", function () {
+                    var operacao = apiHunter("sair", "POST");
+                    operacao.then(function () {
+                        window.location = pastaSite + "index.html";
+                    }).catch(function (erro) {
+                        botaoSair.title = erro.message;
+                        botaoSair.textContent = "Tentar sair novamente";
+                    });
+                });
+                perfil.appendChild(botaoSair);
+
+                function bindDisclosure(botao, painel) {
+                    function close() {
+                        painel.hidden = true;
+                        botao.setAttribute("aria-expanded", "false");
+                    }
+                    botao.addEventListener("click", function () {
+                        if (!painel.hidden) {
+                            close();
+                            return;
+                        }
+                        painel.hidden = false;
+                        botao.setAttribute("aria-expanded", "true");
+                    });
+                    document.addEventListener("click", function (evento) {
+                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
+                    });
+                    document.addEventListener("keydown", function (evento) {
+                        if (evento.key === "Escape" && !painel.hidden) {
+                            close();
+                            botao.focus();
+                        }
+                    });
+                }
+
+                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
+                bindDisclosure(botaoPerfil, perfil);
+                perfil.addEventListener("click", function (evento) {
+                    if (evento.target.closest("a")) {
+                        perfil.hidden = true;
+                        botaoPerfil.setAttribute("aria-expanded", "false");
+                    }
+                });
+            } else {
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
+                }
+            }
+
+
+
+            function get(id) {
+                return document.getElementById(id);
+            }
+            function value(id) {
+                return get(id).value.trim();
+            }
+
+            function card(title, descricao) {
+                const artigo = document.createElement("article");
+                artigo.className = "cartao";
+                const titulo = document.createElement("h2");
+                titulo.textContent = title;
+                const detalhes = document.createElement("p");
+                detalhes.textContent = descricao;
+                artigo.appendChild(titulo);
+                artigo.appendChild(detalhes);
+                return artigo;
+            }
+
+
+            if (hunter && get("area_voto_restricao")) {
+                const areaQuiz = get("area_voto_restricao");
+                areaQuiz.innerHTML = `<form class="cartao">
+                    <div class="campo">
+                        <label for="meta_input">Meta</label>
+                        <input id="meta_input" type="text" placeholder="Ex.: treinar Nen todos os dias" required maxlength="150" />
+                    </div>
+                    <div class="campo">
+                        <label for="restricao_input">Restrição</label>
+                        <textarea id="restricao_input" required maxlength="300" placeholder="Ex.: treinar apenas depois das aulas"></textarea>
+                    </div>
+                    <div class="campo">
+                        <label for="penalidade_input">Penalidade</label>
+                        <textarea id="penalidade_input" required maxlength="300" placeholder="Ex.: ficar um dia sem usar a habilidade"></textarea>
+                    </div>
+                    <div class="campo">
+                        <label for="severidade_input">Severidade da restrição</label>
+                        <select id="severidade_input"><option>Leve</option><option>Moderada</option><option>Severa</option></select>
+                    </div>
+                    <button>Selar voto</button><p role="status"></p>
+                </form><div id="voto_salvo"></div>`;
+                const campos = { "goal": "meta_input", "restriction": "restricao_input", "penalty": "penalidade_input", "severity": "severidade_input" };
+
+                function updateVow() {
+                    const voto2 = estado.voto;
+                    if (!voto2) return;
+                    const resumo = card(voto2.goal, "Restrição " + voto2.severity.toLowerCase() + " · " + voto2.restriction);
+                    const penalidade = document.createElement("p");
+                    penalidade.textContent = "Penalidade: " + voto2.penalty;
+                    resumo.appendChild(penalidade);
+                    get("voto_salvo").innerHTML = "";
+                    get("voto_salvo").appendChild(resumo);
+                    for (var campo in campos) {
+                        get(campos[campo]).value = voto2[campo];
+                    }
+                }
+                updateVow();
+                areaQuiz.querySelector("form").onsubmit = function (evento) {
+                    evento.preventDefault();
+                    var voto = {};
+                    for (var campo in campos) {
+                        voto[campo] = value(campos[campo]);
+                    }
+                    if (!voto.goal || !voto.restriction || !voto.penalty || !voto.severity) {
+                        areaQuiz.querySelector("[role=status]").textContent = "Preencha todos os campos do voto.";
+                        return;
+                    }
+                    var operacao = apiHunter("voto", "PUT", voto);
+                    operacao.then(function (salvo) {
+                        estado.voto = salvo;
+                        updateVow();
+                        areaQuiz.querySelector("[role=status]").textContent = "Voto salvo.";
+                    }).catch(function (erro) {
+                        areaQuiz.querySelector("[role=status]").textContent = erro.message;
+                    });
+                };
+            }
+
+
+        }
+
+        iniciarPagina().catch(function (erro) {
+            console.error(erro);
+        });
+    </script>
+</body>
+
 </html>

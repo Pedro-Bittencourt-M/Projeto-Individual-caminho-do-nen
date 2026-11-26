@@ -1,47 +1,51 @@
 var express = require("express");
-var router = express.Router();
+var roteador = express.Router();
 var hunterController = require("../controllers/hunterController");
 var sessao = require("../sessaoHunter");
 
-router.use(function (req, res, next) {
-    res.set("Cache-Control", "no-store");
-    next();
+roteador.use(function (requisicao, resposta, proximo) {
+    resposta.set("Cache-Control", "no-store");
+    proximo();
 });
 
-router.post("/sair", function (req, res) {
-    sessao.sair(req, res);
+roteador.post("/sair", function (requisicao, resposta) {
+    sessao.sair(requisicao, resposta);
 });
-router.use(sessao.exigir);
+roteador.use(sessao.exigir);
 
-router.get("/estado", function (req, res, next) {
-    Promise.resolve(hunterController.estado(req, res)).catch(next);
-});
-
-router.put("/perfil", function (req, res, next) {
-    Promise.resolve(hunterController.editarPerfil(req, res)).catch(next);
+roteador.get("/dashboard", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.buscarDashboard(requisicao, resposta)).catch(proximo);
 });
 
-router.post("/nen", function (req, res, next) {
-    Promise.resolve(hunterController.salvarNen(req, res)).catch(next);
+roteador.get("/estado", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.estado(requisicao, resposta)).catch(proximo);
 });
 
-router.put("/voto", function (req, res, next) {
-    Promise.resolve(hunterController.salvarVoto(req, res)).catch(next);
+roteador.put("/perfil", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.editarPerfil(requisicao, resposta)).catch(proximo);
 });
 
-router.post("/criaturas", function (req, res, next) {
-    Promise.resolve(hunterController.registrarCriatura(req, res)).catch(next);
+roteador.post("/nen", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.salvarNen(requisicao, resposta)).catch(proximo);
 });
 
-router.post("/quizzes/:quiz/tentativas", function (req, res, next) {
-    Promise.resolve(hunterController.salvarTentativa(req, res)).catch(next);
+roteador.put("/voto", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.salvarVoto(requisicao, resposta)).catch(proximo);
+});
+
+roteador.post("/criaturas", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.registrarCriatura(requisicao, resposta)).catch(proximo);
+});
+
+roteador.post("/quizzes/:quiz/tentativas", function (requisicao, resposta, proximo) {
+    return Promise.resolve(hunterController.salvarTentativa(requisicao, resposta)).catch(proximo);
 });
 
 
-router.use(function (erro, req, res, next) {
+roteador.use(function (erro, requisicao, resposta, proximo) {
     console.error("Erro na área Hunter:", erro.code || "ERRO_INTERNO");
-    if (res.headersSent) {
-        return next(erro);
+    if (resposta.headersSent) {
+        return proximo(erro);
     }
     var mensagem = "Não foi possível consultar os dados da Área Hunter. Confira o terminal do servidor.";
     if (erro.code === "ER_NO_SUCH_TABLE" || erro.code === "ER_BAD_FIELD_ERROR" || erro.code === "ER_BAD_DB_ERROR") {
@@ -60,7 +64,7 @@ router.use(function (erro, req, res, next) {
         mensagem = "A API não conseguiu conectar ao MySQL. Confira se o banco está ligado e o endereço está correto.";
     }
 
-    res.status(503).json({ mensagem });
+    resposta.status(503).json({ mensagem });
 });
 
-module.exports = router;
+module.exports = roteador;

@@ -1,23 +1,23 @@
 var express = require("express");
-var router = express.Router();
+var roteador = express.Router();
 
 var empresaController = require("../controllers/empresaController");
 
 //Recebendo os dados do html e direcionando para a função cadastrar de usuarioController.js
-router.post("/cadastrar", function (req, res) {
-    empresaController.cadastrar(req, res);
+roteador.post("/cadastrar", function (requisicao, resposta) {
+    empresaController.cadastrar(requisicao, resposta);
 })
 
-router.get("/buscar", function (req, res) {
-    empresaController.buscarPorCnpj(req, res);
+roteador.get("/buscar", function (requisicao, resposta) {
+    empresaController.buscarPorCnpj(requisicao, resposta);
 });
 
-router.get("/buscar/:id", function (req, res) {
-  empresaController.buscarPorId(req, res);
+roteador.get("/buscar/:id", function (requisicao, resposta) {
+  empresaController.buscarPorId(requisicao, resposta);
 });
 
-router.get("/listar", function (req, res) {
-  empresaController.listar(req, res);
+roteador.get("/listar", function (requisicao, resposta) {
+  empresaController.listar(requisicao, resposta);
 });
 
-module.exports = router;
+module.exports = roteador;

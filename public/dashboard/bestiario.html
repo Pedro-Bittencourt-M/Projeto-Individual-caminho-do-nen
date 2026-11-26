@@ -19,6 +19,7 @@
         <p class="cartao">Ative o JavaScript para acessar a área Hunter.</p>
     </noscript>
     <!-- CONTEÚDO DA PÁGINA -->
+    <div id="aviso_area_hunter"></div>
     <main hidden>
         <section id="bestiario">
             <h1>Bestiário da Associação</h1>
@@ -92,7 +93,328 @@
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
-    <script src="../js/app.js"></script>
+    <script>
+        var pastaSite = "../";
+
+        function pageUrl(caminho2) {
+            var partes = caminho2.split("#");
+            var url = pastaSite + partes[0];
+            if (partes.length > 1) url += "#" + partes[1];
+            return url;
+        }
+        const pagina = document.body.dataset.v;
+        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
+
+
+        function apiHunter(caminho, metodo, dados) {
+            var opcoes = { method: metodo || "GET" };
+            if (dados !== undefined) {
+                opcoes.headers = { "Content-Type": "application/json" };
+                opcoes.body = JSON.stringify(dados);
+            }
+            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
+                return resposta.json().catch(function () {
+                    return null;
+                }).then(function (conteudo) {
+                    if (!resposta.ok || !conteudo) {
+                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
+                        erro.status = resposta.status;
+                        if (conteudo) erro.completedAt = conteudo.completedAt;
+                        throw erro;
+                    }
+                    return conteudo;
+                });
+            }, function () {
+                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
+            });
+        }
+        function iniciarPagina() {
+            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
+            if (location.protocol !== "http:" && location.protocol !== "https:") {
+                return Promise.resolve().then(function () {
+                    montarPagina(estadoInicial);
+                });
+            }
+            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
+                montarPagina(estado);
+            }, function (erro) {
+                if (erro.status === 401) erro = null;
+                montarPagina(estadoInicial, erro);
+            });
+        }
+
+        function montarPagina(estado, erroAoConsultar) {
+            const hunter = estado.hunter;
+            if (paginasHunter.includes(pagina)) {
+                if (hunter) {
+                    document.querySelector("main").hidden = false;
+                } else if (erroAoConsultar) {
+                    const aviso = document.createElement("p");
+                    aviso.className = "cartao";
+                    aviso.textContent = erroAoConsultar.message;
+                    document.getElementById("aviso_area_hunter").appendChild(aviso);
+                } else {
+                    location.replace(pastaSite + "login.html");
+                    return;
+                }
+            }
+            window.addEventListener("pageshow", function (evento) {
+                if (evento.persisted) window.location = location.href;
+            });
+
+            const navegacao = document.querySelector("#nav");
+            const ligacoes = [
+                ["index.html", "Início"],
+                ["sobre.html", "Sobre mim"],
+                ["dashboard/personagens.html", "Personagens"],
+                ["dashboard/perfil.html", "Perfil"],
+                ["dashboard/dashboard.html", "Dashboard"],
+                ["dashboard/quiz.html", "Quizzes"],
+                ["dashboard/voto.html", "Voto e Restrição"],
+                ["dashboard/bestiario.html", "Bestiário"],
+                ["cadastro.html", "Cadastro"],
+                ["login.html", "Entrar"]
+            ];
+            navegacao.setAttribute("aria-label", "Navegação principal");
+            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
+            function navigationLink(url, rotulo) {
+                const ligacao = document.createElement("a");
+                ligacao.href = pageUrl(url);
+                ligacao.textContent = rotulo;
+                if (url === "login.html") ligacao.classList.add("botao-destaque");
+                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
+                    ligacao.classList.add("ativo");
+                    ligacao.setAttribute("aria-current", "page");
+                }
+                return ligacao;
+            }
+
+            if (hunter) {
+                navegacao.classList.add("navegacao-hunter");
+                navegacao.innerHTML += `
+                    <div class="controle-menu-hunter">
+                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
+                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+                        </button>
+                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
+                    </div>
+                    <div class="controle-perfil">
+                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
+                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
+                    </div>`;
+
+                navegacao.appendChild(navegacao.querySelector("b"));
+                const menu = navegacao.querySelector("#hunter-menu");
+                const perfil = navegacao.querySelector("#hunter-profile");
+                const botaoPerfil = navegacao.querySelector(".botao-perfil");
+                botaoPerfil.textContent = hunter.name[0].toUpperCase();
+                perfil.querySelector("b").textContent = hunter.name;
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) continue;
+                    const ligacao = navigationLink(url, rotulo);
+                    if (rotulo === "Perfil") {
+                        perfil.appendChild(ligacao);
+                    } else {
+                        const item = document.createElement("li");
+                        item.appendChild(ligacao);
+                        menu.appendChild(item);
+                    }
+                }
+
+                const botaoSair = document.createElement("button");
+                botaoSair.type = "button";
+                botaoSair.textContent = "Sair";
+                botaoSair.addEventListener("click", function () {
+                    var operacao = apiHunter("sair", "POST");
+                    operacao.then(function () {
+                        window.location = pastaSite + "index.html";
+                    }).catch(function (erro) {
+                        botaoSair.title = erro.message;
+                        botaoSair.textContent = "Tentar sair novamente";
+                    });
+                });
+                perfil.appendChild(botaoSair);
+
+                function bindDisclosure(botao, painel) {
+                    function close() {
+                        painel.hidden = true;
+                        botao.setAttribute("aria-expanded", "false");
+                    }
+                    botao.addEventListener("click", function () {
+                        if (!painel.hidden) {
+                            close();
+                            return;
+                        }
+                        painel.hidden = false;
+                        botao.setAttribute("aria-expanded", "true");
+                    });
+                    document.addEventListener("click", function (evento) {
+                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
+                    });
+                    document.addEventListener("keydown", function (evento) {
+                        if (evento.key === "Escape" && !painel.hidden) {
+                            close();
+                            botao.focus();
+                        }
+                    });
+                }
+
+                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
+                bindDisclosure(botaoPerfil, perfil);
+                perfil.addEventListener("click", function (evento) {
+                    if (evento.target.closest("a")) {
+                        perfil.hidden = true;
+                        botaoPerfil.setAttribute("aria-expanded", "false");
+                    }
+                });
+            } else {
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
+                }
+            }
+
+
+
+            function get(id) {
+                return document.getElementById(id);
+            }
+            function value(id) {
+                return get(id).value.trim();
+            }
+
+            function card(title, descricao) {
+                const artigo = document.createElement("article");
+                artigo.className = "cartao";
+                const titulo = document.createElement("h2");
+                titulo.textContent = title;
+                const detalhes = document.createElement("p");
+                detalhes.textContent = descricao;
+                artigo.appendChild(titulo);
+                artigo.appendChild(detalhes);
+                return artigo;
+            }
+
+
+            const tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
+
+            if (hunter && get("formulario_criatura")) {
+                const formulario = get("formulario_criatura");
+                const lista = get("lista_criaturas");
+                const categorias = {
+                    bp: ["Baixo", "Moderado", "Alto", "Extremo"],
+                    bev: ["Baixo", "Moderado", "Alto"],
+                    bt: ["Animal", "Besta mágica", "Quimera", "Outro"],
+                    bh: ["Floresta", "Montanha", "Água", "Deserto", "Outro"],
+                    bo: ["Pequeno", "Médio", "Grande"],
+                    bc: ["Dócil", "Territorial", "Agressivo", "Desconhecido"],
+                    bnn: ["Desconhecida", "Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"]
+                };
+                const camposCategorias = {"bp": "perigo_input", "bev": "evolucao_input", "bt": "tipo_input", "bh": "habitat_input", "bo": "porte_input", "bc": "comportamento_input", "bnn": "afinidade_nen_input"};
+                function preencherOpcoes(campo, opcoes, primeiraOpcao) {
+                    var seletor = get(campo);
+                    seletor.textContent = "";
+                    if (primeiraOpcao) {
+                        var opcaoInicial = document.createElement("option");
+                        opcaoInicial.value = "";
+                        opcaoInicial.textContent = primeiraOpcao;
+                        seletor.appendChild(opcaoInicial);
+                    }
+                    for (var i = 0; i < opcoes.length; i++) {
+                        var opcao = document.createElement("option");
+                        opcao.textContent = opcoes[i];
+                        seletor.appendChild(opcao);
+                    }
+                }
+
+                for (var id in categorias) {
+                    preencherOpcoes(camposCategorias[id], categorias[id]);
+                }
+                preencherOpcoes("filtro_tipo_input", categorias.bt, "Todos os tipos");
+                preencherOpcoes("filtro_perigo_input", categorias.bp, "Todos os níveis de perigo");
+                function limparFormularioCriatura() {
+                    get("nome_input").value = "";
+                    get("descricao_input").value = "";
+                    for (var campo in camposCategorias) get(camposCategorias[campo]).selectedIndex = 0;
+                }
+
+                function renderCreatures() {
+                    var criaturas = estado.criaturas;
+                    var tipo = value("filtro_tipo_input");
+                    var perigo = value("filtro_perigo_input");
+                    var quantidade = 0;
+                    lista.innerHTML = "";
+                    for (var i = 0; i < criaturas.length; i++) {
+                        var item = criaturas[i];
+                        if (tipo && item.bt !== tipo) continue;
+                        if (perigo && item.bp !== perigo) continue;
+                        quantidade++;
+                        const registro = card(item.name, item.description);
+                        const detalhes = document.createElement("p");
+                        detalhes.textContent = [item.bt, "Perigo " + item.bp, item.bh, item.bo, item.bc,
+                            "Evolução: " + item.bev, "Nen: " + item.bnn].join(" · ");
+                        const autor = document.createElement("small");
+                        autor.textContent = "Registro de " + item.author;
+                        registro.appendChild(detalhes);
+                        registro.appendChild(autor);
+                        lista.appendChild(registro);
+                    }
+                    get("total_criaturas").textContent = quantidade + (quantidade === 1 ? " criatura" : " criaturas");
+                    if (!quantidade) lista.appendChild(card("Nenhuma criatura encontrada", "Registre uma criatura ou altere os filtros."));
+                }
+                get("botao_registrar_criatura").disabled = false;
+                get("botao_registrar_criatura").onclick = function () { formulario.hidden = false; get("nome_input").focus(); };
+                get("botao_cancelar_criatura").onclick = function () { limparFormularioCriatura(); formulario.hidden = true; get("botao_registrar_criatura").focus(); };
+                get("filtro_tipo_input").onchange = renderCreatures;
+                get("filtro_perigo_input").onchange = renderCreatures;
+                formulario.onsubmit = function (evento) {
+                    evento.preventDefault();
+                    const mensagemCampo = get("descricao_input").nextElementSibling;
+                    if (!value("descricao_input")) {
+                        mensagemCampo.textContent = "Descreva a criatura.";
+                        return;
+                    }
+                    const criatura = {
+                        name: value("nome_input") || "Criatura sem nome", description: value("descricao_input"), author: hunter.name,
+                        
+                    };
+                    for (var campo in camposCategorias) {
+                        criatura[campo] = value(camposCategorias[campo]);
+                    }
+                    const botaoEnviar = formulario.querySelector("button:not([type=button])");
+                    botaoEnviar.disabled = true;
+                    var operacao = apiHunter("criaturas", "POST", criatura);
+                    operacao.then(function (salva) {
+                        {
+                            for (var i = estado.criaturas.length; i > 0; i--) {
+                                estado.criaturas[i] = estado.criaturas[i - 1];
+                            }
+                            estado.criaturas[0] = salva;
+                        }
+                        mensagemCampo.textContent = "";
+                        limparFormularioCriatura();
+                        formulario.hidden = true;
+                        get("botao_registrar_criatura").focus();
+                        renderCreatures();
+                    }).catch(function (erro) {
+                        mensagemCampo.textContent = erro.message;
+                    }).then(function () {
+                        botaoEnviar.disabled = false;
+                    });
+                };
+                get("filtro_tipo_input").parentElement.hidden = false;
+                renderCreatures();
+            }
+
+        }
+
+        iniciarPagina().catch(function (erro) {
+            console.error(erro);
+        });
+    </script>
 </body>
 
 </html>

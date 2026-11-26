@@ -1,4 +1,4 @@
-var database = require("../database/config");
+var bancoDados = require("../database/config");
 
 function buscarUltimasMedidas(idAquario, limite_linhas) {
 
@@ -11,7 +11,7 @@ function buscarUltimasMedidas(idAquario, limite_linhas) {
                     ORDER BY id DESC LIMIT ${limite_linhas}`;
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql);
+    return bancoDados.executar(instrucaoSql);
 }
 
 function buscarMedidasEmTempoReal(idAquario) {
@@ -24,7 +24,7 @@ function buscarMedidasEmTempoReal(idAquario) {
                     ORDER BY id DESC LIMIT 1`;
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql);
+    return bancoDados.executar(instrucaoSql);
 }
 
 module.exports = {

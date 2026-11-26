@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" haref="css/panels.css">
+    <link rel="stylesheet" href="css/panels.css">
     <link rel="stylesheet" href="css/home.css">
 </head>
 
@@ -23,6 +23,7 @@
         <a href="./login.html" class="botao-destaque">Entrar</a>
     </nav>
     <!-- CONTEÚDO DA PÁGINA -->
+    <div id="aviso_area_hunter"></div>
     <main>
         <section id="inicio">
             <!-- APRESENTAÇÃO DO SITE -->
@@ -285,7 +286,367 @@
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter
             © Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
-    <script src="./js/app.js"></script>
+    <script>
+        var pastaSite = "./";
+
+        function pageUrl(caminho2) {
+            var partes = caminho2.split("#");
+            var url = pastaSite + partes[0];
+            if (partes.length > 1) url += "#" + partes[1];
+            return url;
+        }
+        const pagina = document.body.dataset.v;
+        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
+
+
+        function apiHunter(caminho, metodo, dados) {
+            var opcoes = { method: metodo || "GET" };
+            if (dados !== undefined) {
+                opcoes.headers = { "Content-Type": "application/json" };
+                opcoes.body = JSON.stringify(dados);
+            }
+            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
+                return resposta.json().catch(function () {
+                    return null;
+                }).then(function (conteudo) {
+                    if (!resposta.ok || !conteudo) {
+                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
+                        erro.status = resposta.status;
+                        if (conteudo) erro.completedAt = conteudo.completedAt;
+                        throw erro;
+                    }
+                    return conteudo;
+                });
+            }, function () {
+                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
+            });
+        }
+        function iniciarPagina() {
+            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
+            if (location.protocol !== "http:" && location.protocol !== "https:") {
+                return Promise.resolve().then(function () {
+                    montarPagina(estadoInicial);
+                });
+            }
+            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
+                montarPagina(estado);
+            }, function (erro) {
+                if (erro.status === 401) erro = null;
+                montarPagina(estadoInicial, erro);
+            });
+        }
+
+        function montarPagina(estado, erroAoConsultar) {
+            const hunter = estado.hunter;
+            if (paginasHunter.includes(pagina)) {
+                if (hunter) {
+                    document.querySelector("main").hidden = false;
+                } else if (erroAoConsultar) {
+                    const aviso = document.createElement("p");
+                    aviso.className = "cartao";
+                    aviso.textContent = erroAoConsultar.message;
+                    document.getElementById("aviso_area_hunter").appendChild(aviso);
+                } else {
+                    location.replace(pastaSite + "login.html");
+                    return;
+                }
+            }
+            window.addEventListener("pageshow", function (evento) {
+                if (evento.persisted) window.location = location.href;
+            });
+
+            const navegacao = document.querySelector("#nav");
+            const ligacoes = [
+                ["index.html", "Início"],
+                ["sobre.html", "Sobre mim"],
+                ["dashboard/personagens.html", "Personagens"],
+                ["dashboard/perfil.html", "Perfil"],
+                ["dashboard/dashboard.html", "Dashboard"],
+                ["dashboard/quiz.html", "Quizzes"],
+                ["dashboard/voto.html", "Voto e Restrição"],
+                ["dashboard/bestiario.html", "Bestiário"],
+                ["cadastro.html", "Cadastro"],
+                ["login.html", "Entrar"]
+            ];
+            navegacao.setAttribute("aria-label", "Navegação principal");
+            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
+            function navigationLink(url, rotulo) {
+                const ligacao = document.createElement("a");
+                ligacao.href = pageUrl(url);
+                ligacao.textContent = rotulo;
+                if (url === "login.html") ligacao.classList.add("botao-destaque");
+                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
+                    ligacao.classList.add("ativo");
+                    ligacao.setAttribute("aria-current", "page");
+                }
+                return ligacao;
+            }
+
+            if (hunter) {
+                navegacao.classList.add("navegacao-hunter");
+                navegacao.innerHTML += `
+                    <div class="controle-menu-hunter">
+                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
+                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+                        </button>
+                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
+                    </div>
+                    <div class="controle-perfil">
+                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
+                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
+                    </div>`;
+
+                navegacao.appendChild(navegacao.querySelector("b"));
+                const menu = navegacao.querySelector("#hunter-menu");
+                const perfil = navegacao.querySelector("#hunter-profile");
+                const botaoPerfil = navegacao.querySelector(".botao-perfil");
+                botaoPerfil.textContent = hunter.name[0].toUpperCase();
+                perfil.querySelector("b").textContent = hunter.name;
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) continue;
+                    const ligacao = navigationLink(url, rotulo);
+                    if (rotulo === "Perfil") {
+                        perfil.appendChild(ligacao);
+                    } else {
+                        const item = document.createElement("li");
+                        item.appendChild(ligacao);
+                        menu.appendChild(item);
+                    }
+                }
+
+                const botaoSair = document.createElement("button");
+                botaoSair.type = "button";
+                botaoSair.textContent = "Sair";
+                botaoSair.addEventListener("click", function () {
+                    var operacao = apiHunter("sair", "POST");
+                    operacao.then(function () {
+                        window.location = pastaSite + "index.html";
+                    }).catch(function (erro) {
+                        botaoSair.title = erro.message;
+                        botaoSair.textContent = "Tentar sair novamente";
+                    });
+                });
+                perfil.appendChild(botaoSair);
+
+                function bindDisclosure(botao, painel) {
+                    function close() {
+                        painel.hidden = true;
+                        botao.setAttribute("aria-expanded", "false");
+                    }
+                    botao.addEventListener("click", function () {
+                        if (!painel.hidden) {
+                            close();
+                            return;
+                        }
+                        painel.hidden = false;
+                        botao.setAttribute("aria-expanded", "true");
+                    });
+                    document.addEventListener("click", function (evento) {
+                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
+                    });
+                    document.addEventListener("keydown", function (evento) {
+                        if (evento.key === "Escape" && !painel.hidden) {
+                            close();
+                            botao.focus();
+                        }
+                    });
+                }
+
+                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
+                bindDisclosure(botaoPerfil, perfil);
+                perfil.addEventListener("click", function (evento) {
+                    if (evento.target.closest("a")) {
+                        perfil.hidden = true;
+                        botaoPerfil.setAttribute("aria-expanded", "false");
+                    }
+                });
+            } else {
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
+                }
+            }
+
+
+
+            function get(id) {
+                return document.getElementById(id);
+            }
+            function value(id) {
+                return get(id).value.trim();
+            }
+
+            const personagens = [
+                ["gon", "Gon Freecss", "Sai da Ilha da Baleia para se tornar Hunter e encontrar seu pai."],
+                ["killua", "Killua Zoldyck", "Deixa para trás a vida de assassino e segue sua própria jornada ao lado de Gon."],
+                ["kurapika", "Kurapika", "Busca recuperar os olhos escarlates do clã Kurta."],
+                ["leorio", "Leorio Paradinight", "Quer se tornar médico e usa o Exame Hunter como caminho para realizar esse objetivo."]
+            ];
+            const paineis = document.querySelector("#paineis_protagonistas");
+            if (paineis && hunter) {
+                paineis.closest(".faixa").hidden = false;
+                document.querySelector("#etapa_personagens").hidden = false;
+            }
+            if (paineis && hunter) {
+                for (var i = 0; i < personagens.length; i++) {
+                    var arquivoImagem = personagens[i][0];
+                    var nome = personagens[i][1];
+                    var descricao = personagens[i][2];
+                    paineis.innerHTML += `<article class="painel-protagonista"><div class="conteudo-protagonista">
+                        <div class="ilustracao"><img src="${pastaSite + "assets/" + arquivoImagem + ".webp"}" alt=""></div>
+                        <div class="texto-protagonista"><h3>${nome}</h3><p>${descricao}</p></div>
+                    </div></article>`;
+                }
+            }
+
+
+            const janela = document.querySelector("#modal");
+            document.querySelectorAll("[data-open]").forEach(function (botao) {
+                botao.addEventListener("click", function () {
+                    const conteudo2 = document.getElementById("t-" + botao.dataset.open);
+                    document.querySelector("#conteudo_janela_informacoes").innerHTML = "";
+                    document.querySelector("#conteudo_janela_informacoes").innerHTML = conteudo2.innerHTML;
+                    janela.showModal();
+                });
+            });
+
+            const coresNen = ["#2c9954", "#8942a1", "#247eaf", "#bd3528", "#dc9119", "#169d89"];
+            const pontosHexagono = [[640, 228], [997, 434], [997, 846], [640, 1052], [283, 846], [283, 434]];
+            function drawNenArtwork(hexagono, filterId) {
+                const imagemHexagono = pastaSite + "assets/hexagono-nen.png";
+                hexagono.setAttribute("viewBox", "-265 38 1810 1204");
+
+
+                hexagono.innerHTML = `
+                    <defs>
+                        <filter id="${filterId}" color-interpolation-filters="sRGB">
+                            <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                                 0 0 0 0 0
+                                                                 0 0 0 0 0
+                                                                 4 4 4 0 -.18" result="mascara"></feColorMatrix>
+                            <feComposite in="SourceGraphic" in2="mascara" operator="in"></feComposite>
+                        </filter>
+                    </defs>
+                    <g aria-hidden="true" fill="#fff">
+                        <path d="M 552 278 L 370 384 M 728 278 L 910 384
+                                 M 997 534 V 746 M 910 896 L 728 1002
+                                 M 552 1002 L 370 896 M 283 746 V 534"
+                              fill="none" stroke="#fff" stroke-width="33" stroke-linecap="butt"></path>
+                        <path fill-rule="evenodd"
+                              d="M 482 457 H 607 L 628 480 Q 607 541 558 585 H 724
+                                 Q 660 526 641 453 L 681 446 Q 688 473 698 490
+                                 L 748 445 L 775 474 L 721 524 L 739 543
+                                 L 797 493 L 823 523 L 770 571 Q 792 589 829 610
+                                 L 811 645 Q 781 630 753 609 V 626 H 709 V 676
+                                 H 805 V 717 H 709 V 773 Q 709 785 719 785 H 766
+                                 Q 776 785 776 776 V 738 L 817 754 V 778
+                                 Q 815 827 764 827 H 718 Q 668 827 668 776 V 717
+                                 H 605 Q 581 798 486 835 L 473 797
+                                 Q 544 768 563 717 H 472 V 676 H 565 V 626 H 527 V 610
+                                 Q 499 634 470 650 L 451 616 Q 486 594 517 569
+                                 L 477 533 L 504 502 L 545 540 Q 563 521 576 498 H 482 Z
+                                 M 607 626 V 676 H 668 V 626 Z"></path>
+                    </g>
+                    <image href="${imagemHexagono}" width="1280" height="1280" filter="url(#${filterId})" aria-hidden="true"></image>`;
+            }
+
+            const hexagono = document.querySelector("#hexagono_tipos_nen");
+            if (hexagono) {
+                const tipos = [
+                    ["Intensificação", coresNen[0], "Gon", "Reforça o corpo e os objetos. Direto, honesto e determinado.", "A água transborda do copo."],
+                    ["Transmutação", coresNen[1], "Killua", "Muda as propriedades da aura, como dar a ela características de eletricidade.", "A água muda de sabor."],
+                    ["Materialização", coresNen[2], "Kurapika", "Cria objetos a partir da aura, como correntes.", "Surgem impurezas na água."],
+                    ["Especialização", coresNen[3], "Chrollo", "Reúne habilidades fora das outras cinco categorias.", "Ocorre um efeito diferente dos demais."],
+                    ["Manipulação", coresNen[4], "Illumi", "Permite controlar objetos ou seres vivos.", "A folha se move."],
+                    ["Emissão", coresNen[5], "Leorio", "Permite projetar a aura e mantê-la longe do corpo.", "A água muda de cor."]
+                ];
+                const pontos = pontosHexagono;
+                const informacoes = document.querySelector("#informacoes_tipo_nen");
+                drawNenArtwork(hexagono, "nen-sem-fundo");
+                hexagono.setAttribute("role", "group");
+                hexagono.setAttribute("aria-label", "Os seis tipos de Nen");
+
+                for (let indice = 0; indice < tipos.length; indice++) {
+                    let tipo = tipos[indice];
+                    let nome = tipo[0];
+                    let cor = tipo[1];
+                    let exemplo = tipo[2];
+                    let descricao = tipo[3];
+                    let efeito = tipo[4];
+                    const [x, y] = pontos[indice];
+                    const horizontal = (x < 640 ? -1 : x > 640 ? 1 : 0) * 122;
+                    const posicaoTexto = y + [-122, 16, 16, 155, 16, 16][indice];
+                    const alinhamento = horizontal === 0 ? "middle" : horizontal > 0 ? "start" : "end";
+                    var suporteVertice = document.createElement("div");
+                    suporteVertice.innerHTML = `<svg><g class="vertice-nen" role="button" tabindex="0" aria-label="${nome}" aria-pressed="false">
+                        <circle cx="${x}" cy="${y}" r="101"></circle>
+                        <text x="${x + horizontal}" y="${posicaoTexto}" text-anchor="${alinhamento}" aria-hidden="true">${nome}</text>
+                    </g></svg>`;
+                    const vertice = suporteVertice.firstElementChild.firstElementChild;
+                    hexagono.appendChild(vertice);
+                    const proximo = tipos[(indice + 1) % tipos.length][0];
+                    const anterior = tipos[(indice + tipos.length - 1) % tipos.length][0];
+                    const oposto = tipos[(indice + 3) % tipos.length][0];
+                    function select() {
+                        const elementoAtivo = hexagono.querySelector(".ativo");
+                        if (elementoAtivo) {
+                            elementoAtivo.classList.remove("ativo");
+                            elementoAtivo.setAttribute("aria-pressed", "false");
+                        }
+                        vertice.classList.add("ativo");
+                        vertice.setAttribute("aria-pressed", "true");
+                        informacoes.style.setProperty("--nen-color", cor);
+                        informacoes.innerHTML = `<h3><span class="etiqueta">${nome}</span></h3>
+                            <p class="texto-secundario">Exemplo: ${exemplo}</p><p>${descricao}</p>
+                            <p class="texto-secundario"><strong>Na divinação:</strong> ${efeito}</p>
+                            ${indice === 3 ? "" : `<p class="texto-secundario"><strong>Afinidade:</strong> 80% com ${anterior} e ${proximo}; 40% com ${oposto}.</p>`}`;
+                    }
+                    vertice.addEventListener("focus", select);
+                    vertice.addEventListener("pointerenter", select);
+                    vertice.addEventListener("click", select);
+                    vertice.addEventListener("keydown", function (evento) {
+                        if (evento.key === "Enter" || evento.key === " ") {
+                            evento.preventDefault();
+                            select();
+                        }
+                    });
+                    if (indice === 0) select();
+                }
+            }
+
+
+            function card(title, descricao) {
+                const artigo = document.createElement("article");
+                artigo.className = "cartao";
+                const titulo = document.createElement("h2");
+                titulo.textContent = title;
+                const detalhes = document.createElement("p");
+                detalhes.textContent = descricao;
+                artigo.appendChild(titulo);
+                artigo.appendChild(detalhes);
+                return artigo;
+            }
+
+            const mural = get("mural");
+            if (mural && hunter) {
+                var contas = estado.mural;
+                mural.innerHTML = "";
+                for (var i = 0; i < contas.length; i++) {
+                    var conta = contas[i];
+                    mural.appendChild(card(conta.name, "Licença " + conta.license));
+                }
+            }
+            if (mural) mural.closest(".faixa").hidden = !hunter;
+
+        }
+
+        iniciarPagina().catch(function (erro) {
+            console.error(erro);
+        });
+    </script>
 </body>
 
 </html>

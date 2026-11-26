@@ -8,54 +8,394 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body data-v="dashboard">
     <!-- MENU DA ÁREA HUNTER -->
     <nav id="nav"></nav>
 
+    <div id="aviso_area_hunter"></div>
     <main class="painel-hunter" hidden>
         <header class="cabecalho-dashboard">
             <div>
                 <h1>Dashboard Hunter</h1>
-                <p>Dados fictícios para visualizar o painel.</p>
+                <p id="situacao_dashboard" role="status">Carregando dados do banco...</p>
             </div>
         </header>
 
         <!-- INDICADORES -->
-        <dl class="indicadores-hunter">
-            <div><dt>Hunters cadastrados</dt><dd>15</dd></div>
-            <div><dt>Testes de Nen concluídos</dt><dd>12</dd></div>
-            <div><dt>Tentativas de quiz</dt><dd>24</dd></div>
-            <div><dt>Criaturas registradas</dt><dd>8</dd></div>
-        </dl>
+        <div class="indicadores-hunter">
+            <div>
+                <h3 class="titulo-indicador">Hunters cadastrados</h3>
+                <p class="valor-indicador" id="total_hunters">—</p>
+            </div>
+            <div>
+                <h3 class="titulo-indicador">Testes de Nen concluídos</h3>
+                <p class="valor-indicador" id="total_nen">—</p>
+            </div>
+            <div>
+                <h3 class="titulo-indicador">Tentativas de quiz</h3>
+                <p class="valor-indicador" id="total_tentativas">—</p>
+            </div>
+            <div>
+                <h3 class="titulo-indicador">Criaturas registradas</h3>
+                <p class="valor-indicador" id="total_criaturas">—</p>
+            </div>
+        </div>
 
         <!-- GRÁFICOS -->
         <section class="graficos-hunter" aria-label="Gráficos da Área Hunter">
             <article class="grafico-hunter">
                 <h2>Tipos de Nen</h2>
                 <p>Quantidade de Hunters por tipo dominante</p>
-                <canvas id="grafico_tipos_nen" width="390" height="214" role="img"
-                    aria-label="Intensificação 3, Transmutação 3, Materialização 2, Especialização 1, Manipulação 1, Emissão 2."></canvas>
+                <div class="area-grafico">
+                    <canvas id="grafico_tipos_nen" width="390" height="214" role="img"
+                        aria-label="Distribuição dos tipos de Nen"></canvas>
+                </div>
             </article>
             <article class="grafico-hunter">
                 <h2>Média de nota por quiz</h2>
                 <p>Média de acertos de um total de 15</p>
-                <canvas id="grafico_medias_quiz" width="390" height="214" role="img"
-                    aria-label="Killua 12,4; Leorio 9,6; Gon 11,8; Kurapika 10,7, de 15."></canvas>
+                <div class="area-grafico">
+                    <canvas id="grafico_medias_quiz" width="390" height="214" role="img"
+                        aria-label="Média por quiz"></canvas>
+                </div>
             </article>
             <article class="grafico-hunter">
                 <h2>Perigo das criaturas</h2>
                 <p>Registros do bestiário por classificação</p>
-                <canvas id="grafico_perigo_criaturas" width="390" height="214" role="img"
-                    aria-label="Baixo 4, Moderado 3, Alto 1, Extremo 0."></canvas>
+                <div class="area-grafico">
+                    <canvas id="grafico_perigo_criaturas" width="390" height="214" role="img"
+                        aria-label="Níveis de perigo das criaturas"></canvas>
+                </div>
             </article>
         </section>
     </main>
 
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos. Hunter × Hunter © Yoshihiro Togashi / Shueisha.</footer>
-    <script src="../js/app.js"></script>
-    <script src="../js/dashboard.js"></script>
+    <script>
+        var pastaSite = "../";
+
+        function pageUrl(caminho2) {
+            var partes = caminho2.split("#");
+            var url = pastaSite + partes[0];
+            if (partes.length > 1) url += "#" + partes[1];
+            return url;
+        }
+        const pagina = document.body.dataset.v;
+        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
+
+
+        function apiHunter(caminho, metodo, dados) {
+            var opcoes = { method: metodo || "GET" };
+            if (dados !== undefined) {
+                opcoes.headers = { "Content-Type": "application/json" };
+                opcoes.body = JSON.stringify(dados);
+            }
+            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
+                return resposta.json().catch(function () {
+                    return null;
+                }).then(function (conteudo) {
+                    if (!resposta.ok || !conteudo) {
+                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
+                        erro.status = resposta.status;
+                        if (conteudo) erro.completedAt = conteudo.completedAt;
+                        throw erro;
+                    }
+                    return conteudo;
+                });
+            }, function () {
+                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
+            });
+        }
+        function iniciarPagina() {
+            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
+            if (location.protocol !== "http:" && location.protocol !== "https:") {
+                return Promise.resolve().then(function () {
+                    montarPagina(estadoInicial);
+                });
+            }
+            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
+                montarPagina(estado);
+            }, function (erro) {
+                if (erro.status === 401) erro = null;
+                montarPagina(estadoInicial, erro);
+            });
+        }
+
+        function montarPagina(estado, erroAoConsultar) {
+            const hunter = estado.hunter;
+            if (paginasHunter.includes(pagina)) {
+                if (hunter) {
+                    document.querySelector("main").hidden = false;
+                } else if (erroAoConsultar) {
+                    const aviso = document.createElement("p");
+                    aviso.className = "cartao";
+                    aviso.textContent = erroAoConsultar.message;
+                    document.getElementById("aviso_area_hunter").appendChild(aviso);
+                } else {
+                    location.replace(pastaSite + "login.html");
+                    return;
+                }
+            }
+            window.addEventListener("pageshow", function (evento) {
+                if (evento.persisted) window.location = location.href;
+            });
+
+            const navegacao = document.querySelector("#nav");
+            const ligacoes = [
+                ["index.html", "Início"],
+                ["sobre.html", "Sobre mim"],
+                ["dashboard/personagens.html", "Personagens"],
+                ["dashboard/perfil.html", "Perfil"],
+                ["dashboard/dashboard.html", "Dashboard"],
+                ["dashboard/quiz.html", "Quizzes"],
+                ["dashboard/voto.html", "Voto e Restrição"],
+                ["dashboard/bestiario.html", "Bestiário"],
+                ["cadastro.html", "Cadastro"],
+                ["login.html", "Entrar"]
+            ];
+            navegacao.setAttribute("aria-label", "Navegação principal");
+            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
+            function navigationLink(url, rotulo) {
+                const ligacao = document.createElement("a");
+                ligacao.href = pageUrl(url);
+                ligacao.textContent = rotulo;
+                if (url === "login.html") ligacao.classList.add("botao-destaque");
+                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
+                    ligacao.classList.add("ativo");
+                    ligacao.setAttribute("aria-current", "page");
+                }
+                return ligacao;
+            }
+
+            if (hunter) {
+                navegacao.classList.add("navegacao-hunter");
+                navegacao.innerHTML += `
+                    <div class="controle-menu-hunter">
+                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
+                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+                        </button>
+                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
+                    </div>
+                    <div class="controle-perfil">
+                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
+                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
+                    </div>`;
+
+                navegacao.appendChild(navegacao.querySelector("b"));
+                const menu = navegacao.querySelector("#hunter-menu");
+                const perfil = navegacao.querySelector("#hunter-profile");
+                const botaoPerfil = navegacao.querySelector(".botao-perfil");
+                botaoPerfil.textContent = hunter.name[0].toUpperCase();
+                perfil.querySelector("b").textContent = hunter.name;
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) continue;
+                    const ligacao = navigationLink(url, rotulo);
+                    if (rotulo === "Perfil") {
+                        perfil.appendChild(ligacao);
+                    } else {
+                        const item = document.createElement("li");
+                        item.appendChild(ligacao);
+                        menu.appendChild(item);
+                    }
+                }
+
+                const botaoSair = document.createElement("button");
+                botaoSair.type = "button";
+                botaoSair.textContent = "Sair";
+                botaoSair.addEventListener("click", function () {
+                    var operacao = apiHunter("sair", "POST");
+                    operacao.then(function () {
+                        window.location = pastaSite + "index.html";
+                    }).catch(function (erro) {
+                        botaoSair.title = erro.message;
+                        botaoSair.textContent = "Tentar sair novamente";
+                    });
+                });
+                perfil.appendChild(botaoSair);
+
+                function bindDisclosure(botao, painel) {
+                    function close() {
+                        painel.hidden = true;
+                        botao.setAttribute("aria-expanded", "false");
+                    }
+                    botao.addEventListener("click", function () {
+                        if (!painel.hidden) {
+                            close();
+                            return;
+                        }
+                        painel.hidden = false;
+                        botao.setAttribute("aria-expanded", "true");
+                    });
+                    document.addEventListener("click", function (evento) {
+                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
+                    });
+                    document.addEventListener("keydown", function (evento) {
+                        if (evento.key === "Escape" && !painel.hidden) {
+                            close();
+                            botao.focus();
+                        }
+                    });
+                }
+
+                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
+                bindDisclosure(botaoPerfil, perfil);
+                perfil.addEventListener("click", function (evento) {
+                    if (evento.target.closest("a")) {
+                        perfil.hidden = true;
+                        botaoPerfil.setAttribute("aria-expanded", "false");
+                    }
+                });
+            } else {
+                for (var i = 0; i < ligacoes.length; i++) {
+                    var url = ligacoes[i][0];
+                    var rotulo = ligacoes[i][1];
+                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
+                }
+            }
+
+
+
+            function get(id) {
+                return document.getElementById(id);
+            }
+            function value(id) {
+                return get(id).value.trim();
+            }
+
+        }
+
+        iniciarPagina().catch(function (erro) {
+            console.error(erro);
+        });
+    </script>
+    <script>
+    // Busca os dados da API e chama as funções que preenchem a página.
+    window.addEventListener("DOMContentLoaded", obterDadosGrafico);
+
+    function obterDadosGrafico() {
+        var situacao = document.getElementById("situacao_dashboard");
+
+        fetch("../../hunter/dashboard", { cache: "no-store" }).then(function (resposta2) {
+            if (resposta2.ok) {
+                return resposta2.json().then(function (resposta) {
+                    preencherDashboard(resposta);
+                    situacao.textContent = "";
+                });
+            } else {
+                return resposta2.json().then(function (erro) {
+                    situacao.textContent = erro.mensagem;
+                });
+            }
+        }).catch(function (erro) {
+            console.error("Erro na obtenção dos dados: " + erro.message);
+            situacao.textContent = "Não foi possível carregar os dados da dashboard.";
+        });
+    }
+
+    function preencherDashboard(resposta) {
+        var totalHunters = 0;
+        var totalNen = 0;
+        var totalTentativas = 0;
+        var totalCriaturas = 0;
+        var tiposNen = [];
+        var mediasQuiz = [];
+        var perigoCriaturas = [];
+
+        for (var i = 0; i < resposta.length; i++) {
+            var registro = resposta[i];
+            var valor = Number(registro.valor);
+
+            if (registro.grupo === "usuarios") {
+                totalHunters = valor;
+            } else if (registro.grupo === "nen") {
+                totalNen += valor;
+                tiposNen.push({ nome: registro.nome, valor: valor });
+            } else if (registro.grupo === "tentativas") {
+                totalTentativas = valor;
+            } else if (registro.grupo === "medias" && registro.valor !== null) {
+                mediasQuiz.push({ nome: registro.nome.toUpperCase(), valor: valor });
+            } else if (registro.grupo === "perigo") {
+                totalCriaturas += valor;
+                perigoCriaturas.push({ nome: registro.nome, valor: valor });
+            }
+        }
+
+        document.getElementById("total_hunters").textContent = totalHunters;
+        document.getElementById("total_nen").textContent = totalNen;
+        document.getElementById("total_tentativas").textContent = totalTentativas;
+        document.getElementById("total_criaturas").textContent = totalCriaturas;
+
+        plotarGrafico(tiposNen, "grafico_tipos_nen", "Hunters", "#ffd34e");
+        plotarGrafico(mediasQuiz, "grafico_medias_quiz", "Média de acertos", "#67d8aa");
+        plotarGrafico(perigoCriaturas, "grafico_perigo_criaturas", "Criaturas", "#f0a46e", "doughnut");
+    }
+
+    // Coloca os dados recebidos em labels e datasets e cria o gráfico no canvas.
+    function plotarGrafico(resposta, idGrafico, titulo, cor, tipo) {
+        var rotulos = [];
+        var cores = { Baixo: "#67d8aa", Moderado: "#ffd34e", Alto: "#f0a46e", Extremo: "#ef7070" };
+        var dados = {
+            labels: rotulos,
+            datasets: [
+                {
+                    label: titulo,
+                    data: [],
+                    backgroundColor: tipo === "doughnut" ? [] : cor
+                }
+            ]
+        };
+
+        for (var i = 0; i < resposta.length; i++) {
+            var registro = resposta[i];
+            rotulos.push(registro.nome);
+            dados.datasets[0].data.push(registro.valor);
+            if (tipo === "doughnut") {
+                dados.datasets[0].backgroundColor.push(cores[registro.nome] || cor);
+            }
+        }
+
+        var config = {
+            type: tipo || "bar",
+            data: dados,
+            options: tipo === "doughnut" ? {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { color: "#f4efe0" } }
+                }
+            } : {
+                indexAxis: "y",
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        suggestedMax: titulo === "Média de acertos" ? 15 : 1,
+                        ticks: { color: "#f4efe0" }
+                    },
+                    y: {
+                        ticks: { color: "#f4efe0" }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        };
+
+        if (resposta.length === 0) {
+            document.getElementById(idGrafico).setAttribute("aria-label", titulo + ": sem dados registrados.");
+        }
+
+        new Chart(
+            document.getElementById(idGrafico),
+            config
+        );
+    }
+    </script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-var database = require("../database/config");
+var bancoDados = require("../database/config");
 
 var tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
 
@@ -8,12 +8,12 @@ function perfil(id) {
         FROM usuario
         WHERE id = ?;
     `;
-    return database.executar(instrucaoSql, [id]).then(function (resultado) {
+    return bancoDados.executar(instrucaoSql, [id]).then(function (resultado) {
         return resultado[0];
     });
 }
 
-async function estado(id, pagina) {
+function estado(id, pagina) {
     var consultaNen = `
         SELECT tipo_dominante AS tipo, pontos_intensificacao AS intensificacao,
                pontos_transmutacao AS transmutacao, pontos_materializacao AS materializacao,
@@ -52,46 +52,58 @@ async function estado(id, pagina) {
         LIMIT 30;
     `;
 
-    var [hunter, resultados, votos, tentativas, criaturas, mural] = await Promise.all([
+    return Promise.all([
         perfil(id),
-        database.executar(consultaNen, [id]),
-        database.executar(consultaVoto, [id]),
-        database.executar(consultaTentativa, [id]),
-        pagina === "bestiario" ? database.executar(consultaCriaturas) : [],
-        pagina === "inicio" ? database.executar(consultaMural) : []
-    ]);
-    var nen = resultados[0];
-    var resultado = nen ? {
-        type: tiposNen.indexOf(nen.tipo),
-        scores: [nen.intensificacao, nen.transmutacao, nen.materializacao, nen.especializacao, nen.manipulacao, nen.emissao]
-    } : null;
-    return {
-        hunter, resultado, voto: votos[0] || null, criaturas, mural,
-        tentativas: Object.fromEntries(tentativas.map(function (tentativa) { return [tentativa.quiz, { completedAt: Number(tentativa.completedAt) }]; }))
-    };
+        bancoDados.executar(consultaNen, [id]),
+        bancoDados.executar(consultaVoto, [id]),
+        bancoDados.executar(consultaTentativa, [id]),
+        pagina === "bestiario" ? bancoDados.executar(consultaCriaturas) : [],
+        pagina === "inicio" ? bancoDados.executar(consultaMural) : []
+    ]).then(function (dados) {
+        var hunter = dados[0];
+        var resultados = dados[1];
+        var votos = dados[2];
+        var tentativas = dados[3];
+        var criaturas = dados[4];
+        var mural = dados[5];
+        var nen = resultados[0];
+        var resultado = nen ? {
+            type: tiposNen.indexOf(nen.tipo),
+            scores: [nen.intensificacao, nen.transmutacao, nen.materializacao, nen.especializacao, nen.manipulacao, nen.emissao]
+        } : null;
+        var ultimaTentativaPorQuiz = {};
+        for (var i = 0; i < tentativas.length; i++) {
+            var tentativa = tentativas[i];
+            ultimaTentativaPorQuiz[tentativa.quiz] = { completedAt: Number(tentativa.completedAt) };
+        }
+        return { hunter, resultado, voto: votos[0] || null, criaturas, mural, tentativas: ultimaTentativaPorQuiz };
+    });
 }
 
-function editarPerfil(id, name, reason) {
+function editarPerfil(id, nome, motivacao) {
     var instrucaoSql = `
         UPDATE usuario
         SET nome = ?, motivo_cadastro = ?
         WHERE id = ?;
     `;
-    return database.executar(instrucaoSql, [name, reason, id]).then(function () {
+    return bancoDados.executar(instrucaoSql, [nome, motivacao, id]).then(function () {
         return perfil(id);
     });
 }
 
-function salvarNen(id, scores) {
-    var type = scores.indexOf(Math.max(...scores));
+function salvarNen(id, pontuacoes) {
+    var tipo2 = 0;
+    for (var i = 1; i < pontuacoes.length; i++) {
+        if (pontuacoes[i] > pontuacoes[tipo2]) tipo2 = i;
+    }
     var instrucaoSql = `
         INSERT INTO resultado_nen (tipo_dominante, pontos_intensificacao, pontos_transmutacao,
             pontos_materializacao, pontos_especializacao, pontos_manipulacao, pontos_emissao,
             data_resultado, fk_usuario)
         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_DATE(), ?);
     `;
-    return database.executar(instrucaoSql, [tiposNen[type], ...scores, id]).then(function () {
-        return { type, scores };
+    return bancoDados.executar(instrucaoSql, [tiposNen[tipo2]].concat(pontuacoes, [id])).then(function () {
+        return { type: tipo2, scores: pontuacoes };
     });
 }
 
@@ -102,38 +114,70 @@ function salvarVoto(id, voto) {
         VALUES (?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE meta = ?, restricao = ?, penalidade = ?, severidade = ?;
     `;
-    return database.executar(instrucaoSql, [...campos, id, ...campos]).then(function () {
+    return bancoDados.executar(instrucaoSql, campos.concat([id], campos)).then(function () {
         return voto;
     });
 }
 
-async function registrarCriatura(id, criatura) {
+function registrarCriatura(id, criatura) {
     var campos = [criatura.name, criatura.description, criatura.bt, criatura.bp, criatura.bh, criatura.bo, criatura.bc, criatura.bev, criatura.bnn];
     var instrucaoSql = `
         INSERT INTO criatura (nome, descricao, categoria, perigo, habitat, porte,
             comportamento, evolucao, tipo_nen, fk_usuario)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
-    var registro = await database.executar(instrucaoSql, [...campos, id]);
-    var hunter = await perfil(id);
-    return { ...criatura, id: registro.insertId, author: hunter.name };
-}
-
-function salvarTentativa(id, quiz, correct, total) {
-    return database.executarEmTransacao(async function (executar) {
-        await executar("SELECT id FROM usuario WHERE id = ? FOR UPDATE", [id]);
-        var [nen] = await executar("SELECT id FROM resultado_nen WHERE fk_usuario = ?", [id]);
-        if (!nen) return { bloqueio: "nen" };
-
-        var [ultima] = await executar("SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt, TIMESTAMPDIFF(SECOND, concluido_em, CURRENT_TIMESTAMP) AS segundos FROM tentativa_quiz WHERE fk_usuario = ? AND quiz = ? ORDER BY concluido_em DESC, id DESC LIMIT 1", [id, quiz]);
-        if (ultima && ultima.segundos < 10800) return { bloqueio: "tempo", completedAt: Number(ultima.completedAt) };
-        var tentativa = await executar("INSERT INTO tentativa_quiz (fk_usuario, quiz, acertos, total_perguntas) VALUES (?, ?, ?, ?)", [id, quiz, correct, total]);
-        var [salva] = await executar("SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt FROM tentativa_quiz WHERE id = ?", [tentativa.insertId]);
-        return { correct, total, completedAt: Number(salva.completedAt) };
+    return bancoDados.executar(instrucaoSql, campos.concat([id])).then(function (registro) {
+        return perfil(id).then(function (hunter) {
+            criatura.id = registro.insertId;
+            criatura.author = hunter.name;
+            return criatura;
+        });
     });
 }
 
+function salvarTentativa(id, quiz, acertos, total) {
+    return bancoDados.executarEmTransacao(function (executar) {
+        return executar("SELECT id FROM usuario WHERE id = ? FOR UPDATE", [id]).then(function () {
+            return executar("SELECT id FROM resultado_nen WHERE fk_usuario = ?", [id]);
+        }).then(function (resultadosNen) {
+            if (!resultadosNen[0]) return { bloqueio: "nen" };
+
+            var consulta = "SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt, TIMESTAMPDIFF(SECOND, concluido_em, CURRENT_TIMESTAMP) AS segundos FROM tentativa_quiz WHERE fk_usuario = ? AND quiz = ? ORDER BY concluido_em DESC, id DESC LIMIT 1";
+            return executar(consulta, [id, quiz]).then(function (tentativas) {
+                var ultima = tentativas[0];
+                if (ultima && ultima.segundos < 10800) {
+                    return { bloqueio: "tempo", completedAt: Number(ultima.completedAt) };
+                }
+
+                return executar("INSERT INTO tentativa_quiz (fk_usuario, quiz, acertos, total_perguntas) VALUES (?, ?, ?, ?)", [id, quiz, acertos, total]).then(function (tentativa) {
+                    return executar("SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt FROM tentativa_quiz WHERE id = ?", [tentativa.insertId]);
+                }).then(function (registros) {
+                    return { correct: acertos, total, completedAt: Number(registros[0].completedAt) };
+                });
+            });
+        });
+    });
+}
+
+function buscarDashboard() {
+    var instrucaoSql = `
+        SELECT 'usuarios' AS grupo, '' AS nome, COUNT(*) AS valor FROM usuario
+        UNION ALL
+        SELECT 'nen', tipo_dominante, COUNT(*) FROM resultado_nen GROUP BY tipo_dominante
+        UNION ALL
+        SELECT 'tentativas', '', COUNT(*) FROM tentativa_quiz
+        UNION ALL
+        SELECT 'medias', quiz, ROUND(AVG(15.0 * acertos / NULLIF(total_perguntas, 0)), 1)
+        FROM tentativa_quiz GROUP BY quiz
+        UNION ALL
+        SELECT 'perigo', perigo, COUNT(*) FROM criatura GROUP BY perigo;
+    `;
+
+    return bancoDados.executar(instrucaoSql);
+}
+
 module.exports = {
+    buscarDashboard,
     estado,
     editarPerfil,
     salvarNen,

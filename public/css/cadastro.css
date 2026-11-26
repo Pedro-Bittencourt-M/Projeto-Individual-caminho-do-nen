@@ -5,3 +5,51 @@ body[data-v="cadastro"] {
 #cadastro .cartao-licenca > img {
   border-radius: 16px 16px 0 0;
 }
+
+.campo-senha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.campo-senha input {
+  min-width: 0;
+  flex: 1;
+}
+
+.campo-senha button {
+  flex: none;
+  margin: 0;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.requisitos-senha {
+  margin-top: 6px;
+  text-align: left;
+  font: 13px/1.5 var(--fonte-site);
+}
+
+.requisitos-senha p,
+.requisitos-senha ul {
+  margin: 0;
+}
+
+.requisitos-senha ul {
+  list-style: none;
+  padding: 0;
+}
+
+.requisitos-senha li {
+  color: #8b1825;
+}
+
+.requisitos-senha li.valido {
+  color: #125836;
+}
+
+.requisitos-senha li span {
+  display: inline-block;
+  width: 1.25em;
+  font-weight: 700;
+}

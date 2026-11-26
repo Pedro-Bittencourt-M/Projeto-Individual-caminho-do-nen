@@ -7,7 +7,9 @@
     <title>Cadastro · Caminho do Nen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/cadastro.css">
@@ -28,23 +30,39 @@
                 inscrição.
             </p>
             <div class="cartao-licenca"><img src="./assets/cardtop.png" alt="Cartão da Associação Hunter">
-                <form id="formulario_cadastro" class="formulario-licenca">
+                <form id="formulario_cadastro" class="formulario-licenca" novalidate onsubmit="cadastrar(); return false;">
                     <div class="campo">
                         <label for="nome_input">Nome de Hunter</label>
                         <input id="nome_input" type="text" placeholder="Seu nome" required autocomplete="nickname" />
                     </div>
                     <div class="campo">
                         <label for="email_input">E-mail</label>
-                        <input id="email_input" type="email" placeholder="seuemail@exemplo.com" required autocomplete="email" />
+                        <input id="email_input" type="email" placeholder="seuemail@exemplo.com" required
+                            autocomplete="email" />
                     </div>
                     <div class="campo">
                         <label for="senha_input">Senha</label>
-                        <input id="senha_input" type="password" placeholder="Crie uma senha com pelo menos 8 caracteres" required minlength="8" autocomplete="new-password" />
-                        <div class="barra-progresso"><i id="indicador_forca_senha" style="width:0"></i></div>
+                        <div class="campo-senha">
+                            <input id="senha_input" type="password" oninput="validarSenha()" placeholder="Digite sua senha" required
+                                minlength="8" maxlength="70" aria-describedby="requisitos_senha"
+                                autocomplete="new-password" />
+                            <button type="button" id="mostrar_senha" aria-pressed="false" onclick="alternarVisibilidadeSenha(this, 'senha_input')">Mostrar</button>
+                        </div>
+                        <div id="requisitos_senha" class="requisitos-senha">
+                            <p>Sua senha deve conter:</p>
+                            <ul>
+                                <li id="senha_tamanho"><span aria-hidden="true">✕</span> De 8 a 70 caracteres</li>
+                                <li id="senha_minuscula"><span aria-hidden="true">✕</span> Letra minúscula</li>
+                                <li id="senha_maiuscula"><span aria-hidden="true">✕</span> Letra maiúscula</li>
+                                <li id="senha_numero"><span aria-hidden="true">✕</span> Número</li>
+                                <li id="senha_simbolo"><span aria-hidden="true">✕</span> Símbolo, como !, @, # ou %</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="campo">
                         <label for="confirmacao_senha_input">Confirme a senha</label>
-                        <input id="confirmacao_senha_input" type="password" placeholder="Repita sua senha" required autocomplete="new-password" />
+                        <input id="confirmacao_senha_input" type="password" placeholder="Repita sua senha" required
+                            autocomplete="new-password" />
                     </div>
                     <div class="campo">
                         <label for="motivacao_input">Por que você quer ser Hunter?</label>
@@ -63,7 +81,131 @@
     </main>
     <footer class="rodape">Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial. Hunter x Hunter ©
         Yoshihiro Togashi / Shueisha. Personagens e imagens pertencem aos seus criadores.</footer>
-    <script src="./js/app.js"></script>
+    <script>
+    function alternarVisibilidadeSenha(botao, idInput) {
+        var campo = document.getElementById(idInput);
+        if (campo.type === "password") {
+            campo.type = "text";
+            botao.textContent = "Ocultar";
+            botao.setAttribute("aria-pressed", "true");
+        } else {
+            campo.type = "password";
+            botao.textContent = "Mostrar";
+            botao.setAttribute("aria-pressed", "false");
+        }
+    }
+
+    function marcarRequisito(id, passou) {
+        var requisito = document.getElementById(id);
+        if (passou) {
+            requisito.classList.add("valido");
+            requisito.querySelector("span").textContent = "✓";
+        } else {
+            requisito.classList.remove("valido");
+            requisito.querySelector("span").textContent = "✕";
+        }
+    }
+
+    function validarSenha() {
+        var senha = document.getElementById("senha_input").value;
+        var minusculas = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
+        var maiusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ";
+        var numeros = "0123456789";
+        var temMaiuscula = false;
+        var temMinuscula = false;
+        var temNumero = false;
+        var temSimbolo = false;
+
+        for (var i = 0; i < senha.length; i++) {
+            var caractere = senha[i];
+            if (maiusculas.includes(caractere)) {
+                temMaiuscula = true;
+            } else if (minusculas.includes(caractere)) {
+                temMinuscula = true;
+            } else if (numeros.includes(caractere)) {
+                temNumero = true;
+            } else if (caractere.trim() !== "") {
+                temSimbolo = true;
+            }
+        }
+
+        var tamanhoValido = senha.length >= 8 && senha.length <= 70;
+        marcarRequisito("senha_tamanho", tamanhoValido);
+        marcarRequisito("senha_minuscula", temMinuscula);
+        marcarRequisito("senha_maiuscula", temMaiuscula);
+        marcarRequisito("senha_numero", temNumero);
+        marcarRequisito("senha_simbolo", temSimbolo);
+        return tamanhoValido && temMinuscula && temMaiuscula && temNumero && temSimbolo;
+    }
+
+    function cadastrar() {
+        var nomeInput = document.getElementById("nome_input");
+        var emailInput = document.getElementById("email_input");
+        var senhaInput = document.getElementById("senha_input");
+        var confirmacaoInput = document.getElementById("confirmacao_senha_input");
+        var motivacaoInput = document.getElementById("motivacao_input");
+        var aceiteInput = document.getElementById("aceite_input");
+        var formulario = document.getElementById("formulario_cadastro");
+        var mensagem = formulario.querySelector("[role=status]");
+        var botao = formulario.querySelector("button[type=submit]");
+
+        var nomeVar = nomeInput.value.trim();
+        var emailVar = emailInput.value.trim().toLowerCase();
+        var senhaVar = senhaInput.value;
+        var confirmacaoSenhaVar = confirmacaoInput.value;
+        var motivoVar = motivacaoInput.value.trim();
+        var aceiteVar = aceiteInput.checked;
+
+        if (botao.disabled) return;
+        if (nomeVar === "") {
+            mensagem.textContent = "Informe um nome de Hunter.";
+            nomeInput.focus();
+        } else if (emailVar === "" || !emailInput.validity.valid) {
+            mensagem.textContent = "Informe um e-mail válido.";
+            emailInput.focus();
+        } else if (!validarSenha()) {
+            mensagem.textContent = "A senha precisa atender a todos os requisitos.";
+            senhaInput.focus();
+        } else if (senhaVar !== confirmacaoSenhaVar) {
+            mensagem.textContent = "As senhas precisam ser iguais.";
+            confirmacaoInput.focus();
+        } else if (!aceiteVar) {
+            mensagem.textContent = "Aceite os termos do Exame para continuar.";
+            aceiteInput.focus();
+        } else if (location.protocol === "file:") {
+            mensagem.textContent = "Abra o site pelo servidor para fazer o cadastro.";
+        } else {
+            botao.disabled = true;
+            mensagem.textContent = "";
+
+            return fetch("/usuarios/cadastrar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nomeServer: nomeVar,
+                    emailServer: emailVar,
+                    senhaServer: senhaVar,
+                    motivoServer: motivoVar,
+                    aceiteServer: aceiteVar
+                })
+            }).then(function (resposta) {
+                if (resposta.ok) {
+                    window.location = "dashboard/quiz.html";
+                } else {
+                    return resposta.json().then(function (dados) {
+                        mensagem.textContent = dados.mensagem || "Não foi possível cadastrar.";
+                        botao.disabled = false;
+                    });
+                }
+            }).catch(function () {
+                mensagem.textContent = "Não foi possível cadastrar. Confira se o servidor está ligado.";
+                botao.disabled = false;
+            });
+        }
+    }
+
+    validarSenha();
+    </script>
 </body>
 
 </html>

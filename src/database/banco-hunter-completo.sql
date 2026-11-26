@@ -1,15 +1,7 @@
-CREATE DATABASE IF NOT EXISTS hunter;
+-- Caminho do Nen | Instalação local com dados fictícios.
+-- Execute uma vez em um banco hunter novo.
+CREATE DATABASE IF NOT EXISTS hunter CHARACTER SET utf8mb4;
 USE hunter;
-
--- Execute no mesmo MySQL usado pela API do Caminho do Nen.
--- As tabelas existentes e seus registros são preservados.
-USE hunter;
-
-CREATE USER 'hunter_user'@'localhost' identified by 'Urubu@100';
-
-GRANT ALL privileges ON hunter.* TO 'hunter_user'@'localhost';
-
-FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -75,12 +67,3 @@ CREATE TABLE IF NOT EXISTS tentativa_quiz (
     CONSTRAINT ck_tentativa_quiz_placar CHECK (total_perguntas > 0 AND acertos <= total_perguntas),
     CONSTRAINT fk_tentativa_quiz_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
 );
-
--- Se uma tabela antiga estiver com outra estrutura, o SELECT mostra a coluna que falta.
-SELECT id, nome, email, senha, motivo_cadastro, codigo_licenca FROM usuario LIMIT 0;
-SELECT id, tipo_dominante, pontos_intensificacao, pontos_transmutacao, pontos_materializacao, pontos_especializacao, pontos_manipulacao, pontos_emissao, data_resultado, fk_usuario FROM resultado_nen LIMIT 0;
-SELECT id, meta, restricao, penalidade, severidade, fk_usuario FROM voto_restricao LIMIT 0;
-SELECT id, nome, descricao, categoria, perigo, habitat, porte, comportamento, evolucao, tipo_nen, fk_usuario FROM criatura LIMIT 0;
-SELECT id, fk_usuario, quiz, acertos, total_perguntas, concluido_em FROM tentativa_quiz LIMIT 0;
-
-

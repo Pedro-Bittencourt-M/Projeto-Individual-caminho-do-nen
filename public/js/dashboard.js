@@ -1,4 +1,3 @@
-// Valores fictícios para a prévia do dashboard.
 function desenharGrafico(id, dados, maximo, cor, casasDecimais) {
     var grafico = document.getElementById(id);
     function desenhar() {
@@ -32,10 +31,10 @@ function desenharGrafico(id, dados, maximo, cor, casasDecimais) {
             contexto.fillStyle = "#294037";
             contexto.fillRect(esquerda, y, larguraBarra, alturaBarra);
             contexto.fillStyle = cor;
-            contexto.fillRect(esquerda, y, larguraBarra * valor / maximo, alturaBarra);
+            contexto.fillRect(esquerda, y, larguraBarra * (valor || 0) / maximo, alturaBarra);
 
             contexto.fillStyle = "#f4efe0";
-            contexto.fillText(valor.toFixed(casasDecimais).replace(".", ","), largura - 34, centro);
+            contexto.fillText(valor === null ? "—" : valor.toFixed(casasDecimais).replace(".", ","), largura - 34, centro);
         });
     }
 
@@ -44,17 +43,3 @@ function desenharGrafico(id, dados, maximo, cor, casasDecimais) {
     desenhar();
 }
 
-window.addEventListener("DOMContentLoaded", function () {
-    desenharGrafico("grafico_tipos_nen", [
-        ["Intensificação", 3], ["Transmutação", 3], ["Materialização", 2],
-        ["Especialização", 1], ["Manipulação", 1], ["Emissão", 2]
-    ], 3, "#ffd34e", 0);
-
-    desenharGrafico("grafico_medias_quiz", [
-        ["Killua", 12.4], ["Leorio", 9.6], ["Gon", 11.8], ["Kurapika", 10.7]
-    ], 15, "#67d8aa", 1);
-
-    desenharGrafico("grafico_perigo_criaturas", [
-        ["Baixo", 4], ["Moderado", 3], ["Alto", 1], ["Extremo", 0]
-    ], 8, "#f0a46e", 0);
-});

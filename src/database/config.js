@@ -1,7 +1,7 @@
 var mysql = require("mysql2");
 
 // CONEXÃO DO BANCO MYSQL SERVER
-var mySqlConfig = {
+var configuracaoMySql = {
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     user: process.env.DB_USER,
@@ -16,15 +16,15 @@ function executar(instrucao, parametros = []) {
         return Promise.reject("AMBIENTE NÃO CONFIGURADO EM .env");
     }
 
-    return new Promise(function (resolve, reject) {
-        var conexao = mysql.createConnection(mySqlConfig);
+    return new Promise(function (resolver, rejeitar) {
+        var conexao = mysql.createConnection(configuracaoMySql);
         var executarConsulta = parametros.length ? conexao.execute.bind(conexao) : conexao.query.bind(conexao);
         executarConsulta(instrucao, parametros, function (erro, resultados) {
             conexao.end();
             if (erro) {
-                return reject(erro);
+                return rejeitar(erro);
             }
-            resolve(resultados);
+            resolver(resultados);
         });
         conexao.on('error', function (erro) {
             return ("ERRO NO MySQL SERVER: ", erro.sqlMessage);
@@ -32,20 +32,30 @@ function executar(instrucao, parametros = []) {
     });
 }
 
-async function executarEmTransacao(operacao) {
-    const conexao = await mysql.createConnection(mySqlConfig).promise();
-    try {
-        await conexao.beginTransaction();
-        const executarConsulta = async (sql, parametros) => (await conexao.execute(sql, parametros))[0];
-        const resultado = await operacao(executarConsulta);
-        await conexao.commit();
-        return resultado;
-    } catch (erro) {
-        await conexao.rollback();
-        throw erro;
-    } finally {
-        await conexao.end();
-    }
+function executarEmTransacao(operacao) {
+    return Promise.resolve().then(function () {
+        var conexao = mysql.createConnection(configuracaoMySql).promise();
+
+        function executarConsulta(sql, parametros) {
+            return conexao.execute(sql, parametros).then(function (resultado) {
+                return resultado[0];
+            });
+        }
+
+        return conexao.beginTransaction().then(function () {
+            return operacao(executarConsulta);
+        }).then(function (resultado) {
+            return conexao.commit().then(function () {
+                return resultado;
+            });
+        }).catch(function (erro) {
+            return conexao.rollback().then(function () {
+                throw erro;
+            });
+        }).finally(function () {
+            return conexao.end();
+        });
+    });
 }
 
 module.exports = { executar, executarEmTransacao };

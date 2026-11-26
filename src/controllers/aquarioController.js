@@ -1,36 +1,36 @@
 var aquarioModel = require("../models/aquarioModel");
 
-function buscarAquariosPorEmpresa(req, res) {
-    var idUsuario = req.params.idUsuario;
+function buscarAquariosPorEmpresa(requisicao, resposta) {
+    var idUsuario = requisicao.params.idUsuario;
 
     aquarioModel.buscarAquariosPorEmpresa(idUsuario)
         .then(function (resultado) {
             if (resultado.length > 0) {
-                res.status(200).json(resultado);
+                resposta.status(200).json(resultado);
             } else {
-                res.status(204).json([]);
+                resposta.status(204).json([]);
             }
         })
         .catch(function (erro) {
             console.log(erro);
             console.log("Houve um erro ao buscar os aquarios: ", erro.sqlMessage);
-            res.status(500).json(erro.sqlMessage);
+            resposta.status(500).json(erro.sqlMessage);
         });
 }
 
-function cadastrar(req, res) {
-    var descricao = req.body.descricao;
-    var idUsuario = req.body.idUsuario;
+function cadastrar(requisicao, resposta) {
+    var descricao = requisicao.body.descricao;
+    var idUsuario = requisicao.body.idUsuario;
 
     if (descricao == undefined) {
-        res.status(400).send("descricao está undefined!");
+        resposta.status(400).send("descricao está undefined!");
     } else if (idUsuario == undefined) {
-        res.status(400).send("idUsuario está undefined!");
+        resposta.status(400).send("idUsuario está undefined!");
     } else {
 
         aquarioModel.cadastrar(descricao, idUsuario)
             .then(function (resultado) {
-                res.status(201).json(resultado);
+                resposta.status(201).json(resultado);
             })
             .catch(function (erro) {
                 console.log(erro);
@@ -38,7 +38,7 @@ function cadastrar(req, res) {
                     "\nHouve um erro ao realizar o cadastro! Erro: ",
                     erro.sqlMessage
                 );
-                res.status(500).json(erro.sqlMessage);
+                resposta.status(500).json(erro.sqlMessage);
             });
     }
 }

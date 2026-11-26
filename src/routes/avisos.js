@@ -1,30 +1,30 @@
 var express = require("express");
-var router = express.Router();
+var roteador = express.Router();
 
 var avisoController = require("../controllers/avisoController");
 
-router.get("/listar", function (req, res) {
-    avisoController.listar(req, res);
+roteador.get("/listar", function (requisicao, resposta) {
+    avisoController.listar(requisicao, resposta);
 });
 
-router.get("/listar/:idUsuario", function (req, res) {
-    avisoController.listarPorUsuario(req, res);
+roteador.get("/listar/:idUsuario", function (requisicao, resposta) {
+    avisoController.listarPorUsuario(requisicao, resposta);
 });
 
-router.get("/pesquisar/:descricao", function (req, res) {
-    avisoController.pesquisarDescricao(req, res);
+roteador.get("/pesquisar/:descricao", function (requisicao, resposta) {
+    avisoController.pesquisarDescricao(requisicao, resposta);
 });
 
-router.post("/publicar/:idUsuario", function (req, res) {
-    avisoController.publicar(req, res);
+roteador.post("/publicar/:idUsuario", function (requisicao, resposta) {
+    avisoController.publicar(requisicao, resposta);
 });
 
-router.put("/editar/:idAviso", function (req, res) {
-    avisoController.editar(req, res);
+roteador.put("/editar/:idAviso", function (requisicao, resposta) {
+    avisoController.editar(requisicao, resposta);
 });
 
-router.delete("/deletar/:idAviso", function (req, res) {
-    avisoController.deletar(req, res);
+roteador.delete("/deletar/:idAviso", function (requisicao, resposta) {
+    avisoController.deletar(requisicao, resposta);
 });
 
-module.exports = router;
+module.exports = roteador;

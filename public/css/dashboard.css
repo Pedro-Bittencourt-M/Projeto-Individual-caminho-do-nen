@@ -114,7 +114,7 @@ svg.radar {
   background: #192823;
 }
 
-.indicadores-hunter dt,
+.indicadores-hunter .titulo-indicador,
 .grafico-hunter h2 {
   margin: 0;
   padding: clamp(11px, 1.8vh, 18px) 16px;
@@ -123,7 +123,7 @@ svg.radar {
   font: 400 clamp(12px, 1.12vw, 19px)/1.35 var(--fonte-destaque);
 }
 
-.indicadores-hunter dd {
+.indicadores-hunter .valor-indicador {
   color: #ffd34e;
   font: 400 clamp(28px, 3.2vw, 52px)/1 var(--fonte-destaque);
   margin: 0;
@@ -138,11 +138,17 @@ svg.radar {
   padding: 8px 12px 0;
 }
 
-.grafico-hunter canvas {
-  display: block;
+.grafico-hunter .area-grafico {
+  position: relative;
   width: calc(100% - 24px);
   height: clamp(214px, 43vh, 490px);
   margin: 6px auto 10px;
+}
+
+.area-grafico canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 body[data-v="dashboard"] .rodape {
@@ -158,7 +164,7 @@ body[data-v="dashboard"] .rodape {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .grafico-hunter canvas {
+  .grafico-hunter .area-grafico {
     height: 245px;
   }
 }

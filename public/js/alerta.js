@@ -14,8 +14,8 @@ function obterdados(idAquario) {
                 console.error(`Nenhum dado encontrado para o id ${idAquario} ou erro na API`);
             }
         })
-        .catch(function (error) {
-            console.error(`Erro na obtenção dos dados do aquario p/ gráfico: ${error.message}`);
+        .catch(function (erro) {
+            console.error(`Erro na obtenção dos dados do aquario p/ gráfico: ${erro.message}`);
         });
 
 }

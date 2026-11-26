@@ -7,57 +7,67 @@ function campo(valor, maximo, obrigatorio = true) {
     return texto.length <= maximo && (!obrigatorio || texto.length) ? texto : null;
 }
 
-function invalido(res, mensagem) {
-    return res.status(400).json({ mensagem });
+function invalido(resposta2, mensagem) {
+    return resposta2.status(400).json({ mensagem });
 }
 
-function estado(req, res) {
-    return hunterModel.estado(req.usuarioHunterId, req.query.pagina)
+function estado(requisicao, resposta2) {
+    return hunterModel.estado(requisicao.usuarioHunterId, requisicao.query.pagina)
         .then(function (dados) {
             if (!dados.hunter) {
-                return res.status(401).json({ mensagem: "Conta Hunter não encontrada." });
+                return resposta2.status(401).json({ mensagem: "Conta Hunter não encontrada." });
             }
-            return res.json(dados);
+            return resposta2.json(dados);
         });
 }
 
-function editarPerfil(req, res) {
-    var nomeVar = campo(req.body?.name, 100);
-    var motivoVar = campo(req.body?.reason, 500, false);
-    if (!nomeVar || motivoVar === null) return invalido(res, "Confira o nome e a motivação.");
-    return hunterModel.editarPerfil(req.usuarioHunterId, nomeVar, motivoVar)
+function editarPerfil(requisicao, resposta2) {
+    var dados = requisicao.body || {};
+    var nomeVar = campo(dados.name, 100);
+    var motivoVar = campo(dados.reason, 500, false);
+    if (!nomeVar || motivoVar === null) return invalido(resposta2, "Confira o nome e a motivação.");
+    return hunterModel.editarPerfil(requisicao.usuarioHunterId, nomeVar, motivoVar)
         .then(function (resultado) {
-            return res.json(resultado);
+            return resposta2.json(resultado);
         });
 }
 
-function salvarNen(req, res) {
-    var pontuacoes = req.body?.scores;
-    if (!Array.isArray(pontuacoes) || pontuacoes.length !== 6 || !pontuacoes.every(function (pontos) { return Number.isInteger(pontos) && pontos >= 0 && pontos <= 14; }) ||
-        pontuacoes.reduce(function (total, pontos) { return total + pontos; }, 0) !== 14) {
-        return invalido(res, "Conclua as 14 perguntas para salvar seu Nen.");
+function salvarNen(requisicao, resposta2) {
+    var dados = requisicao.body || {};
+    var pontuacoes = dados.scores;
+    var mensagem = "Conclua as 14 perguntas para salvar seu Nen.";
+    if (!Array.isArray(pontuacoes) || pontuacoes.length !== 6) return invalido(resposta2, mensagem);
+
+    var total = 0;
+    for (var i = 0; i < pontuacoes.length; i++) {
+        var pontos = pontuacoes[i];
+        if (!Number.isInteger(pontos) || pontos < 0 || pontos > 14) return invalido(resposta2, mensagem);
+        total += pontos;
     }
-    return hunterModel.salvarNen(req.usuarioHunterId, pontuacoes)
+    if (total !== 14) return invalido(resposta2, mensagem);
+
+    return hunterModel.salvarNen(requisicao.usuarioHunterId, pontuacoes)
         .then(function (resultado) {
-            return res.status(201).json(resultado);
+            return resposta2.status(201).json(resultado);
         })
         .catch(function (erro) {
             if (erro.code !== "ER_DUP_ENTRY") throw erro;
-            return res.status(409).json({ mensagem: "Seu teste de Nen já foi concluído." });
+            return resposta2.status(409).json({ mensagem: "Seu teste de Nen já foi concluído." });
         });
 }
 
-function salvarVoto(req, res) {
-    var metaVar = campo(req.body?.goal, 150);
-    var restricaoVar = campo(req.body?.restriction, 300);
-    var penalidadeVar = campo(req.body?.penalty, 300);
-    var severidadeVar = req.body?.severity;
+function salvarVoto(requisicao, resposta2) {
+    var dados = requisicao.body || {};
+    var metaVar = campo(dados.goal, 150);
+    var restricaoVar = campo(dados.restriction, 300);
+    var penalidadeVar = campo(dados.penalty, 300);
+    var severidadeVar = dados.severity;
     if (!metaVar || !restricaoVar || !penalidadeVar || !["Leve", "Moderada", "Severa"].includes(severidadeVar)) {
-        return invalido(res, "Confira os campos do voto.");
+        return invalido(resposta2, "Confira os campos do voto.");
     }
-    return hunterModel.salvarVoto(req.usuarioHunterId, { goal: metaVar, restriction: restricaoVar, penalty: penalidadeVar, severity: severidadeVar })
+    return hunterModel.salvarVoto(requisicao.usuarioHunterId, { goal: metaVar, restriction: restricaoVar, penalty: penalidadeVar, severity: severidadeVar })
         .then(function (resultado) {
-            return res.json(resultado);
+            return resposta2.json(resultado);
         });
 }
 
@@ -65,48 +75,72 @@ var categorias = {
     bp: ["Baixo", "Moderado", "Alto", "Extremo"], bev: ["Baixo", "Moderado", "Alto"],
     bt: ["Animal", "Besta mágica", "Quimera", "Outro"], bh: ["Floresta", "Montanha", "Água", "Deserto", "Outro"],
     bo: ["Pequeno", "Médio", "Grande"], bc: ["Dócil", "Territorial", "Agressivo", "Desconhecido"],
-    bnn: ["Desconhecida", ...hunterModel.tiposNen]
+    bnn: ["Desconhecida"].concat(hunterModel.tiposNen)
 };
 
-function registrarCriatura(req, res) {
-    var dados = req.body || {};
+function registrarCriatura(requisicao, resposta2) {
+    var dados = requisicao.body || {};
     var nomeVar = campo(dados.name, 150, false);
     var descricaoVar = campo(dados.description, 600);
-    if (nomeVar === null || !descricaoVar || !Object.entries(categorias).every(function ([chave, opcoes]) { return opcoes.includes(dados[chave]); })) {
-        return invalido(res, "Confira os dados da criatura.");
+    if (nomeVar === null || !descricaoVar) return invalido(resposta2, "Confira os dados da criatura.");
+
+    var criatura = { name: nomeVar || "Criatura sem nome", description: descricaoVar };
+    for (var chave in categorias) {
+        if (!categorias[chave].includes(dados[chave])) return invalido(resposta2, "Confira os dados da criatura.");
+        criatura[chave] = dados[chave];
     }
-    var selecoes = Object.fromEntries(Object.keys(categorias).map(function (chave) { return [chave, dados[chave]]; }));
-    return hunterModel.registrarCriatura(req.usuarioHunterId, { name: nomeVar || "Criatura sem nome", description: descricaoVar, ...selecoes })
+    return hunterModel.registrarCriatura(requisicao.usuarioHunterId, criatura)
         .then(function (resultado) {
-            return res.status(201).json(resultado);
+            return resposta2.status(201).json(resultado);
         });
 }
 
-function salvarTentativa(req, res) {
-    var quiz = quizzes.find(function (item) { return item.id === req.params.quiz; });
-    var respostas = req.body?.respostas;
-    if (!quiz || !Array.isArray(respostas) || respostas.length > quiz.questions.length ||
-        !respostas.every(function (resposta, indice) {
-            return Number.isInteger(resposta) && resposta >= 0 && resposta < quiz.questions[indice][1].length;
-        })) {
-        return invalido(res, "Respostas inválidas para esse quiz.");
+function salvarTentativa(requisicao, resposta2) {
+    var quiz;
+    for (var i = 0; i < quizzes.length; i++) {
+        if (quizzes[i].id === requisicao.params.quiz) {
+            quiz = quizzes[i];
+            break;
+        }
     }
-    var acertos = respostas.filter(function (resposta) { return resposta === 0; }).length;
-    return hunterModel.salvarTentativa(req.usuarioHunterId, quiz.id, acertos, quiz.questions.length)
+    var dados = requisicao.body || {};
+    var respostas = dados.respostas;
+    var mensagem = "Respostas inválidas para esse quiz.";
+    if (!quiz || !Array.isArray(respostas) || respostas.length > quiz.questions.length) {
+        return invalido(resposta2, mensagem);
+    }
+
+    var acertos = 0;
+    for (var indice = 0; indice < respostas.length; indice++) {
+        var resposta = respostas[indice];
+        if (!Number.isInteger(resposta) || resposta < 0 || resposta >= quiz.questions[indice][1].length) {
+            return invalido(resposta2, mensagem);
+        }
+        if (resposta === 0) acertos++;
+    }
+    return hunterModel.salvarTentativa(requisicao.usuarioHunterId, quiz.id, acertos, quiz.questions.length)
         .then(function (tentativa) {
             if (tentativa.bloqueio === "nen") {
-                return res.status(403).json({ mensagem: "Conclua o teste de Nen primeiro." });
+                return resposta2.status(403).json({ mensagem: "Conclua o teste de Nen primeiro." });
             } else if (tentativa.bloqueio === "tempo") {
-                return res.status(409).json({
+                return resposta2.status(409).json({
                     mensagem: "Espere três horas entre tentativas do mesmo quiz.",
                     completedAt: tentativa.completedAt
                 });
             }
-            return res.status(201).json(tentativa);
+            return resposta2.status(201).json(tentativa);
+        });
+}
+
+function buscarDashboard(requisicao, resposta2) {
+    return hunterModel.buscarDashboard()
+        .then(function (resultado) {
+            resposta2.json(resultado);
         });
 }
 
 module.exports = {
+    buscarDashboard,
     estado,
     editarPerfil,
     salvarNen,

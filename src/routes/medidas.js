@@ -1,14 +1,14 @@
 var express = require("express");
-var router = express.Router();
+var roteador = express.Router();
 
 var medidaController = require("../controllers/medidaController");
 
-router.get("/ultimas/:idAquario", function (req, res) {
-    medidaController.buscarUltimasMedidas(req, res);
+roteador.get("/ultimas/:idAquario", function (requisicao, resposta) {
+    medidaController.buscarUltimasMedidas(requisicao, resposta);
 });
 
-router.get("/tempo-real/:idAquario", function (req, res) {
-    medidaController.buscarMedidasEmTempoReal(req, res);
+roteador.get("/tempo-real/:idAquario", function (requisicao, resposta) {
+    medidaController.buscarMedidasEmTempoReal(requisicao, resposta);
 })
 
-module.exports = router;
+module.exports = roteador;
