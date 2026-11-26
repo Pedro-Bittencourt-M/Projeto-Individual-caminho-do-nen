@@ -88,63 +88,12 @@ O projeto se relaciona com o **ODS 4 — Educação de Qualidade** por incentiva
 
 O navegador chama a API com `fetch`. As rotas encaminham as requisições aos controllers, e os models executam as consultas no MySQL. A API devolve os dados em JSON, e o JavaScript preenche a página.
 
-<a id="estrutura-de-pastas"></a>
+## 🔒 Segurança
 
-## 📁 Estrutura de pastas
+- **Validação no cadastro.** A senha deve ter de 8 a 70 caracteres e incluir uma letra minúscula, uma maiúscula, um número e um símbolo. O formulário mostra quais requisitos foram atendidos, e a API verifica as regras antes de cadastrar.
+- **Sessão Hunter.** A API usa a sessão para identificar o usuário quando ele acessa os recursos da área Hunter.
+- **Contas de demonstração.** Nesta versão local, as senhas fictícias são armazenadas em texto simples no banco.
 
-```text
-Caminho do Nen/
-├── public/               Páginas e arquivos exibidos no navegador
-│   ├── assets/           Imagens do site
-│   ├── css/              Estilos das páginas
-│   ├── dashboard/        Páginas da Área Hunter
-│   └── js/               Scripts da interface e dos quizzes
-├── src/
-│   ├── controllers/      Validação e respostas da API
-│   ├── database/         Configuração do MySQL e scripts SQL
-│   ├── models/           Consultas ao banco
-│   └── routes/           Endereços da API
-├── app.js                Inicialização do servidor
-└── README.md             Documentação do projeto
-```
-
-<a id="como-executar"></a>
-
-## ▶️ Como executar
-
-Você precisa de **Node.js**, **npm** e acesso a uma instância do **MySQL**.
-
-1. Na raiz do projeto, instale as dependências.
-
-   ```bash
-   npm install
-   ```
-
-2. No MySQL, execute o [script de criação do banco](src/database/script-caminho-do-nen.sql). Ele cria o banco `hunter` e as tabelas `usuario`, `resultado_nen`, `voto_restricao`, `criatura` e `tentativa_quiz`.
-
-3. Configure o `.env.dev` na raiz com os dados da sua instância do MySQL.
-
-   ```dotenv
-   AMBIENTE_PROCESSO=desenvolvimento
-   APP_HOST=localhost
-   APP_PORT=3333
-
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_DATABASE=hunter
-   DB_USER=seu_usuario
-   DB_PASSWORD=sua_senha
-   ```
-
-4. Inicie o servidor.
-
-   ```bash
-   npm start
-   ```
-
-5. Abra [http://localhost:3333](http://localhost:3333) ou o endereço indicado no terminal. Faça o cadastro para acessar a Área Hunter.
-
-Para testar a dashboard com dados de exemplo, execute primeiro o [script de usuários fictícios](src/database/inserts-usuarios-hunter.sql) e depois o [script de dados extras](src/database/inserts-extras-hunter.sql).
 
 <a id="cronograma"></a>
 
