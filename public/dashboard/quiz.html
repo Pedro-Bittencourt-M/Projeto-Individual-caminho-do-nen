@@ -310,7 +310,6 @@ const perguntas = [
         let botoesAlternativas = [alternativa_0, alternativa_1, alternativa_2, alternativa_3, alternativa_4, alternativa_5];
         let tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
         let resultadoNen;
-        let tentativas = {};
         let quizAtual;
         let indicePergunta;
         let totalPerguntas;
@@ -329,21 +328,13 @@ const perguntas = [
 
         function atualizarLista() {
             if (resultadoNen) cartao_nen.style.display = "none";
-            for (let i = 0; i < quizzesPersonagens.length; i++) {
-                let tentativa = tentativas[quizzesPersonagens[i].id];
-                botoesQuiz[i].disabled = true;
-                avisosQuiz[i].innerHTML = "Conclua o teste de Nen para liberar.";
+            for (let i = 0; i < botoesQuiz.length; i++) {
                 if (resultadoNen) {
-                    let restante = 0;
-                    if (tentativa) restante = tentativa.completedAt + 3 * 60 * 60 * 1000 - Date.now();
-                    if (restante > 0) {
-                        let minutos = Math.ceil(restante / 60000);
-                        let horas = Math.floor(minutos / 60);
-                        avisosQuiz[i].innerHTML = "Disponível em " + horas + " h " + minutos % 60 + " min.";
-                    } else {
-                        botoesQuiz[i].disabled = false;
-                        avisosQuiz[i].innerHTML = "";
-                    }
+                    botoesQuiz[i].disabled = false;
+                    avisosQuiz[i].innerHTML = "";
+                } else {
+                    botoesQuiz[i].disabled = true;
+                    avisosQuiz[i].innerHTML = "Conclua o teste de Nen para liberar.";
                 }
             }
         }
@@ -486,15 +477,13 @@ const perguntas = [
                 }
                 return resposta.json().then(function (resultado) {
                     if (!resposta.ok) {
-                        if (quizAtual && resultado.completedAt) tentativas[quizAtual.id] = { completedAt: resultado.completedAt };
                         throw resultado.mensagem || "Não foi possível salvar o resultado.";
                     }
                     if (quizAtual) {
-                        tentativas[quizAtual.id] = resultado;
                         acertos = resultado.correct;
                         mostrarRecompensa();
-                        mensagem_resultado.innerHTML = "Você respondeu a todas as perguntas. Pode repetir este quiz em 3 horas.";
-                        if (indicePergunta < totalPerguntas) mensagem_resultado.innerHTML = "O tempo acabou. Questões sem resposta contam como erro. Pode repetir este quiz em 3 horas.";
+                        mensagem_resultado.innerHTML = "Você respondeu a todas as perguntas. Você pode repetir este quiz quando quiser.";
+                        if (indicePergunta < totalPerguntas) mensagem_resultado.innerHTML = "O tempo acabou. Questões sem resposta contam como erro. Você pode repetir este quiz quando quiser.";
                     } else {
                         resultadoNen = resultado;
                         atualizarLista();
@@ -527,13 +516,9 @@ const perguntas = [
                     nome_hunter.innerHTML = tratarTexto(estado.hunter.name);
                     botao_perfil.innerHTML = tratarTexto(estado.hunter.name[0].toUpperCase());
                     resultadoNen = estado.resultado;
-                    tentativas = estado.tentativas;
                     atualizarLista();
                     nav.style.display = "";
                     conteudo_quiz.style.display = "";
-                    setInterval(function () {
-                        if (selecao_quizzes.style.display != "none") atualizarLista();
-                    }, 1000);
                 });
             } else {
                 aviso_area_hunter.innerHTML = "Não foi possível carregar os quizzes.";

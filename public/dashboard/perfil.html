@@ -16,14 +16,52 @@
     <link rel="stylesheet" href="../css/base.css" />
     <link rel="stylesheet" href="../css/auth.css" />
     <link rel="stylesheet" href="../css/perfil.css" />
+  <style>
+        #nome_hunter {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: bold;
+        }
+
+        .fechado {
+            display: none;
+        }
+    </style>
   </head>
 
   <body data-v="perfil">
     <!-- MENU DE NAVEGAÇÃO -->
-    <nav id="nav"></nav>
+    <nav id="nav" class="navegacao-hunter fechado">
+        <div class="controle-menu-hunter">
+            <button id="botao_menu" type="button" class="botao-menu" aria-label="Menu Hunter" aria-controls="menu_hunter" aria-expanded="false" onclick="alternarMenu()">
+                <i></i><i></i><i></i>
+            </button>
+            <ul id="menu_hunter" class="lista-menu-hunter fechado">
+                <li><a href="personagens.html">Personagens</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="quiz.html">Quizzes</a></li>
+                <li><a href="voto.html">Voto e Restrição</a></li>
+                <li><a href="bestiario.html">Bestiário</a></li>
+            </ul>
+        </div>
+        <b><img src="../assets/logo.png" alt="">Caminho do Nen</b>
+        <div class="controle-perfil">
+            <button id="botao_perfil" type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="menu_perfil" aria-expanded="false" onclick="alternarPerfil()"></button>
+            <div id="menu_perfil" class="menu-perfil fechado">
+                <div class="cabecalho-menu-perfil"><input id="nome_hunter" type="text" aria-label="Nome do Hunter" readonly></div>
+                <a href="perfil.html" class="ativo" aria-current="page">Perfil</a>
+                <button type="button" id="botao_sair" onclick="sair()">Sair</button>
+            </div>
+        </div>
+    </nav>
     <!-- CONTEÚDO DA PÁGINA -->
-    <div id="aviso_area_hunter"></div>
-    <main hidden>
+    <p id="aviso_area_hunter" role="status"></p>
+    <main id="conteudo_perfil" class="fechado">
       <section id="perfil">
         <h1>Perfil do Hunter</h1>
         <!-- CARTÃO HUNTER E ESTATÍSTICAS DE NEN -->
@@ -36,30 +74,30 @@
                 alt="Cartão da Associação Hunter"
               />
               <div class="dados-licenca">
-                <h2 id="nome-hunter"></h2>
+                <h2 id="nome_cartao"></h2>
                 <p>
                   <strong>Licença Hunter</strong> ·
-                  <span id="licenca-hunter"></span>
+                  <span id="licenca_cartao"></span>
                 </p>
                 <p>
-                  <strong>Tipo de Nen</strong> · <span id="nen-hunter"></span>
+                  <strong>Tipo de Nen</strong> · <span id="nen_cartao"></span>
                 </p>
                 <p>
-                  <strong>Motivação</strong> · <span id="motivo-hunter"></span>
+                  <strong>Motivação</strong> · <span id="motivo_cartao"></span>
                 </p>
-                <p><strong>Voto</strong> · <span id="voto-hunter"></span></p>
+
               </div>
               <button
                 class="editar-perfil"
                 type="button"
-                id="editar-perfil"
+                id="botao_editar" onclick="alternarEdicao()"
                 aria-controls="formulario_perfil"
                 aria-expanded="false"
               >
                 Editar perfil
               </button>
             </article>
-            <form id="formulario_perfil" class="cartao form-perfil" hidden>
+            <form id="formulario_perfil" class="cartao form-perfil fechado" onsubmit="return salvarPerfil();">
               <div class="campo">
                 <label for="nome_input">Nome de Hunter</label>
                 <input
@@ -78,228 +116,27 @@
                   placeholder="Conte sua motivação"
                 ></textarea>
               </div>
-              <button type="submit">Salvar perfil</button>
-              <p id="status-perfil" class="status-perfil" role="status"></p>
+              <button id="botao_salvar" type="submit">Salvar perfil</button>
+              <p id="mensagem_perfil" class="status-perfil" role="status"></p>
             </form>
+            <section class="cartao" aria-labelledby="titulo_votos">
+              <h2 id="titulo_votos">Meus votos</h2>
+              <div id="lista_votos"></div>
+            </section>
           </div>
           <section id="estatisticas" class="cartao">
             <h2>Estatísticas de Nen</h2>
-            <div id="afinidades-hunter"></div>
-          </section>
-        </div>
-      </section>
-    </main>
-    <!-- RODAPÉ -->
-    <footer class="rodape">
-      Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
-      Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
-      pertencem aos seus criadores.
-    </footer>
-    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
-    <script>
-        var pastaSite = "../";
+            <div id="afinidades-hunter">
+              <div id="aviso_nen">
+                <p>Faça o quiz de Nen para descobrir suas afinidades.</p>
+                <a class="botao" href="quiz.html">Ir para os quizzes</a>
+              </div>
+              <div id="estatisticas_nen" class="fechado">
+                <p>Sua afinidade diminui 20 pontos percentuais a cada vértice de distância do tipo dominante.</p>
+                <svg class="hexagrama-afinidade" viewBox="-265 38 1810 1260" role="img" aria-label="Afinidades de Nen">
 
-        function pageUrl(caminho2) {
-            var partes = caminho2.split("#");
-            var url = pastaSite + partes[0];
-            if (partes.length > 1) url += "#" + partes[1];
-            return url;
-        }
-        const pagina = document.body.dataset.v;
-        const paginasHunter = ["dashboard", "perfil", "quiz", "voto", "bestiario", "personagens"];
-
-
-        function apiHunter(caminho, metodo, dados) {
-            var opcoes = { method: metodo || "GET" };
-            if (dados !== undefined) {
-                opcoes.headers = { "Content-Type": "application/json" };
-                opcoes.body = JSON.stringify(dados);
-            }
-            return fetch(pastaSite + "hunter/" + caminho, opcoes).then(function (resposta) {
-                return resposta.json().catch(function () {
-                    return null;
-                }).then(function (conteudo) {
-                    if (!resposta.ok || !conteudo) {
-                        var erro = new Error((conteudo && conteudo.mensagem) || "A API não respondeu como esperado.");
-                        erro.status = resposta.status;
-                        if (conteudo) erro.completedAt = conteudo.completedAt;
-                        throw erro;
-                    }
-                    return conteudo;
-                });
-            }, function () {
-                throw new Error("Não foi possível conectar à API. Confira se o servidor está ligado.");
-            });
-        }
-        function iniciarPagina() {
-            var estadoInicial = { hunter: null, resultado: null, voto: null, tentativas: {}, criaturas: [], mural: [] };
-            if (location.protocol !== "http:" && location.protocol !== "https:") {
-                return Promise.resolve().then(function () {
-                    montarPagina(estadoInicial);
-                });
-            }
-            return apiHunter("estado?pagina=" + (pagina || "")).then(function (estado) {
-                montarPagina(estado);
-            }, function (erro) {
-                if (erro.status === 401) erro = null;
-                montarPagina(estadoInicial, erro);
-            });
-        }
-
-        function montarPagina(estado, erroAoConsultar) {
-            const hunter = estado.hunter;
-            if (paginasHunter.includes(pagina)) {
-                if (hunter) {
-                    document.querySelector("main").hidden = false;
-                } else if (erroAoConsultar) {
-                    const aviso = document.createElement("p");
-                    aviso.className = "cartao";
-                    aviso.textContent = erroAoConsultar.message;
-                    document.getElementById("aviso_area_hunter").appendChild(aviso);
-                } else {
-                    location.replace(pastaSite + "login.html");
-                    return;
-                }
-            }
-            window.addEventListener("pageshow", function (evento) {
-                if (evento.persisted) window.location = location.href;
-            });
-
-            const navegacao = document.querySelector("#nav");
-            const ligacoes = [
-                ["index.html", "Início"],
-                ["sobre.html", "Sobre mim"],
-                ["dashboard/personagens.html", "Personagens"],
-                ["dashboard/perfil.html", "Perfil"],
-                ["dashboard/dashboard.html", "Dashboard"],
-                ["dashboard/quiz.html", "Quizzes"],
-                ["dashboard/voto.html", "Voto e Restrição"],
-                ["dashboard/bestiario.html", "Bestiário"],
-                ["cadastro.html", "Cadastro"],
-                ["login.html", "Entrar"]
-            ];
-            navegacao.setAttribute("aria-label", "Navegação principal");
-            navegacao.innerHTML = `<b><img src="${pastaSite + "assets/logo.png"}" alt="">Caminho do Nen</b>`;
-            function navigationLink(url, rotulo) {
-                const ligacao = document.createElement("a");
-                ligacao.href = pageUrl(url);
-                ligacao.textContent = rotulo;
-                if (url === "login.html") ligacao.classList.add("botao-destaque");
-                if (ligacao.pathname === location.pathname || (url === "index.html" && pastaSite === "./" && location.pathname.endsWith("/"))) {
-                    ligacao.classList.add("ativo");
-                    ligacao.setAttribute("aria-current", "page");
-                }
-                return ligacao;
-            }
-
-            if (hunter) {
-                navegacao.classList.add("navegacao-hunter");
-                navegacao.innerHTML += `
-                    <div class="controle-menu-hunter">
-                        <button type="button" class="botao-menu" aria-label="Menu da área Hunter" aria-controls="hunter-menu" aria-expanded="false">
-                            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
-                        </button>
-                        <ul class="lista-menu-hunter" id="hunter-menu" hidden></ul>
-                    </div>
-                    <div class="controle-perfil">
-                        <button type="button" class="botao-perfil" aria-label="Opções do perfil" aria-controls="hunter-profile" aria-expanded="false"></button>
-                        <div class="menu-perfil" id="hunter-profile" hidden><div class="cabecalho-menu-perfil"><b></b></div></div>
-                    </div>`;
-
-                navegacao.appendChild(navegacao.querySelector("b"));
-                navegacao.appendChild(navegacao.querySelector(".controle-perfil"));
-                const menu = navegacao.querySelector("#hunter-menu");
-                const perfil = navegacao.querySelector("#hunter-profile");
-                const botaoPerfil = navegacao.querySelector(".botao-perfil");
-                botaoPerfil.textContent = hunter.name[0].toUpperCase();
-                perfil.querySelector("b").textContent = hunter.name;
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) continue;
-                    const ligacao = navigationLink(url, rotulo);
-                    if (rotulo === "Perfil") {
-                        perfil.appendChild(ligacao);
-                    } else {
-                        const item = document.createElement("li");
-                        item.appendChild(ligacao);
-                        menu.appendChild(item);
-                    }
-                }
-
-                const botaoSair = document.createElement("button");
-                botaoSair.type = "button";
-                botaoSair.textContent = "Sair";
-                botaoSair.addEventListener("click", function () {
-                    var operacao = apiHunter("sair", "POST");
-                    operacao.then(function () {
-                        window.location = pastaSite + "index.html";
-                    }).catch(function (erro) {
-                        botaoSair.title = erro.message;
-                        botaoSair.textContent = "Tentar sair novamente";
-                    });
-                });
-                perfil.appendChild(botaoSair);
-
-                function bindDisclosure(botao, painel) {
-                    function close() {
-                        painel.hidden = true;
-                        botao.setAttribute("aria-expanded", "false");
-                    }
-                    botao.addEventListener("click", function () {
-                        if (!painel.hidden) {
-                            close();
-                            return;
-                        }
-                        painel.hidden = false;
-                        botao.setAttribute("aria-expanded", "true");
-                    });
-                    document.addEventListener("click", function (evento) {
-                        if (!botao.contains(evento.target) && !painel.contains(evento.target)) close();
-                    });
-                    document.addEventListener("keydown", function (evento) {
-                        if (evento.key === "Escape" && !painel.hidden) {
-                            close();
-                            botao.focus();
-                        }
-                    });
-                }
-
-                bindDisclosure(navegacao.querySelector(".botao-menu"), menu);
-                bindDisclosure(botaoPerfil, perfil);
-                perfil.addEventListener("click", function (evento) {
-                    if (evento.target.closest("a")) {
-                        perfil.hidden = true;
-                        botaoPerfil.setAttribute("aria-expanded", "false");
-                    }
-                });
-            } else {
-                for (var i = 0; i < ligacoes.length; i++) {
-                    var url = ligacoes[i][0];
-                    var rotulo = ligacoes[i][1];
-                    if (!url.startsWith("dashboard/")) navegacao.appendChild(navigationLink(url, rotulo));
-                }
-            }
-
-
-
-            function get(id) {
-                return document.getElementById(id);
-            }
-            function value(id) {
-                return get(id).value.trim();
-            }
-
-            const coresNen = ["#2c9954", "#8942a1", "#247eaf", "#bd3528", "#dc9119", "#169d89"];
-            const pontosHexagono = [[640, 228], [997, 434], [997, 846], [640, 1052], [283, 846], [283, 434]];
-            function drawNenArtwork(hexagono, filterId) {
-                const imagemHexagono = pastaSite + "assets/hexagono-nen.png";
-                hexagono.setAttribute("viewBox", "-265 38 1810 1204");
-
-
-                hexagono.innerHTML = `
                     <defs>
-                        <filter id="${filterId}" color-interpolation-filters="sRGB">
+                        <filter id="nen-afinidade-sem-fundo" color-interpolation-filters="sRGB">
                             <feColorMatrix type="matrix" values="0 0 0 0 0
                                                                  0 0 0 0 0
                                                                  0 0 0 0 0
@@ -327,123 +164,192 @@
                                  L 477 533 L 504 502 L 545 540 Q 563 521 576 498 H 482 Z
                                  M 607 626 V 676 H 668 V 626 Z"></path>
                     </g>
-                    <image href="${imagemHexagono}" width="1280" height="1280" filter="url(#${filterId})" aria-hidden="true"></image>`;
+                    <image href="../assets/hexagono-nen.png" width="1280" height="1280" filter="url(#nen-afinidade-sem-fundo)" aria-hidden="true"></image>
+                                <circle id="destaque_0" class="fechado" cx="640" cy="228" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="640" y="99" text-anchor="middle">Intensificação<tspan id="afinidade_0" class="porcentagem-afinidade" x="640" dy="47"></tspan></text>
+                <circle id="destaque_1" class="fechado" cx="997" cy="434" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="1119" y="422" text-anchor="start">Transmutação<tspan id="afinidade_1" class="porcentagem-afinidade" x="1119" dy="47"></tspan></text>
+                <circle id="destaque_2" class="fechado" cx="997" cy="846" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="1119" y="834" text-anchor="start">Materialização<tspan id="afinidade_2" class="porcentagem-afinidade" x="1119" dy="47"></tspan></text>
+                <circle id="destaque_3" class="fechado" cx="640" cy="1052" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="640" y="1204" text-anchor="middle">Especialização<tspan id="afinidade_3" class="porcentagem-afinidade" x="640" dy="47"></tspan></text>
+                <circle id="destaque_4" class="fechado" cx="283" cy="846" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="161" y="834" text-anchor="end">Manipulação<tspan id="afinidade_4" class="porcentagem-afinidade" x="161" dy="47"></tspan></text>
+                <circle id="destaque_5" class="fechado" cx="283" cy="434" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>
+                <text x="161" y="422" text-anchor="end">Emissão<tspan id="afinidade_5" class="porcentagem-afinidade" x="161" dy="47"></tspan></text>
+              </svg>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+    <!-- RODAPÉ -->
+    <footer class="rodape">
+      Projeto acadêmico feito por fã, sem fins lucrativos e sem vínculo oficial.
+      Hunter x Hunter © Yoshihiro Togashi / Shueisha. Personagens e imagens
+      pertencem aos seus criadores.
+    </footer>
+    <!-- JAVASCRIPT DO CAMINHO DO NEN -->
+    <script>
+        function alternarMenu() {
+            if (menu_hunter.className == "lista-menu-hunter fechado") {
+                menu_hunter.className = "lista-menu-hunter";
+                menu_perfil.className = "menu-perfil fechado";
+                botao_menu.setAttribute("aria-expanded", "true");
+                botao_perfil.setAttribute("aria-expanded", "false");
+            } else {
+                menu_hunter.className = "lista-menu-hunter fechado";
+                botao_menu.setAttribute("aria-expanded", "false");
             }
-
-
-            const tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
-            function affinityHexagon(dominant) {
-                var afinidades = [];
-                var nomesAfinidades = [];
-                for (var indice = 0; indice < tiposNen.length; indice++) {
-                    const distancia = indice > dominant ? indice - dominant : dominant - indice;
-                    var porcentagem = 100 - 20 * (distancia < tiposNen.length - distancia ? distancia : tiposNen.length - distancia);
-                    afinidades.push(porcentagem);
-                    nomesAfinidades.push(tiposNen[indice] + " " + porcentagem + "%");
-                }
-                var suporteHexagono = document.createElement("div");
-                suporteHexagono.innerHTML = "<svg></svg>";
-                const svg = suporteHexagono.firstElementChild;
-                svg.setAttribute("class", "hexagrama-afinidade");
-                svg.setAttribute("role", "img");
-                svg.setAttribute("aria-label", nomesAfinidades.join(", "));
-                drawNenArtwork(svg, "nen-afinidade-sem-fundo");
-                svg.setAttribute("viewBox", "-265 38 1810 1260");
-                for (var indice = 0; indice < pontosHexagono.length; indice++) {
-                    var x = pontosHexagono[indice][0];
-                    var y = pontosHexagono[indice][1];
-                    const horizontal = (x < 640 ? -1 : x > 640 ? 1 : 0) * 122;
-                    const posicaoTexto = y + [-129, -12, -12, 152, -12, -12][indice];
-                    const alinhamento = horizontal === 0 ? "middle" : horizontal > 0 ? "start" : "end";
-                    const destaque = indice === dominant
-                        ? `<circle cx="${x}" cy="${y}" r="102" fill="none" stroke="#ffd34e" stroke-width="12"></circle>`
-                        : "";
-                    svg.innerHTML += `<g aria-hidden="true">${destaque}
-                        <text x="${x + horizontal}" y="${posicaoTexto}" text-anchor="${alinhamento}">${tiposNen[indice]}
-                            <tspan class="porcentagem-afinidade" x="${x + horizontal}" dy="47">${afinidades[indice]}%</tspan>
-                        </text>
-                    </g>`;
-                }
-                return svg;
-            }
-
-
-            let resultadoNen = estado.resultado;
-
-            if (hunter && get("dados_perfil_hunter")) {
-                const botaoEditar = get("editar-perfil");
-                const formulario = get("formulario_perfil");
-                const nome = get("nome_input");
-                const motivacao = get("motivacao_input");
-                const mensagemSituacao = get("status-perfil");
-                const voto2 = estado.voto;
-
-                function showProfile() {
-                    get("licenca-hunter").textContent = hunter.license || "Não informada";
-                    get("nome-hunter").textContent = hunter.name;
-                    get("nen-hunter").textContent = resultadoNen ? tiposNen[resultadoNen.type] || "não revelado" : "não revelado";
-                    get("motivo-hunter").textContent = hunter.reason || "não informada";
-                    get("voto-hunter").textContent = voto2 ? voto2.goal || "nenhum" : "nenhum";
-                    navegacao.querySelector(".botao-perfil").textContent = hunter.name[0].toUpperCase();
-                    navegacao.querySelector(".cabecalho-menu-perfil b").textContent = hunter.name;
-                }
-
-                nome.value = hunter.name;
-                motivacao.value = hunter.reason || "";
-                showProfile();
-
-                botaoEditar.addEventListener("click", function () {
-                    formulario.hidden = !formulario.hidden;
-                    botaoEditar.setAttribute("aria-expanded", String(!formulario.hidden));
-                    if (!formulario.hidden) nome.focus();
-                });
-
-                formulario.addEventListener("submit", function (evento) {
-                    evento.preventDefault();
-                    const dadosAtualizados = {
-                        name: nome.value.trim(),
-                        reason: motivacao.value.trim()
-                    };
-                    if (!dadosAtualizados.name) {
-                        mensagemSituacao.textContent = "Informe um nome de Hunter.";
-                        nome.focus();
-                        return;
-                    }
-                    var operacao = apiHunter("perfil", "PUT", { name: dadosAtualizados.name, reason: dadosAtualizados.reason });
-                    operacao.then(function (salvo) {
-                        hunter.name = salvo.name;
-                        hunter.reason = salvo.reason;
-                        nome.value = hunter.name;
-                        motivacao.value = hunter.reason;
-                        showProfile();
-                        mensagemSituacao.textContent = "Perfil salvo.";
-                    }).catch(function (erro) {
-                        mensagemSituacao.textContent = erro.message;
-                    });
-                });
-            }
-            const estatisticas = get("afinidades-hunter");
-            if (hunter && estatisticas) {
-                if (resultadoNen) {
-                    const resumo = document.createElement("p");
-                    resumo.textContent = "Sua afinidade diminui 20 pontos percentuais a cada vértice de distância do tipo dominante.";
-                    estatisticas.appendChild(resumo);
-                    estatisticas.appendChild(affinityHexagon(resultadoNen.type));
-                } else {
-                    const resumo = document.createElement("p");
-                    resumo.textContent = "Faça o quiz de Nen para descobrir suas afinidades.";
-                    const ligacao = navigationLink("dashboard/quiz.html", "Fazer o quiz de Nen");
-                    ligacao.className = "botao";
-                    estatisticas.appendChild(resumo);
-                    estatisticas.appendChild(ligacao);
-                }
-            }
-
-
         }
 
-        iniciarPagina().catch(function (erro) {
-            console.error(erro);
+        function alternarPerfil() {
+            if (menu_perfil.className == "menu-perfil fechado") {
+                menu_perfil.className = "menu-perfil";
+                menu_hunter.className = "lista-menu-hunter fechado";
+                botao_perfil.setAttribute("aria-expanded", "true");
+                botao_menu.setAttribute("aria-expanded", "false");
+            } else {
+                menu_perfil.className = "menu-perfil fechado";
+                botao_perfil.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function sair() {
+            fetch("/hunter/sair", { method: "POST" }).then(function (resposta) {
+                if (resposta.ok) {
+                    window.location = "../index.html";
+                } else {
+                    botao_sair.innerHTML = "Tentar sair novamente";
+                }
+            }).catch(function () {
+                botao_sair.innerHTML = "Tentar sair novamente";
+            });
+        }
+
+        let hunter;
+        let resultadoNen;
+        let votos = [];
+        let tiposNen = ["Intensificação", "Transmutação", "Materialização", "Especialização", "Manipulação", "Emissão"];
+        let afinidades = [afinidade_0, afinidade_1, afinidade_2, afinidade_3, afinidade_4, afinidade_5];
+        let destaques = [destaque_0, destaque_1, destaque_2, destaque_3, destaque_4, destaque_5];
+
+        function tratarTexto(texto) {
+            texto = texto.replaceAll("&", "&amp;");
+            texto = texto.replaceAll("<", "&lt;");
+            return texto.replaceAll(">", "&gt;");
+        }
+
+        function mostrarPerfil() {
+            nome_cartao.innerHTML = tratarTexto(hunter.name);
+            licenca_cartao.innerHTML = hunter.id;
+            motivo_cartao.innerHTML = tratarTexto(hunter.reason || "não informada");
+            nen_cartao.innerHTML = "não revelado";
+            if (resultadoNen && tiposNen[resultadoNen.type]) nen_cartao.innerHTML = tiposNen[resultadoNen.type];
+
+            nome_hunter.value = hunter.name;
+            botao_perfil.innerHTML = "?";
+            if (hunter.name) botao_perfil.innerHTML = tratarTexto(hunter.name[0].toUpperCase());
+            nome_input.value = hunter.name;
+            motivacao_input.value = hunter.reason || "";
+        }
+
+        function mostrarVotos() {
+            lista_votos.innerHTML = "Nenhum voto selado.";
+            if (votos.length == 0) return;
+
+            lista_votos.innerHTML = "";
+            for (let i = 0; i < votos.length; i++) {
+                let voto = votos[i];
+                lista_votos.innerHTML += "<article><h3>" + tratarTexto(voto.goal) + "</h3>" +
+                    "<p><strong>Restrição:</strong> " + tratarTexto(voto.restriction) + "</p>" +
+                    "<p><strong>Penalidade:</strong> " + tratarTexto(voto.penalty) + "</p>" +
+                    "<p><strong>Severidade:</strong> " + tratarTexto(voto.severity) + "</p></article>";
+            }
+        }
+
+        function mostrarAfinidades() {
+            if (!resultadoNen || !tiposNen[resultadoNen.type]) return;
+
+            for (let i = 0; i < tiposNen.length; i++) {
+                let distancia = i - resultadoNen.type;
+                if (distancia < 0) distancia = -distancia;
+                if (distancia > 3) distancia = 6 - distancia;
+                afinidades[i].innerHTML = (100 - 20 * distancia) + "%";
+                if (i == resultadoNen.type) destaques[i].setAttribute("class", "");
+            }
+
+            aviso_nen.className = "fechado";
+            estatisticas_nen.className = "";
+        }
+
+        function alternarEdicao() {
+            if (formulario_perfil.className == "cartao form-perfil fechado") {
+                formulario_perfil.className = "cartao form-perfil";
+                botao_editar.setAttribute("aria-expanded", "true");
+            } else {
+                formulario_perfil.className = "cartao form-perfil fechado";
+                botao_editar.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        function salvarPerfil() {
+            let nome = nome_input.value;
+            let motivacao = motivacao_input.value;
+
+            if (botao_salvar.disabled) return false;
+            if (nome == "") {
+                mensagem_perfil.innerHTML = "Informe um nome de Hunter.";
+                return false;
+            }
+
+            botao_salvar.disabled = true;
+            mensagem_perfil.innerHTML = "";
+            fetch("/hunter/perfil", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: nome, reason: motivacao })
+            }).then(function (resposta) {
+                if (resposta.status == 401) {
+                    window.location = "../login.html";
+                } else if (resposta.ok) {
+                    return resposta.json().then(function (salvo) {
+                        hunter = salvo;
+                        mostrarPerfil();
+                        mensagem_perfil.innerHTML = "Perfil salvo.";
+                        botao_salvar.disabled = false;
+                    });
+                } else {
+                    mensagem_perfil.innerHTML = "Não foi possível salvar o perfil. Confira os campos.";
+                    botao_salvar.disabled = false;
+                }
+            }).catch(function () {
+                mensagem_perfil.innerHTML = "Não foi possível salvar o perfil. Confira se o servidor está ligado.";
+                botao_salvar.disabled = false;
+            });
+            return false;
+        }
+
+        fetch("/hunter/estado?pagina=perfil").then(function (resposta) {
+            if (resposta.status == 401) {
+                window.location = "../login.html";
+            } else if (resposta.ok) {
+                return resposta.json().then(function (estado) {
+                    hunter = estado.hunter;
+                    resultadoNen = estado.resultado;
+                    votos = estado.votos;
+                    mostrarVotos();
+                    mostrarPerfil();
+                    mostrarAfinidades();
+                    nav.className = "navegacao-hunter";
+                    conteudo_perfil.className = "";
+                });
+            } else {
+                aviso_area_hunter.innerHTML = "Não foi possível carregar o perfil.";
+            }
+        }).catch(function () {
+            aviso_area_hunter.innerHTML = "Não foi possível carregar o perfil. Confira se o servidor está ligado.";
         });
     </script>
   </body>

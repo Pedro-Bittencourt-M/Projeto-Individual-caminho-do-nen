@@ -21,7 +21,7 @@ roteador.get("/estado", function (requisicao, resposta, proximo) {
     return Promise.resolve(hunterController.estado(requisicao, resposta)).catch(proximo);
 });
 
-roteador.put("/perfil", function (requisicao, resposta, proximo) {
+roteador.post("/perfil", function (requisicao, resposta, proximo) {
     return Promise.resolve(hunterController.editarPerfil(requisicao, resposta)).catch(proximo);
 });
 

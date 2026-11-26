@@ -26,7 +26,8 @@ function estado(id, pagina) {
     var consultaVoto = `
         SELECT meta AS goal, restricao AS restriction, penalidade AS penalty, severidade AS severity
         FROM voto_restricao
-        WHERE fk_usuario = ?;
+        WHERE fk_usuario = ?
+        ORDER BY id DESC;
     `;
 
     var consultaTentativa = `
@@ -76,7 +77,7 @@ function estado(id, pagina) {
             var tentativa = tentativas[i];
             ultimaTentativaPorQuiz[tentativa.quiz] = { completedAt: Number(tentativa.completedAt) };
         }
-        return { hunter, resultado, voto: votos[0] || null, criaturas, mural, tentativas: ultimaTentativaPorQuiz };
+        return { hunter, resultado, votos: votos, criaturas, mural, tentativas: ultimaTentativaPorQuiz };
     });
 }
 
@@ -111,10 +112,9 @@ function salvarVoto(id, voto) {
     var campos = [voto.goal, voto.restriction, voto.penalty, voto.severity];
     var instrucaoSql = `
         INSERT INTO voto_restricao (meta, restricao, penalidade, severidade, fk_usuario)
-        VALUES (?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE meta = ?, restricao = ?, penalidade = ?, severidade = ?;
+        VALUES (?, ?, ?, ?, ?);
     `;
-    return bancoDados.executar(instrucaoSql, campos.concat([id], campos)).then(function () {
+    return bancoDados.executar(instrucaoSql, campos.concat([id])).then(function () {
         return voto;
     });
 }
@@ -136,27 +136,15 @@ function registrarCriatura(id, criatura) {
 }
 
 function salvarTentativa(id, quiz, acertos, total) {
-    return bancoDados.executarEmTransacao(function (executar) {
-        return executar("SELECT id FROM usuario WHERE id = ? FOR UPDATE", [id]).then(function () {
-            return executar("SELECT id FROM resultado_nen WHERE fk_usuario = ?", [id]);
-        }).then(function (resultadosNen) {
+    return bancoDados.executar("SELECT id FROM resultado_nen WHERE fk_usuario = ?", [id])
+        .then(function (resultadosNen) {
             if (!resultadosNen[0]) return { bloqueio: "nen" };
 
-            var consulta = "SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt, TIMESTAMPDIFF(SECOND, concluido_em, CURRENT_TIMESTAMP) AS segundos FROM tentativa_quiz WHERE fk_usuario = ? AND quiz = ? ORDER BY concluido_em DESC, id DESC LIMIT 1";
-            return executar(consulta, [id, quiz]).then(function (tentativas) {
-                var ultima = tentativas[0];
-                if (ultima && ultima.segundos < 10800) {
-                    return { bloqueio: "tempo", completedAt: Number(ultima.completedAt) };
-                }
-
-                return executar("INSERT INTO tentativa_quiz (fk_usuario, quiz, acertos, total_perguntas) VALUES (?, ?, ?, ?)", [id, quiz, acertos, total]).then(function (tentativa) {
-                    return executar("SELECT UNIX_TIMESTAMP(concluido_em) * 1000 AS completedAt FROM tentativa_quiz WHERE id = ?", [tentativa.insertId]);
-                }).then(function (registros) {
-                    return { correct: acertos, total, completedAt: Number(registros[0].completedAt) };
-                });
+            var instrucaoSql = "INSERT INTO tentativa_quiz (fk_usuario, quiz, acertos, total_perguntas) VALUES (?, ?, ?, ?)";
+            return bancoDados.executar(instrucaoSql, [id, quiz, acertos, total]).then(function () {
+                return { correct: acertos, total: total };
             });
         });
-    });
 }
 
 function buscarDashboard() {

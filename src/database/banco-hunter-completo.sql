@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS voto_restricao (
     restricao VARCHAR(300),
     penalidade VARCHAR(300),
     severidade VARCHAR(20) CHECK (severidade IN ('Leve', 'Moderada', 'Severa')),
-    fk_usuario INT NOT NULL UNIQUE,
+    fk_usuario INT NOT NULL,
     CONSTRAINT fkVotoUsuario FOREIGN KEY (fk_usuario)
     REFERENCES usuario(id)
 );

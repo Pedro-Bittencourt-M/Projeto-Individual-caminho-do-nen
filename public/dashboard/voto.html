@@ -70,13 +70,6 @@
                     <button id="botao_salvar" type="submit">Selar voto</button>
                     <p id="mensagem_voto" role="status"></p>
                 </form>
-                <div id="voto_salvo" style="display: none;">
-                    <article class="cartao">
-                        <h2 id="resumo_meta"></h2>
-                        <p id="resumo_restricao"></p>
-                        <p id="resumo_penalidade"></p>
-                    </article>
-                </div>
             </div>
         </section>
     </main>
@@ -88,7 +81,6 @@
     </footer>
     <!-- JAVASCRIPT DO CAMINHO DO NEN -->
     <script>
-        let votoAtual = null;
 
         function alternarMenu() {
             if (menu_hunter.style.display == "none") {
@@ -126,26 +118,6 @@
             });
         }
 
-        function tratarTexto(texto) {
-            texto = texto.replaceAll("&", "&amp;");
-            texto = texto.replaceAll("<", "&lt;");
-            texto = texto.replaceAll(">", "&gt;");
-            return texto;
-        }
-
-        function mostrarVoto() {
-            if (votoAtual) {
-                meta_input.value = votoAtual.goal;
-                restricao_input.value = votoAtual.restriction;
-                penalidade_input.value = votoAtual.penalty;
-                severidade_input.value = votoAtual.severity;
-                resumo_meta.innerHTML = tratarTexto(votoAtual.goal);
-                resumo_restricao.innerHTML = tratarTexto("Restrição " + votoAtual.severity + " · " + votoAtual.restriction);
-                resumo_penalidade.innerHTML = tratarTexto("Penalidade: " + votoAtual.penalty);
-                voto_salvo.style.display = "";
-            }
-        }
-
         function salvarVoto() {
             let meta = meta_input.value;
             let restricao = restricao_input.value;
@@ -173,12 +145,12 @@
                 if (resposta.status == 401) {
                     window.location = "../login.html";
                 } else if (resposta.ok) {
-                    return resposta.json().then(function (voto) {
-                        votoAtual = voto;
-                        mostrarVoto();
-                        mensagem_voto.innerHTML = "Voto salvo.";
-                        botao_salvar.disabled = false;
-                    });
+                    meta_input.value = "";
+                    restricao_input.value = "";
+                    penalidade_input.value = "";
+                    severidade_input.value = "Leve";
+                    mensagem_voto.innerHTML = "Voto selado";
+                    botao_salvar.disabled = false;
                 } else {
                     mensagem_voto.innerHTML = "Não foi possível salvar o voto. Confira os campos.";
                     botao_salvar.disabled = false;
@@ -197,8 +169,6 @@
                 return resposta.json().then(function (estado) {
                     nome_hunter.textContent = estado.hunter.name;
                     botao_perfil.textContent = estado.hunter.name[0].toUpperCase();
-                    votoAtual = estado.voto;
-                    mostrarVoto();
                     nav.style.display = "";
                     conteudo_voto.style.display = "";
                 });

@@ -122,11 +122,6 @@ function salvarTentativa(requisicao, resposta2) {
         .then(function (tentativa) {
             if (tentativa.bloqueio === "nen") {
                 return resposta2.status(403).json({ mensagem: "Conclua o teste de Nen primeiro." });
-            } else if (tentativa.bloqueio === "tempo") {
-                return resposta2.status(409).json({
-                    mensagem: "Espere três horas entre tentativas do mesmo quiz.",
-                    completedAt: tentativa.completedAt
-                });
             }
             return resposta2.status(201).json(tentativa);
         });
